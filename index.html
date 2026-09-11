@@ -113,6 +113,31 @@
   }
   .next-lesson .info b{font-size:16px; display:block;}
   .next-lesson .info span{font-size:13px; color:var(--muted);}
+  .mini-lesson{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px 14px;
+    margin-bottom:8px;
+  }
+  .mini-lesson .mini-time{
+    min-width:42px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.45;
+  }
+  .mini-lesson .mini-info{flex:1;}
+  .mini-lesson .mini-info b{font-size:14px; display:block;}
+  .mini-lesson .mini-info span{font-size:12px; color:var(--muted);}
+  .mini-lesson .mini-num{
+    font-size:13px;
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
   .section-title{
     font-size:14px;
     color:var(--muted);
@@ -271,6 +296,28 @@
   .category-card b{font-size:15px;display:block;}
   .category-card span{font-size:12px;color:var(--muted);display:block;margin-top:3px;}
 
+  /* ---- DODATKOWE W WIĘCEJ ---- */
+  .more-tools{margin-top:18px;}
+  .tool-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 16px;margin-bottom:10px;cursor:pointer;}
+  .tool-row:active{background:var(--card-hover);}
+  .tool-ico{width:40px;height:40px;border-radius:13px;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
+  .tool-info{flex:1}.tool-info b{display:block;font-size:15px}.tool-info span{display:block;font-size:12px;color:var(--muted);margin-top:3px;}
+  .tool-arrow{color:var(--muted);font-size:20px;}
+  .more-note{background:linear-gradient(135deg,#16241d,#10151f);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px;}
+  .more-note b{font-size:15px}.more-note p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:6px;}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;z-index:20;}
+  .modal.show{display:flex}.modal-box{width:100%;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:22px;max-height:80vh;overflow:auto;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{font-size:20px;}
+  .close-btn{width:34px;height:34px;border:0;border-radius:50%;background:#232327;color:var(--text);font-size:20px;cursor:pointer;}
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .setting-row:last-child{border-bottom:0}.toggle{width:44px;height:24px;border-radius:999px;background:#303035;position:relative;cursor:pointer;transition:.2s;}
+  .toggle::after{content:"";position:absolute;width:18px;height:18px;top:3px;left:3px;border-radius:50%;background:#aaa;transition:.2s;}
+  .toggle.on{background:var(--accent-dim)}.toggle.on::after{left:23px;background:var(--accent);}
+  .stat-box{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-item{background:#121216;border:1px solid var(--line);border-radius:16px;padding:15px;}
+  .stat-item b{font-size:22px}.stat-item span{display:block;color:var(--muted);font-size:12px;margin-top:3px;}
+  .note-input{width:100%;min-height:110px;resize:vertical;background:#121216;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:13px;font:inherit;font-size:14px;outline:none;}
+  .save-note{width:100%;margin-top:10px;padding:12px;border:0;border-radius:13px;background:var(--accent);color:#08120e;font-weight:700;cursor:pointer;}
+
   /* ---- WIADOMOŚCI ---- */
   .message-card{
     background:var(--card);
@@ -362,55 +409,53 @@
         <div class="big">100%</div>
         <div class="label">frekwencja w tym semestrze</div>
       </div>
+
+      <div class="section-title" style="margin-top:0">Dzisiaj</div>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="n" id="start-lesson-count">0</div>
+          <div class="t">lekcji</div>
+        </div>
+        <div class="quick-card">
+          <div class="n" id="start-end-time">—</div>
+          <div class="t">koniec zajęć</div>
+        </div>
+      </div>
+
+      <div class="section-title">Najbliższa lekcja</div>
+      <div class="next-lesson" id="start-next-lesson">
+        <div class="time">—</div>
+        <div class="info">
+          <b>Brak zajęć</b>
+          <span>Na dzisiaj</span>
+        </div>
+      </div>
+
+      <div class="section-title">Mini plan lekcji</div>
+      <div id="start-mini-plan"></div>
     </section>
 
     <!-- WIĘCEJ -->
     <section class="view" id="view-wiecej">
       <div class="section-title" style="margin-top:0">Kategorie</div>
-
       <div class="category-grid">
-        <div class="category-card" onclick="showView('start')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
-          </div>
-          <b>Start</b><span>Podsumowanie</span>
-        </div>
-
-        <div class="category-card" onclick="showView('wiadomosci')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z"/><path d="M8 7h8M8 10.5h5"/></svg>
-          </div>
-          <b>Wiadomości</b><span>Komunikaty</span>
-        </div>
-
-        <div class="category-card" onclick="showView('oceny')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
-          </div>
-          <b>Oceny</b><span>Twoje oceny</span>
-        </div>
-
-        <div class="category-card" onclick="showView('plan')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-          </div>
-          <b>Plan lekcji</b><span>Zajęcia</span>
-        </div>
-
-        <div class="category-card" onclick="showView('frekwencja')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <b>Frekwencja</b><span>Obecności</span>
-        </div>
-
-        <div class="category-card" onclick="showView('wiecej')">
-          <div class="cat-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
-          </div>
-          <b>Więcej</b><span>Wszystkie kategorie</span>
-        </div>
+        <div class="category-card" onclick="showView('start')"><div class="cat-ico">⌂</div><b>Start</b><span>Podsumowanie</span></div>
+        <div class="category-card" onclick="showView('wiadomosci')"><div class="cat-ico">💬</div><b>Wiadomości</b><span>Komunikaty</span></div>
+        <div class="category-card" onclick="showView('oceny')"><div class="cat-ico">📘</div><b>Oceny</b><span>Twoje oceny</span></div>
+        <div class="category-card" onclick="showView('plan')"><div class="cat-ico">📅</div><b>Plan lekcji</b><span>Zajęcia</span></div>
+        <div class="category-card" onclick="showView('frekwencja')"><div class="cat-ico">✓</div><b>Frekwencja</b><span>Obecności</span></div>
+        <div class="category-card" onclick="showView('wiecej')"><div class="cat-ico">•••</div><b>Więcej</b><span>Wszystkie kategorie</span></div>
       </div>
+
+      <div class="section-title">Narzędzia</div>
+      <div class="more-tools">
+        <div class="tool-row" onclick="openModal('statystyki')"><div class="tool-ico">📊</div><div class="tool-info"><b>Statystyki</b><span>Podsumowanie tygodnia i frekwencji</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('notatki')"><div class="tool-ico">📝</div><div class="tool-info"><b>Notatki</b><span>Zapisz własne przypomnienie</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('ustawienia')"><div class="tool-ico">⚙️</div><div class="tool-info"><b>Ustawienia</b><span>Personalizacja dziennika</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('pomoc')"><div class="tool-ico">❔</div><div class="tool-info"><b>Pomoc</b><span>Informacje o funkcjach aplikacji</span></div><div class="tool-arrow">›</div></div>
+      </div>
+
+      <div class="more-note"><b>💡 Szybki dostęp</b><p>Wszystkie najważniejsze funkcje dziennika masz teraz w jednym miejscu.</p></div>
     </section>
 
     <!-- WIADOMOŚCI -->
@@ -464,6 +509,35 @@
     </section>
 
   </main>
+
+  <div class="modal" id="modal-statystyki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Statystyki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="stat-box">
+        <div class="stat-item"><b>100%</b><span>Frekwencja</span></div>
+        <div class="stat-item"><b>35</b><span>Lekcje w tygodniu</span></div>
+        <div class="stat-item"><b>0</b><span>Nieobecności</span></div>
+        <div class="stat-item"><b>5</b><span>Dni zajęć</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modal-notatki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Notatki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <textarea class="note-input" id="note-input" placeholder="Np. sprawdzian z matematyki w piątek..."></textarea>
+      <button class="save-note" onclick="saveNote()">Zapisz notatkę</button><p id="note-status" style="font-size:12px;color:var(--muted);margin-top:10px;"></p>
+    </div>
+  </div>
+  <div class="modal" id="modal-ustawienia" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Ustawienia</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="setting-row"><span>Powiadomienia</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Pokazuj mini plan</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Przypomnienia o lekcjach</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+  <div class="modal" id="modal-pomoc" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Pomoc</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6;">Korzystaj z dolnej nawigacji, aby szybko przełączać się między Startem, Wiadomościami, Ocenami, Planem i Frekwencją. W „Więcej” znajdziesz dodatkowe narzędzia i ustawienia.</p>
+    </div>
+  </div>
 
   <nav class="bottom">
     <button class="active" data-view="start" onclick="showView('start')">
@@ -573,8 +647,69 @@ function checkIcon(){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>`;
 }
 
+function renderStart(){
+  const day = days[dayIndex];
+  const count = day.lessons.length;
+
+  document.getElementById('start-lesson-count').textContent = count;
+  document.getElementById('start-end-time').textContent =
+    count ? day.lessons[count - 1].end : '—';
+
+  const next = day.lessons[0];
+  const nextBox = document.getElementById('start-next-lesson');
+
+  if(next){
+    nextBox.innerHTML = `
+      <div class="time">${next.start}</div>
+      <div class="info">
+        <b>${next.subj}</b>
+        <span>Sala ${next.room} · ${next.teacher}</span>
+      </div>
+    `;
+  } else {
+    nextBox.innerHTML = `
+      <div class="time">—</div>
+      <div class="info">
+        <b>Brak zajęć</b>
+        <span>Na dzisiaj</span>
+      </div>
+    `;
+  }
+
+  document.getElementById('start-mini-plan').innerHTML = day.lessons.map(l => `
+    <div class="mini-lesson">
+      <div class="mini-num">${l.n}</div>
+      <div class="mini-time">${l.start}<br>${l.end}</div>
+      <div class="mini-info">
+        <b>${l.subj}</b>
+        <span>Sala ${l.room} · ${l.teacher}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(name){
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+  const modal = document.getElementById('modal-' + name);
+  if(modal) modal.classList.add('show');
+  if(name === 'notatki'){
+    document.getElementById('note-input').value = localStorage.getItem('dziennik_note') || '';
+    document.getElementById('note-status').textContent = '';
+  }
+}
+function closeModal(event){
+  if(event && event.target !== event.currentTarget) return;
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+}
+function saveNote(){
+  const value = document.getElementById('note-input').value.trim();
+  localStorage.setItem('dziennik_note', value);
+  document.getElementById('note-status').textContent = value ? 'Notatka została zapisana.' : 'Notatka została usunięta.';
+}
+
 function renderDay(){
   const day = days[dayIndex];
+  renderStart();
 
   // Plan lekcji
   document.getElementById('plan-day-label').textContent = day.label;
