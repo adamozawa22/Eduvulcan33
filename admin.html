@@ -1,569 +1,259 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin - Dzwonki</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel administracyjny – Dziennik</title>
 <style>
-  :root{
-    --bg: #0a0c0f;
-    --panel: #12161c;
-    --panel2: #171c23;
-    --line: #232933;
-    --text: #e9edf2;
-    --muted: #7a8492;
-    --amber: #ffb100;
-    --teal: #4fd1c5;
-    --red: #ff4b3e;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    min-height:100vh;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Manrope', sans-serif;
-  }
-  .center{
-    min-height:100vh;
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
-  }
-  .card{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:36px;
-    width:100%;
-    max-width:380px;
-  }
-  .card h1{
-    font-size:22px;
-    margin:0 0 24px;
-  }
-  input{
-    width:100%;
-    padding:12px 14px;
-    margin-bottom:12px;
-    background:var(--panel2);
-    border:1px solid var(--line);
-    border-radius:10px;
-    color:var(--text);
-    font-family:inherit;
-    font-size:15px;
-  }
-  input:focus{ outline:2px solid var(--amber); border-color:transparent; }
-  button{
-    font-family:inherit;
-    cursor:pointer;
-    border:none;
-  }
-  .btn-glowny{
-    width:100%;
-    padding:12px;
-    background:var(--amber);
-    color:#1a1200;
-    font-weight:700;
-    border-radius:10px;
-    font-size:15px;
-  }
-  .btn-glowny:hover{ filter:brightness(1.05); }
-  .blad-login{ color:var(--red); font-size:13px; margin-top:10px; min-height:16px; }
-
-  /* --- panel po zalogowaniu --- */
-  .app{ display:none; max-width:900px; margin:0 auto; padding:40px 20px 80px; }
-  .app.widoczny{ display:block; }
-  header.top{
-    display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:28px;
-  }
-  header.top h1{ font-size:24px; font-weight:800; margin:0; }
-  .wyloguj{
-    background:transparent; color:var(--muted);
-    font-size:14px; text-decoration:underline;
-  }
-
-  .sekcja{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:24px;
-    margin-bottom:24px;
-  }
-  .sekcja h2{ font-size:15px; color:var(--muted); font-weight:700; margin:0 0 16px; }
-
-  table{ width:100%; border-collapse:collapse; }
-  th{
-    text-align:left; font-size:12px; color:var(--muted);
-    font-weight:700; padding:0 10px 10px;
-  }
-  td{ padding:8px 10px; border-top:1px solid var(--line); }
-  tr td input{ margin:0; padding:8px 10px; font-size:14px; }
-  select{
-    background:var(--panel2); color:var(--text);
-    border:1px solid var(--line); border-radius:8px;
-    padding:8px 10px; font-family:inherit; font-size:14px;
-  }
-  .akcje{ display:flex; gap:8px; }
-  .btn-mini{
-    padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600;
-  }
-  .btn-zapisz{ background:var(--teal); color:#04211d; }
-  .btn-usun{ background:transparent; color:var(--red); border:1px solid var(--red); }
-  .btn-dodaj{
-    margin-top:16px;
-    background:var(--panel2); color:var(--text);
-    border:1px dashed var(--line);
-    padding:12px; width:100%; border-radius:10px; font-weight:600;
-  }
-  .info{ font-size:13px; color:var(--muted); margin-top:10px; }
-  .status{ font-size:13px; margin-top:12px; min-height:16px; }
-  .status.ok{ color:var(--teal); }
-  .status.blad{ color:var(--red); }
-
-  a.link-tv{ color:var(--amber); }
-
-  .artykul-karta{
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:16px;
-    margin-bottom:14px;
-    background:var(--panel2);
-  }
-  .artykul-karta input[type="text"]{ font-weight:700; margin-bottom:10px; }
-  .artykul-karta textarea{
-    width:100%;
-    min-height:110px;
-    padding:12px 14px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:10px;
-    color:var(--text);
-    font-family:inherit;
-    font-size:14px;
-    resize:vertical;
-    margin-bottom:10px;
-  }
-  .artykul-karta textarea:focus{ outline:2px solid var(--teal); border-color:transparent; }
-  .artykul-dol{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  .artykul-checkbox{
-    display:flex; align-items:center; gap:8px;
-    font-size:13px; color:var(--muted);
-  }
-  .artykul-checkbox input{ width:auto; margin:0; }
-
-  .sekcja-alarm{
-    border-color: rgba(255,75,62,0.35);
-  }
-  .sekcja-alarm textarea{
-    width:100%;
-    min-height:120px;
-    padding:12px 14px;
-    background:var(--panel2);
-    border:1px solid var(--line);
-    border-radius:10px;
-    color:var(--text);
-    font-family:inherit;
-    font-size:14px;
-    resize:vertical;
-    margin-bottom:14px;
-  }
-  .sekcja-alarm textarea:focus{ outline:2px solid var(--red); border-color:transparent; }
-  .alarm-przyciski{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  .btn-alarm{
-    padding:12px 22px;
-    border-radius:10px;
-    font-weight:800;
-    font-size:14px;
-    letter-spacing:0.03em;
-    background:var(--red);
-    color:#fff;
-  }
-  .btn-alarm:hover{ filter:brightness(1.08); }
-  .btn-alarm.wlaczony{
-    background:transparent;
-    border:1px solid var(--red);
-    color:var(--red);
-  }
+:root{--bg:#0d0d0f;--card:#18181b;--line:#29292e;--text:#f2f2f3;--muted:#92929a;--accent:#34d399;--danger:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1200px;margin:auto;padding:28px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.top h1{margin:0;font-size:28px}.top span{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px}
+h2{font-size:18px;margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:18px;overflow:auto}
+.tab{background:#252529;color:var(--muted);border:1px solid var(--line);padding:10px 16px;border-radius:12px;cursor:pointer;white-space:nowrap}
+.tab.active{background:var(--accent);color:#07120e;border-color:var(--accent);font-weight:700}
+.panel{display:none}.panel.active{display:block}
+.day-tabs{display:flex;gap:7px;overflow:auto;margin-bottom:18px}
+.day-tab{flex:1;min-width:110px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#111114;color:var(--muted);cursor:pointer}
+.day-tab.active{background:#253a32;color:var(--accent);border-color:#315a4a}
+.schedule{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
+.schedule-head{font-size:12px;color:var(--muted);padding:8px;text-align:center}
+.lesson{min-height:92px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;transition:.15s}
+.lesson:hover{border-color:#4b4b54;transform:translateY(-1px)}
+.lesson .num{font-size:12px;color:var(--muted)}.lesson .subject{font-weight:700;margin-top:7px}.lesson .meta{font-size:11px;color:var(--muted);margin-top:5px}
+.timecell{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:14px;background:#151518}
+.att-grid{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
+.att-cell{min-height:82px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}
+.att-cell.present{border-color:#275b46}.att-cell.absent{border-color:#66383b}.att-cell.late{border-color:#6a5730}
+.att-cell .status{font-weight:700;font-size:13px}.present .status{color:var(--accent)}.absent .status{color:var(--danger)}.late .status{color:#fbbf24}
+.att-cell .sub{font-size:11px;color:var(--muted);margin-top:5px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.show{display:flex}.modal-box{width:min(520px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}
+.close{width:34px;height:34px;border:0;border-radius:50%;background:#29292e;color:white;font-size:20px;cursor:pointer}
+label{display:block;font-size:12px;color:var(--muted);margin:11px 0 6px}
+input,select{width:100%;background:#111114;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;margin-top:18px}
+button.primary{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:#07120e;font-weight:700;cursor:pointer}
+button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292e;color:var(--text);font-weight:600;cursor:pointer}
+.status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}
+.login{max-width:430px;margin:70px auto}.login h1{margin-top:0}
+@media(max-width:800px){
+ .wrap{padding:15px}.schedule,.att-grid{grid-template-columns:62px repeat(5,minmax(115px,1fr));overflow-x:auto}
+ .schedule{min-width:650px}.att-grid{min-width:650px}.card{overflow:hidden}
+ .form-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-
-<!-- EKRAN LOGOWANIA -->
-<div id="ekran-login" class="center">
-  <div class="card">
-    <h1>Panel dzwonków</h1>
-    <input id="login-email" type="email" placeholder="e-mail" autocomplete="username">
-    <input id="login-haslo" type="password" placeholder="hasło" autocomplete="current-password">
-    <button class="btn-glowny" onclick="zaloguj()">Zaloguj</button>
-    <div id="login-blad" class="blad-login"></div>
-  </div>
+<div id="loginScreen" class="login card">
+  <h1>Panel administracyjny</h1>
+  <p style="color:var(--muted)">Zaloguj się, żeby edytować plan i frekwencję.</p>
+  <label>E-mail</label><input id="loginEmail" type="email">
+  <label>Hasło</label><input id="loginPassword" type="password">
+  <div class="actions"><button class="primary" onclick="login()">Zaloguj</button></div>
+  <div class="status-msg" id="loginStatus"></div>
 </div>
 
-<!-- PANEL -->
-<div id="app" class="app">
-  <header class="top">
-    <h1>Plan dzwonków</h1>
-    <button class="wyloguj" onclick="wyloguj()">wyloguj</button>
-  </header>
-
-  <div class="sekcja">
-    <h2>DZISIEJSZY PLAN (ten sam każdego dnia)</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Etykieta</th>
-          <th>Typ</th>
-          <th>Start</th>
-          <th>Koniec</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tabela-plan"></tbody>
-    </table>
-    <button class="btn-dodaj" onclick="dodajWiersz()">+ dodaj punkt planu</button>
-    <div id="status" class="status"></div>
-    <p class="info">Zmiany widać na TV od razu (na żywo). Podgląd: <a class="link-tv" href="index.html" target="_blank">index.html</a></p>
+<div id="app" class="wrap" style="display:none">
+  <div class="top">
+    <div><h1>Panel administracyjny</h1><span>Plan lekcji i frekwencja</span></div>
+    <button class="secondary" onclick="logout()">Wyloguj</button>
   </div>
 
-  <div class="sekcja">
-    <h2>ARTYKUŁ / OGŁOSZENIE (pokazuje się na dole TV tylko gdy zaznaczysz "aktywny")</h2>
-    <div id="lista-artykuly"></div>
-    <button class="btn-dodaj" onclick="dodajArtykul()">+ dodaj artykuł</button>
-    <div id="status-art" class="status"></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchPanel('plan',this)">Plan lekcji</button>
+    <button class="tab" onclick="switchPanel('frekwencja',this)">Frekwencja</button>
   </div>
 
-  <div class="sekcja sekcja-alarm">
-    <h2>ALARM POŻAROWY (pełny ekran na wszystkich TV, dopóki nie wyłączysz)</h2>
-    <input id="alarm-tytul" type="text" placeholder="Tytuł">
-    <textarea id="alarm-tresc" placeholder="Jedna linijka = jeden punkt na ekranie"></textarea>
-    <div class="alarm-przyciski">
-      <button class="btn-mini btn-zapisz" onclick="zapiszTrescAlarmu()">zapisz treść</button>
-      <button id="btn-alarm-toggle" class="btn-alarm" onclick="przelaczAlarm()">OGŁOŚ ALARM</button>
+  <section id="panel-plan" class="panel active">
+    <div class="card">
+      <h2>Plan lekcji</h2>
+      <div class="day-tabs" id="planDays"></div>
+      <div style="overflow:auto"><div class="schedule" id="schedule"></div></div>
+      <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia.</div>
     </div>
-    <div id="status-alarm" class="status"></div>
+  </section>
+
+  <section id="panel-frekwencja" class="panel">
+    <div class="card">
+      <h2>Frekwencja</h2>
+      <div class="day-tabs" id="attDays"></div>
+      <div style="overflow:auto"><div class="att-grid" id="attGrid"></div></div>
+      <div class="status-msg">Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.</div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="lessonModal">
+ <div class="modal-box">
+  <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
+  <div class="form-grid">
+   <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
+   <div><label>Przedmiot</label><input id="mSubject"></div>
+   <div><div><label>Od</label><input id="mStart" type="time"></div></div>
+   <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
+   <div><label>Sala</label><input id="mRoom"></div>
+   <div><label>Nauczyciel</label><input id="mTeacher"></div>
   </div>
+  <div class="actions"><button class="primary" onclick="saveLesson()">Zapisz</button><button class="secondary" onclick="deleteLesson()">Usuń lekcję</button></div>
+  <div class="status-msg" id="lessonMsg"></div>
+ </div>
+</div>
+
+<div class="modal" id="attModal">
+ <div class="modal-box">
+  <div class="modal-head"><h3 id="attModalTitle">Frekwencja</h3><button class="close" onclick="closeModal('attModal')">×</button></div>
+  <label>Status</label>
+  <select id="mAttStatus"><option value="present">Obecność</option><option value="absent">Nieobecność</option><option value="late">Spóźnienie</option></select>
+  <label>Data</label><input id="mAttDate" type="date">
+  <div class="actions"><button class="primary" onclick="saveAttendance()">Zapisz</button><button class="secondary" onclick="deleteAttendance()">Wyczyść</button></div>
+  <div class="status-msg" id="attMsg"></div>
+ </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ---- UZUPEŁNIJ SWOIMI DANYMI Z SUPABASE (Project Settings -> API) ----
-  const SUPABASE_URL = "https://cedmjyrqjcvabdmyjmzd.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_tu9CPL3sPtKJaVqTiPDc4A_trd1nsJ6";
-  // -----------------------------------------------------------------------
+const SUPABASE_URL="UZUPELNIJ_SUPABASE_URL";
+const SUPABASE_ANON_KEY="UZUPELNIJ_SUPABASE_ANON_KEY";
+const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
+const defaultTimes=[
+ ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
+ ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
+];
+let plan=[], attendance=[];
+let selectedDay=0, selectedLesson=null, selectedAtt=null;
 
-  const elLoginScreen = document.getElementById('ekran-login');
-  const elApp = document.getElementById('app');
-  const elLoginBlad = document.getElementById('login-blad');
-  const elTabela = document.getElementById('tabela-plan');
-  const elStatus = document.getElementById('status');
-
-  let wiersze = []; // lokalna kopia planu z tabeli
-
-  async function zaloguj(){
-    elLoginBlad.textContent = '';
-    const email = document.getElementById('login-email').value.trim();
-    const haslo = document.getElementById('login-haslo').value;
-    const { error } = await sb.auth.signInWithPassword({ email, password: haslo });
-    if(error){
-      elLoginBlad.textContent = 'Nieprawidłowy e-mail lub hasło.';
-      return;
-    }
-    pokazApp();
-  }
-
-  async function wyloguj(){
-    await sb.auth.signOut();
-    location.reload();
-  }
-
-  async function pokazApp(){
-    elLoginScreen.style.display = 'none';
-    elApp.classList.add('widoczny');
-    await wczytaj();
-    await wczytajArtykuly();
-    await wczytajAlarm();
-  }
-
-  async function wczytaj(){
-    const { data, error } = await sb
-      .from('dzwonki')
-      .select('*')
-      .order('start_czas', { ascending: true })
-      .order('kolejnosc', { ascending: true });
-
-    if(error){
-      pokazStatus('Błąd wczytywania: ' + error.message, true);
-      return;
-    }
-    wiersze = data;
-    renderTabela();
-  }
-
-  function renderTabela(){
-    elTabela.innerHTML = '';
-    wiersze.forEach(w => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input value="${w.etykieta}" data-pole="etykieta" data-id="${w.id}"></td>
-        <td>
-          <select data-pole="typ" data-id="${w.id}">
-            <option value="lekcja" ${w.typ==='lekcja'?'selected':''}>lekcja</option>
-            <option value="przerwa" ${w.typ==='przerwa'?'selected':''}>przerwa</option>
-          </select>
-        </td>
-        <td><input type="time" value="${w.start_czas.slice(0,5)}" data-pole="start_czas" data-id="${w.id}"></td>
-        <td><input type="time" value="${w.koniec_czas.slice(0,5)}" data-pole="koniec_czas" data-id="${w.id}"></td>
-        <td class="akcje">
-          <button class="btn-mini btn-zapisz" onclick="zapiszWiersz('${w.id}')">zapisz</button>
-          <button class="btn-mini btn-usun" onclick="usunWiersz('${w.id}')">usuń</button>
-        </td>
-      `;
-      elTabela.appendChild(tr);
-    });
-  }
-
-  function pobierzWartosciWiersza(id){
-    const pola = document.querySelectorAll(`[data-id="${id}"]`);
-    const wynik = {};
-    pola.forEach(p => wynik[p.dataset.pole] = p.value);
-    return wynik;
-  }
-
-  async function zapiszWiersz(id){
-    const dane = pobierzWartosciWiersza(id);
-    if(!dane.etykieta || !dane.start_czas || !dane.koniec_czas){
-      pokazStatus('Uzupełnij wszystkie pola.', true);
-      return;
-    }
-    if(dane.start_czas >= dane.koniec_czas){
-      pokazStatus('Godzina końca musi być późniejsza niż start.', true);
-      return;
-    }
-    const { error } = await sb.from('dzwonki').update(dane).eq('id', id);
-    if(error){
-      pokazStatus('Błąd zapisu: ' + error.message, true);
-      return;
-    }
-    pokazStatus('Zapisano.', false);
-    await wczytaj();
-  }
-
-  async function usunWiersz(id){
-    if(!confirm('Usunąć ten punkt planu?')) return;
-    const { error } = await sb.from('dzwonki').delete().eq('id', id);
-    if(error){
-      pokazStatus('Błąd usuwania: ' + error.message, true);
-      return;
-    }
-    await wczytaj();
-  }
-
-  async function dodajWiersz(){
-    const nowy = {
-      etykieta: 'Nowy punkt',
-      typ: 'lekcja',
-      start_czas: '08:00',
-      koniec_czas: '08:45',
-      kolejnosc: wiersze.length + 1
-    };
-    const { error } = await sb.from('dzwonki').insert(nowy);
-    if(error){
-      pokazStatus('Błąd dodawania: ' + error.message, true);
-      return;
-    }
-    await wczytaj();
-  }
-
-  function pokazStatus(tekst, czyBlad){
-    elStatus.textContent = tekst;
-    elStatus.className = 'status ' + (czyBlad ? 'blad' : 'ok');
-    setTimeout(() => { elStatus.textContent = ''; }, 3000);
-  }
-
-  // ---------------- ARTYKUŁY ----------------
-
-  const elListaArtykuly = document.getElementById('lista-artykuly');
-  const elStatusArt = document.getElementById('status-art');
-  let artykuly = [];
-
-  async function wczytajArtykuly(){
-    const { data, error } = await sb
-      .from('artykuly')
-      .select('*')
-      .order('kolejnosc', { ascending: true });
-
-    if(error){
-      pokazStatusArt('Błąd wczytywania: ' + error.message, true);
-      return;
-    }
-    artykuly = data;
-    renderArtykuly();
-  }
-
-  function renderArtykuly(){
-    elListaArtykuly.innerHTML = '';
-    if(!artykuly.length){
-      elListaArtykuly.innerHTML = '<p class="info">Brak artykułów — TV pokaże domyślny komunikat w czasie przerwy.</p>';
-      return;
-    }
-    artykuly.forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'artykul-karta';
-      div.innerHTML = `
-        <input type="text" value="${a.tytul.replace(/"/g,'&quot;')}" data-art-pole="tytul" data-art-id="${a.id}" placeholder="Tytuł artykułu">
-        <textarea data-art-pole="tresc" data-art-id="${a.id}" placeholder="Jedna linijka = jeden punkt na ekranie">${a.tresc}</textarea>
-        <div class="artykul-dol">
-          <label class="artykul-checkbox">
-            <input type="checkbox" data-art-pole="aktywny" data-art-id="${a.id}" ${a.aktywny ? 'checked' : ''}>
-            aktywny (widoczny na TV)
-          </label>
-          <div class="akcje">
-            <button class="btn-mini btn-zapisz" onclick="zapiszArtykul('${a.id}')">zapisz</button>
-            <button class="btn-mini btn-usun" onclick="usunArtykul('${a.id}')">usuń</button>
-          </div>
-        </div>
-      `;
-      elListaArtykuly.appendChild(div);
-    });
-  }
-
-  async function zapiszArtykul(id){
-    const tytul = document.querySelector(`[data-art-id="${id}"][data-art-pole="tytul"]`).value.trim();
-    const tresc = document.querySelector(`[data-art-id="${id}"][data-art-pole="tresc"]`).value.trim();
-    const aktywny = document.querySelector(`[data-art-id="${id}"][data-art-pole="aktywny"]`).checked;
-
-    if(!tytul || !tresc){
-      pokazStatusArt('Uzupełnij tytuł i treść.', true);
-      return;
-    }
-
-    const { error } = await sb.from('artykuly').update({ tytul, tresc, aktywny }).eq('id', id);
-    if(error){
-      pokazStatusArt('Błąd zapisu: ' + error.message, true);
-      return;
-    }
-    pokazStatusArt('Zapisano.', false);
-    await wczytajArtykuly();
-  }
-
-  async function usunArtykul(id){
-    if(!confirm('Usunąć ten artykuł?')) return;
-    const { error } = await sb.from('artykuly').delete().eq('id', id);
-    if(error){
-      pokazStatusArt('Błąd usuwania: ' + error.message, true);
-      return;
-    }
-    await wczytajArtykuly();
-  }
-
-  async function dodajArtykul(){
-    const nowy = {
-      tytul: 'Nowy artykuł',
-      tresc: 'Pierwszy punkt\nDrugi punkt',
-      kolejnosc: artykuly.length + 1,
-      aktywny: false
-    };
-    const { error } = await sb.from('artykuly').insert(nowy);
-    if(error){
-      pokazStatusArt('Błąd dodawania: ' + error.message, true);
-      return;
-    }
-    await wczytajArtykuly();
-  }
-
-  function pokazStatusArt(tekst, czyBlad){
-    elStatusArt.textContent = tekst;
-    elStatusArt.className = 'status ' + (czyBlad ? 'blad' : 'ok');
-    setTimeout(() => { elStatusArt.textContent = ''; }, 3000);
-  }
-
-  // ---------------- ALARM POŻAROWY ----------------
-
-  const elAlarmTytulInput = document.getElementById('alarm-tytul');
-  const elAlarmTrescInput = document.getElementById('alarm-tresc');
-  const elBtnAlarmToggle = document.getElementById('btn-alarm-toggle');
-  const elStatusAlarm = document.getElementById('status-alarm');
-  let alarm = null;
-
-  async function wczytajAlarm(){
-    const { data, error } = await sb.from('alarm_pozarowy').select('*').eq('id', 1).single();
-    if(error){
-      pokazStatusAlarm('Błąd wczytywania: ' + error.message, true);
-      return;
-    }
-    alarm = data;
-    elAlarmTytulInput.value = alarm.tytul;
-    elAlarmTrescInput.value = alarm.tresc;
-    odswiezPrzyciskAlarmu();
-  }
-
-  function odswiezPrzyciskAlarmu(){
-    if(alarm && alarm.aktywny){
-      elBtnAlarmToggle.textContent = 'WYŁĄCZ ALARM';
-      elBtnAlarmToggle.classList.add('wlaczony');
-    } else {
-      elBtnAlarmToggle.textContent = 'OGŁOŚ ALARM';
-      elBtnAlarmToggle.classList.remove('wlaczony');
-    }
-  }
-
-  async function zapiszTrescAlarmu(){
-    const tytul = elAlarmTytulInput.value.trim();
-    const tresc = elAlarmTrescInput.value.trim();
-    if(!tytul || !tresc){
-      pokazStatusAlarm('Uzupełnij tytuł i treść.', true);
-      return;
-    }
-    const { error } = await sb.from('alarm_pozarowy').update({ tytul, tresc }).eq('id', 1);
-    if(error){
-      pokazStatusAlarm('Błąd zapisu: ' + error.message, true);
-      return;
-    }
-    pokazStatusAlarm('Zapisano treść.', false);
-    await wczytajAlarm();
-  }
-
-  async function przelaczAlarm(){
-    const wlaczyc = !(alarm && alarm.aktywny);
-    const potwierdzenie = wlaczyc
-      ? 'Ogłosić alarm pożarowy na wszystkich TV? Ekran natychmiast przełączy się na instrukcje ewakuacji.'
-      : 'Wyłączyć alarm i wrócić do normalnego widoku na TV?';
-    if(!confirm(potwierdzenie)) return;
-
-    const { error } = await sb.from('alarm_pozarowy').update({ aktywny: wlaczyc }).eq('id', 1);
-    if(error){
-      pokazStatusAlarm('Błąd: ' + error.message, true);
-      return;
-    }
-    pokazStatusAlarm(wlaczyc ? 'Alarm ogłoszony.' : 'Alarm wyłączony.', false);
-    await wczytajAlarm();
-  }
-
-  function pokazStatusAlarm(tekst, czyBlad){
-    elStatusAlarm.textContent = tekst;
-    elStatusAlarm.className = 'status ' + (czyBlad ? 'blad' : 'ok');
-    setTimeout(() => { elStatusAlarm.textContent = ''; }, 3000);
-  }
-
-  // jeśli sesja już aktywna (np. odświeżenie strony), wejdź od razu do panelu
-  sb.auth.getSession().then(({ data }) => {
-    if(data.session) pokazApp();
-  });
+function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
+async function login(){
+ try{
+  db();
+  const {error}=await sb.auth.signInWithPassword({email:loginEmail.value,password:loginPassword.value});
+  if(error)throw error;
+  showApp();
+ }catch(e){loginStatus.textContent=e.message}
+}
+async function logout(){if(sb)await sb.auth.signOut();location.reload()}
+async function showApp(){
+ const {data}=await sb.auth.getSession();
+ if(!data.session)return;
+ loginScreen.style.display="none";app.style.display="block";await loadData();
+}
+async function loadData(){
+ try{
+  db();
+  const p=await sb.from("lesson_plan").select("*").order("weekday").order("lesson_number");
+  if(p.error)throw p.error; plan=p.data||[];
+  const a=await sb.from("attendance").select("*").order("weekday").order("lesson_number");
+  if(a.error)throw a.error; attendance=a.data||[];
+  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();
+ }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
+}
+function switchPanel(name,btn){
+ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+ document.getElementById("panel-"+name).classList.add("active");
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+}
+function renderPlanDays(){
+ planDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderPlanDays();renderSchedule()">${d}</button>`).join("");
+}
+function renderSchedule(){
+ let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
+ let max=Math.max(8,...rows.map(x=>Number(x.lesson_number)));
+ let out=`<div class="schedule-head">Godzina</div><div class="schedule-head">Pon</div><div class="schedule-head">Wt</div><div class="schedule-head">Śr</div><div class="schedule-head">Czw</div><div class="schedule-head">Pt</div>`;
+ // Normalny widok tygodnia: pokazujemy wybrany dzień jako pełną listę w 5 kolumnach,
+ // z pustymi polami jako możliwymi do kliknięcia.
+ out="";
+ for(let n=1;n<=max;n++){
+   const t=rows.find(x=>Number(x.lesson_number)===n);
+   const st=t?.start_time||defaultTimes[n-1]?.[0]||"";
+   const en=t?.end_time||defaultTimes[n-1]?.[1]||"";
+   out+=`<div class="timecell">${st}<br>${en}</div>`;
+   out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
+     <div class="num">${n}. lekcja</div>
+     <div class="subject">${t?esc(t.subject):'<span style="color:#555">Wolna godzina</span>'}</div>
+     <div class="meta">${t?[esc(t.room||'')+' '+esc(t.teacher||'')]:''}</div>
+   </div>`;
+   out+=`<div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>`;
+ }
+ schedule.innerHTML=out;
+}
+function openLesson(id,n){
+ selectedLesson={id,n,weekday:selectedDay};
+ const t=plan.find(x=>x.id===id);
+ lessonModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
+ mNum.value=t?.lesson_number||n;
+ mSubject.value=t?.subject||"";
+ mStart.value=t?.start_time||defaultTimes[n-1]?.[0]||"";
+ mEnd.value=t?.end_time||defaultTimes[n-1]?.[1]||"";
+ mRoom.value=t?.room||"";mTeacher.value=t?.teacher||"";lessonMsg.textContent="";
+ lessonModal.classList.add("show");
+}
+async function saveLesson(){
+ try{
+  db();
+  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:mTeacher.value.trim()};
+  if(!p.subject||!p.start_time||!p.end_time)throw new Error("Uzupełnij przedmiot i godziny.");
+  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p);
+  if(r.error)throw r.error;closeModal("lessonModal");await loadData();
+ }catch(e){lessonMsg.textContent="Błąd: "+e.message}
+}
+async function deleteLesson(){
+ if(!selectedLesson?.id){closeModal("lessonModal");return}
+ try{db();const {error}=await sb.from("lesson_plan").delete().eq("id",selectedLesson.id);if(error)throw error;closeModal("lessonModal");await loadData()}catch(e){lessonMsg.textContent=e.message}
+}
+function renderAttDays(){
+ attDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderAttDays();renderAttendance()">${d}</button>`).join("");
+}
+function renderAttendance(){
+ let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
+ if(!rows.length){attGrid.innerHTML="<div style='color:var(--muted);padding:20px'>Brak lekcji. Najpierw dodaj plan.</div>";return}
+ let out="";
+ rows.forEach(t=>{
+  let a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===Number(t.lesson_number));
+  let cls=a?.status||"present";
+  let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
+  out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
+    <div class="status">${label}</div><div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${t.start_time}–${t.end_time}</div>
+  </div>`;
+ });
+ attGrid.innerHTML=out;
+}
+function openAtt(n){
+ selectedAtt={weekday:selectedDay,lesson_number:n};
+ const a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===n);
+ attModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
+ mAttStatus.value=a?.status||"present";mAttDate.value=a?.lesson_date||new Date().toISOString().slice(0,10);attMsg.textContent="";
+ attModal.classList.add("show");
+}
+async function saveAttendance(){
+ try{
+  db();
+  const p={weekday:selectedAtt.weekday,lesson_number:selectedAtt.lesson_number,status:mAttStatus.value,lesson_date:mAttDate.value||null};
+  const {error}=await sb.from("attendance").upsert(p,{onConflict:"weekday,lesson_number,lesson_date"});if(error)throw error;
+  closeModal("attModal");await loadData();
+ }catch(e){attMsg.textContent="Błąd: "+e.message}
+}
+async function deleteAttendance(){
+ try{
+  db();
+  const q=sb.from("attendance").delete().eq("weekday",selectedAtt.weekday).eq("lesson_number",selectedAtt.lesson_number);
+  const {error}=await q;if(error)throw error;closeModal("attModal");await loadData();
+ }catch(e){attMsg.textContent=e.message}
+}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+if(sb)sb.auth.getSession().then(showApp);
 </script>
 </body>
 </html>
