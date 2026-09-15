@@ -41,7 +41,7 @@ input,select{width:100%;background:#111114;color:var(--text);border:1px solid va
 .actions{display:flex;gap:8px;margin-top:18px}
 button.primary{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:#07120e;font-weight:700;cursor:pointer}
 button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292e;color:var(--text);font-weight:600;cursor:pointer}
-.status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}
+.status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}.hint{font-size:11px;color:var(--muted);margin-top:5px}.teacher-box{margin-top:14px;padding:14px;background:#111114;border:1px solid var(--line);border-radius:14px}.teacher-box h4{margin:0 0 10px;font-size:13px}.check-row{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;color:var(--text)}.check-row input{width:auto}.sub-wrap{display:none;margin-top:10px}.sub-wrap.show{display:block}
 .login{max-width:430px;margin:70px auto}.login h1{margin-top:0}
 @media(max-width:800px){
  .wrap{padding:15px}.schedule,.att-grid{grid-template-columns:62px repeat(5,minmax(115px,1fr));overflow-x:auto}
@@ -95,11 +95,20 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
   <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
   <div class="form-grid">
    <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
-   <div><label>Przedmiot</label><input id="mSubject"></div>
+   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select><div class="hint">Po wyborze przedmiotu nauczyciel uzupełni się automatycznie.</div></div>
    <div><div><label>Od</label><input id="mStart" type="time"></div></div>
    <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
    <div><label>Sala</label><input id="mRoom"></div>
-   <div><label>Nauczyciel</label><input id="mTeacher"></div>
+   <div><label>Nauczyciel</label><input id="mTeacher" readonly></div>
+  </div>
+  <div class="teacher-box">
+   <h4>Nieobecność nauczyciela i zastępstwo</h4>
+   <label class="check-row"><input id="mTeacherAbsent" type="checkbox" onchange="toggleSubstitute()"> Nauczyciel jest nieobecny</label>
+   <div class="sub-wrap" id="subWrap">
+    <label>Data nieobecności / zastępstwa</label><input id="mChangeDate" type="date">
+    <label>Zastępstwo</label><select id="mSubstitute"></select>
+    <label>Informacja dla ucznia</label><input id="mSubNote" placeholder="np. zastępstwo za nauczyciela">
+   </div>
   </div>
   <div class="actions"><button class="primary" onclick="saveLesson()">Zapisz</button><button class="secondary" onclick="deleteLesson()">Usuń lekcję</button></div>
   <div class="status-msg" id="lessonMsg"></div>
@@ -119,8 +128,8 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://hozpikyxilmedzsyquct.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
+const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
 const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
@@ -128,8 +137,10 @@ const defaultTimes=[
  ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
  ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
 ];
-let plan=[], attendance=[];
+let plan=[], attendance=[], subjectTeachers=[], teacherChanges=[];
 let selectedDay=0, selectedLesson=null, selectedAtt=null;
+
+const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
 
 function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
 async function login(){
@@ -153,6 +164,13 @@ async function loadData(){
   if(p.error)throw p.error; plan=p.data||[];
   const a=await sb.from("attendance").select("*").order("weekday").order("lesson_number");
   if(a.error)throw a.error; attendance=a.data||[];
+  const st=await sb.from("subject_teachers").select("*").order("subject");
+  if(st.error && st.error.code !== "42P01") throw st.error;
+  subjectTeachers=st.data||[];
+  const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
+  if(tc.error && tc.error.code !== "42P01") throw tc.error;
+  teacherChanges=tc.data||[];
+  prepareSubjectOptions();prepareSubstituteOptions();
   renderPlanDays();renderSchedule();renderAttDays();renderAttendance();
  }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
 }
@@ -188,24 +206,66 @@ function renderSchedule(){
  }
  schedule.innerHTML=out;
 }
+function prepareSubjectOptions(){
+ const subjects=[...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
+ mSubject.innerHTML=subjects.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+}
+function prepareSubstituteOptions(){
+ const teachers=[...new Set((subjectTeachers||[]).map(x=>x.teacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pl"));
+ mSubstitute.innerHTML=`<option value="">Wybierz nauczyciela zastępującego</option>`+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+}
+function getTeacherForSubject(subject){
+ const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject).toLowerCase());
+ return row?.teacher||"";
+}
+function subjectChanged(){
+ const t=getTeacherForSubject(mSubject.value);
+ if(t) mTeacher.value=t;
+}
+function toggleSubstitute(){
+ subWrap.classList.toggle("show",mTeacherAbsent.checked);
+}
+function getTeacherChange(lessonId){
+ const today=new Date().toISOString().slice(0,10);
+ return teacherChanges.find(x=>Number(x.lesson_plan_id)===Number(lessonId)&&x.lesson_date===today);
+}
 function openLesson(id,n){
  selectedLesson={id,n,weekday:selectedDay};
  const t=plan.find(x=>x.id===id);
  lessonModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
+ prepareSubjectOptions();prepareSubstituteOptions();
  mNum.value=t?.lesson_number||n;
- mSubject.value=t?.subject||"";
+ mSubject.value=t?.subject||fallbackSubjects[0];
  mStart.value=t?.start_time||defaultTimes[n-1]?.[0]||"";
  mEnd.value=t?.end_time||defaultTimes[n-1]?.[1]||"";
- mRoom.value=t?.room||"";mTeacher.value=t?.teacher||"";lessonMsg.textContent="";
+ mRoom.value=t?.room||"";mTeacher.value=t?.teacher||getTeacherForSubject(mSubject.value);
+ const change=t?.id?getTeacherChange(t.id):null;
+ mTeacherAbsent.checked=!!change?.teacher_absent;
+ mChangeDate.value=change?.lesson_date||new Date().toISOString().slice(0,10);
+ mSubstitute.value=change?.substitute_teacher||"";
+ mSubNote.value=change?.note||"";
+ toggleSubstitute();lessonMsg.textContent="";
  lessonModal.classList.add("show");
 }
 async function saveLesson(){
  try{
   db();
-  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:mTeacher.value.trim()};
+  const autoTeacher=getTeacherForSubject(mSubject.value);
+  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:autoTeacher||mTeacher.value.trim()};
   if(!p.subject||!p.start_time||!p.end_time)throw new Error("Uzupełnij przedmiot i godziny.");
-  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p);
-  if(r.error)throw r.error;closeModal("lessonModal");await loadData();
+  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p).select().single();
+  if(r.error)throw r.error;
+  const lessonId=selectedLesson.id||r.data.id;
+  const date=mChangeDate.value||new Date().toISOString().slice(0,10);
+  if(mTeacherAbsent.checked){
+    const ch={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:true,substitute_teacher:mSubstitute.value||null,note:mSubNote.value.trim()};
+    const cr=await sb.from("teacher_changes").upsert(ch,{onConflict:"lesson_plan_id,lesson_date"});
+    if(cr.error)throw cr.error;
+  }else if(lessonId){
+    const cr=await sb.from("teacher_changes").delete().eq("lesson_plan_id",lessonId).eq("lesson_date",date);
+    if(cr.error)throw cr.error;
+  }
+  closeModal("lessonModal");await loadData();
  }catch(e){lessonMsg.textContent="Błąd: "+e.message}
 }
 async function deleteLesson(){
