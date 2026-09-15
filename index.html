@@ -633,13 +633,14 @@
       Więcej
     </button>
   </nav>
+  
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "UZUPELNIJ_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "UZUPELNIJ_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://hozpikyxilmedzsyquct.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
 const supabaseClient = (SUPABASE_URL.startsWith("UZUPELNIJ_") || SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))
   ? null
   : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
