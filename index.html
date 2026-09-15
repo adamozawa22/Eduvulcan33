@@ -633,7 +633,6 @@
       Więcej
     </button>
   </nav>
-  
 
 </div>
 
@@ -645,69 +644,11 @@ const supabaseClient = (SUPABASE_URL.startsWith("UZUPELNIJ_") || SUPABASE_ANON_K
   ? null
   : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const fallbackDays = [
-  {
-    label: "Poniedziałek, 7 Wrzesień",
-    lessons: [
-      {n:1, start:"08:00", end:"08:45", subj:"Język polski", room:"74", teacher:"Joanna Ołdak"},
-      {n:2, start:"08:50", end:"09:35", subj:"Język polski", room:"74", teacher:"Joanna Ołdak"},
-      {n:3, start:"09:45", end:"10:30", subj:"Chemia", room:"56", teacher:"Małgorzata Witosławska"},
-      {n:4, start:"10:40", end:"11:25", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
-      {n:5, start:"11:45", end:"12:30", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
-      {n:6, start:"12:50", end:"13:35", subj:"Zajęcia z wychowawcą", room:"wych", teacher:"Małgorzata Jankowska"},
-      {n:7, start:"13:45", end:"14:30", subj:"Wychowanie fizyczne", room:"sg2", teacher:"Agnieszka Hojniak"},
-    ]
-  },
-  {
-    label: "Wtorek, 8 Wrzesień",
-    lessons: [
-      {n:1, start:"08:00", end:"08:45", subj:"Wiedza o społeczeństwie", room:"65", teacher:"Marta Kwiatkowska"},
-      {n:2, start:"08:50", end:"09:35", subj:"Fizyka", room:"74", teacher:"Edyta Gaworek"},
-      {n:3, start:"09:45", end:"10:30", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
-      {n:4, start:"10:40", end:"11:25", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
-      {n:5, start:"11:45", end:"12:30", subj:"Informatyka", room:"52", teacher:"Piotr Antoniuk"},
-      {n:6, start:"12:50", end:"13:35", subj:"Historia", room:"61", teacher:"Marta Kwiatkowska"},
-      {n:7, start:"13:45", end:"14:30", subj:"Edukacja dla bezpieczeństwa", room:"20", teacher:"Anna Kula"},
-    ]
-  },
-  {
-    label: "Środa, 9 Wrzesień",
-    lessons: [
-      {n:1, start:"08:00", end:"08:45", subj:"Język niemiecki", room:"gs", teacher:"Marta Kamińska"},
-      {n:2, start:"08:50", end:"09:35", subj:"Język niemiecki", room:"gs", teacher:"Marta Kamińska"},
-      {n:3, start:"09:45", end:"10:30", subj:"Wychowanie fizyczne", room:"sg1", teacher:"Agnieszka Hojniak"},
-      {n:4, start:"10:40", end:"11:25", subj:"MAK", room:"68", teacher:"Małgorzata Jankowska"},
-      {n:5, start:"11:45", end:"12:30", subj:"Matematyka", room:"61", teacher:"Małgorzata Jankowska"},
-      {n:6, start:"12:50", end:"13:35", subj:"POK", room:"20", teacher:"Joanna Ołdak"},
-      {n:7, start:"13:45", end:"14:30", subj:"Chemia", room:"56", teacher:"Małgorzata Witosławska"},
-    ]
-  },
-  {
-    label: "Czwartek, 10 Wrzesień",
-    lessons: [
-      {n:2, start:"08:50", end:"09:35", subj:"Wychowanie fizyczne", room:"sg2", teacher:"Agnieszka Hojniak"},
-      {n:3, start:"09:45", end:"10:30", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
-      {n:4, start:"10:40", end:"11:25", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
-      {n:5, start:"11:45", end:"12:30", subj:"Język polski", room:"61", teacher:"Joanna Ołdak"},
-      {n:6, start:"12:50", end:"13:35", subj:"Historia", room:"65", teacher:"Marta Kwiatkowska"},
-    ]
-  },
-  {
-    label: "Piątek, 11 Wrzesień",
-    lessons: [
-      {n:1, start:"08:00", end:"08:45", subj:"Geografia", room:"65", teacher:"Joanna Sosińska"},
-      {n:2, start:"08:50", end:"09:35", subj:"Wychowanie fizyczne", room:"sg1", teacher:"Agnieszka Hojniak"},
-      {n:3, start:"09:45", end:"10:30", subj:"Fizyka", room:"74", teacher:"Edyta Gaworek"},
-      {n:4, start:"10:40", end:"11:25", subj:"Język polski", room:"68", teacher:"Joanna Ołdak"},
-      {n:5, start:"11:45", end:"12:30", subj:"Język polski", room:"68", teacher:"Joanna Ołdak"},
-      {n:6, start:"12:50", end:"13:35", subj:"Biologia", room:"61", teacher:"Justyna Kubiak"},
-      {n:7, start:"13:45", end:"14:30", subj:"Wiedza o społeczeństwie", room:"61", teacher:"Marta Kwiatkowska"},
-      {n:8, start:"14:35", end:"15:20", subj:"Edukacja zdrowotna", room:"66", teacher:"Agnieszka Hojniak"},
-    ]
-  }
-];
+let days = Array.from({length:7}, (_, weekday) => ({
+  label: ["Poniedziałek","Wtorek","Środa","Czwartek","Piątek","Sobota","Niedziela"][weekday],
+  lessons: []
+}));
 
-let days = fallbackDays;
 let dayIndex = Math.min(4, Math.max(0, (new Date().getDay() + 6) % 7));
 
 function checkIcon(){
@@ -715,7 +656,7 @@ function checkIcon(){
 }
 
 function renderStart(){
-  const day = days[dayIndex];
+  const day = days[dayIndex] || {label:'', lessons:[]};
   const count = day.lessons.length;
 
   document.getElementById('start-lesson-count').textContent = count;
@@ -823,7 +764,7 @@ async function loadSchoolData(){
 }
 
 function renderDay(){
-  const day = days[dayIndex];
+  const day = days[dayIndex] || {label:'', lessons:[]};
   renderStart();
 
   // Plan lekcji
