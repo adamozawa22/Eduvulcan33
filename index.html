@@ -6,853 +6,737 @@
 <title>Dziennik</title>
 
 <style>
-  :root{
-    --bg:#070c18;
-    --card:#111b30;
-    --card-hover:#16233d;
-    --text:#eef4ff;
-    --muted:#8ea3c9;
-    --accent:#3aa0ff;
-    --accent-dim:#132e52;
-    --line:#1c2c48;
-  }
+:root{
+  --bg:#070c18;
+  --card:#111b30;
+  --card-hover:#16233d;
+  --text:#eef4ff;
+  --muted:#8ea3c9;
+  --accent:#3aa0ff;
+  --accent-dim:#132e52;
+  --line:#1c2c48;
+}
 
-  *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-  }
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-  html,body{
-    height:100%;
-  }
+html,body{
+  height:100%;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  display:flex;
+  justify-content:center;
+}
+
+.phone{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:row;
+  position:relative;
+}
+
+.content{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:28px 22px 18px;
+}
+
+header h1{
+  font-size:28px;
+  font-weight:600;
+}
+
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#2a2a2e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:600;
+}
+
+main{
+  flex:1;
+  padding:0 22px 24px;
+  overflow-y:auto;
+}
+
+.view{
+  display:none;
+}
+
+.view.active{
+  display:block;
+}
+
+/* START */
+
+.hero{
+  background:linear-gradient(135deg,#132a52,#0a1526);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:18px;
+}
+
+.hero .big{
+  font-size:46px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.hero .label{
+  color:var(--muted);
+  font-size:14px;
+  margin-top:4px;
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.quick-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+}
+
+.quick-card .n{
+  font-size:22px;
+  font-weight:700;
+}
+
+.quick-card .t{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:2px;
+}
+
+.next-lesson{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.next-lesson .time{
+  font-size:15px;
+  color:var(--accent);
+  font-weight:600;
+  min-width:52px;
+}
+
+.next-lesson .info{
+  flex:1;
+}
+
+.next-lesson .info b{
+  font-size:16px;
+  display:block;
+}
+
+.next-lesson .info span{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.section-title{
+  font-size:14px;
+  color:var(--muted);
+  margin:22px 0 10px;
+}
+
+.mini-lesson{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+  margin-bottom:8px;
+}
+
+.mini-time{
+  min-width:42px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.45;
+}
+
+.mini-info{
+  flex:1;
+}
+
+.mini-info b{
+  font-size:14px;
+  display:block;
+}
+
+.mini-info span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.mini-num{
+  font-size:13px;
+  font-weight:700;
+  color:var(--accent);
+  min-width:18px;
+}
+
+/* DATA */
+
+.day-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--card);
+  border-radius:16px;
+  padding:12px 8px;
+  margin-bottom:18px;
+  border:1px solid var(--line);
+}
+
+.day-nav button{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:none;
+  background:#232327;
+  color:var(--text);
+  font-size:25px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.day-nav button:hover{
+  background:#303039;
+}
+
+.day-nav button:active{
+  transform:scale(.92);
+}
+
+.day-label{
+  font-weight:600;
+  font-size:15px;
+  text-align:center;
+  padding:0 10px;
+}
+
+/* PLAN */
+
+.lesson-card{
+  display:flex;
+  gap:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px 18px;
+  margin-bottom:12px;
+  align-items:flex-start;
+}
+
+.lesson-num{
+  font-size:26px;
+  font-weight:700;
+  color:var(--muted);
+  min-width:26px;
+}
+
+.lesson-time{
+  font-size:13px;
+  color:var(--muted);
+  min-width:48px;
+  line-height:1.6;
+}
+
+.lesson-body{
+  flex:1;
+}
+
+.lesson-body .subj{
+  font-size:16px;
+  font-weight:600;
+}
+
+.lesson-body .meta{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* FREKWENCJA */
+
+.att-summary{
+  background:linear-gradient(135deg,#132a52,#0a1526);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:18px;
+  text-align:center;
+}
+
+.att-summary .pct{
+  font-size:54px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.att-summary .sub{
+  color:var(--muted);
+  font-size:14px;
+  margin-top:4px;
+}
+
+.breakdown{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+
+.breakdown .num{
+  font-size:18px;
+  font-weight:700;
+}
+
+.breakdown .lbl{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.att-lesson{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px 18px;
+  margin-bottom:10px;
+}
+
+.att-lesson .lesson-num{
+  font-size:22px;
+}
+
+.att-lesson .lesson-time{
+  min-width:44px;
+}
+
+.status-pill{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-size:12px;
+  font-weight:600;
+  padding:6px 12px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.status-pill svg{
+  width:12px;
+  height:12px;
+}
+
+/* WIĘCEJ */
+
+.category-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.category-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px 16px;
+  cursor:pointer;
+}
+
+.category-card:active{
+  transform:scale(.97);
+}
+
+.cat-ico{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:var(--accent-dim);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:12px;
+}
+
+.category-card b{
+  font-size:15px;
+  display:block;
+}
+
+.category-card span{
+  font-size:12px;
+  color:var(--muted);
+  display:block;
+  margin-top:3px;
+}
+
+.tool-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:15px 16px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.tool-ico{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:var(--accent-dim);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.tool-info{
+  flex:1;
+}
+
+.tool-info b{
+  display:block;
+  font-size:15px;
+}
+
+.tool-info span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.tool-arrow{
+  color:var(--muted);
+  font-size:20px;
+}
+
+/* WIADOMOŚCI */
+
+.message-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+}
+
+.message-category{
+  display:inline-flex;
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-size:12px;
+  font-weight:600;
+  padding:6px 10px;
+  border-radius:999px;
+  margin-bottom:12px;
+}
+
+.message-card h2{
+  font-size:17px;
+  margin-bottom:7px;
+}
+
+.message-card p{
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+}
+
+/* OCENY */
+
+.empty-state{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--muted);
+}
+
+.empty-state .ico{
+  font-size:40px;
+  margin-bottom:12px;
+}
+
+/* MODALE */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:20;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:430px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:24px 24px 0 0;
+  padding:22px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.modal-head h2{
+  font-size:20px;
+}
+
+.close-btn{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:#232327;
+  color:var(--text);
+  font-size:20px;
+  cursor:pointer;
+}
+
+.stat-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.stat-item{
+  background:#121216;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px;
+}
+
+.stat-item b{
+  font-size:22px;
+}
+
+.stat-item span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+.note-input{
+  width:100%;
+  min-height:110px;
+  resize:vertical;
+  background:#121216;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:13px;
+  font:inherit;
+}
+
+.save-note{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:0;
+  border-radius:13px;
+  background:var(--accent);
+  font-weight:700;
+  cursor:pointer;
+}
+
+.setting-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.toggle{
+  width:44px;
+  height:24px;
+  border-radius:999px;
+  background:#303035;
+  position:relative;
+  cursor:pointer;
+}
+
+.toggle::after{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  top:3px;
+  left:3px;
+  border-radius:50%;
+  background:#aaa;
+  transition:.2s;
+}
+
+.toggle.on{
+  background:var(--accent-dim);
+}
+
+.toggle.on::after{
+  left:23px;
+  background:var(--accent);
+}
+
+/* MENU */
+
+nav.bottom{
+  flex:none;
+  width:84px;
+  height:100vh;
+  position:sticky;
+  top:0;
+  background:#08152a;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:4px;
+  padding:24px 6px;
+}
+
+nav.bottom button{
+  background:none;
+  border:none;
+  color:var(--muted);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  font-size:10.5px;
+  font-family:inherit;
+  padding:10px 2px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+nav.bottom button.active{
+  color:#fff;
+  background:var(--accent-dim);
+}
+
+@media(min-width:900px){
 
   body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:flex;
-    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
   }
 
   .phone{
+    max-width:1140px;
     width:100%;
-    max-width:520px;
-    min-height:100vh;
-    display:flex;
-    flex-direction:row;
-    position:relative;
-  }
-
-  .content{
-    flex:1;
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-  }
-
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:28px 22px 18px;
-  }
-
-  header h1{
-    font-size:28px;
-    font-weight:600;
-    letter-spacing:-0.02em;
-  }
-
-  .avatar{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:#2a2a2e;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:14px;
-    font-weight:600;
-    color:var(--text);
-  }
-
-  main{
-    flex:1;
-    padding:0 22px 24px;
-    overflow-y:auto;
-  }
-
-  .view{
-    display:none;
-  }
-
-  .view.active{
-    display:block;
-  }
-
-  /* START */
-
-  .hero{
-    background:linear-gradient(135deg,#132a52,#0a1526);
-    border:1px solid var(--line);
+    height:calc(100vh - 80px);
+    min-height:600px;
     border-radius:22px;
-    padding:24px;
-    margin-bottom:18px;
-  }
-
-  .hero .big{
-    font-size:46px;
-    font-weight:700;
-    color:var(--accent);
-    letter-spacing:-0.02em;
-  }
-
-  .hero .label{
-    color:var(--muted);
-    font-size:14px;
-    margin-top:4px;
-  }
-
-  .quick-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    margin-bottom:18px;
-  }
-
-  .quick-card{
-    background:var(--card);
+    overflow:hidden;
     border:1px solid var(--line);
-    border-radius:18px;
-    padding:16px;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
   }
-
-  .quick-card .n{
-    font-size:22px;
-    font-weight:700;
-  }
-
-  .quick-card .t{
-    color:var(--muted);
-    font-size:13px;
-    margin-top:2px;
-  }
-
-  .next-lesson{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px;
-    display:flex;
-    align-items:center;
-    gap:14px;
-  }
-
-  .next-lesson .time{
-    font-size:15px;
-    color:var(--accent);
-    font-weight:600;
-    min-width:52px;
-  }
-
-  .next-lesson .info b{
-    font-size:16px;
-    display:block;
-  }
-
-  .next-lesson .info span{
-    font-size:13px;
-    color:var(--muted);
-  }
-
-  .mini-lesson{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:12px 14px;
-    margin-bottom:8px;
-  }
-
-  .mini-lesson .mini-time{
-    min-width:42px;
-    font-size:12px;
-    color:var(--muted);
-    line-height:1.45;
-  }
-
-  .mini-lesson .mini-info{
-    flex:1;
-  }
-
-  .mini-lesson .mini-info b{
-    font-size:14px;
-    display:block;
-  }
-
-  .mini-lesson .mini-info span{
-    font-size:12px;
-    color:var(--muted);
-  }
-
-  .mini-lesson .mini-num{
-    font-size:13px;
-    font-weight:700;
-    color:var(--accent);
-    min-width:18px;
-  }
-
-  .section-title{
-    font-size:14px;
-    color:var(--muted);
-    margin:22px 0 10px;
-  }
-
-  /* NAWIGACJA DAT */
-
-  .day-nav{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:var(--card);
-    border-radius:16px;
-    padding:12px 8px;
-    margin-bottom:18px;
-    border:1px solid var(--line);
-  }
-
-  .day-nav button{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    border:none;
-    background:#232327;
-    color:var(--text);
-    font-size:22px;
-    cursor:pointer;
-    transition:.15s;
-  }
-
-  .day-nav button:hover{
-    background:#303039;
-  }
-
-  .day-nav button:active{
-    transform:scale(.92);
-    background:#2c2c31;
-  }
-
-  .day-nav .day-label{
-    font-weight:600;
-    font-size:15px;
-    text-align:center;
-    padding:0 10px;
-  }
-
-  /* PLAN LEKCJI */
-
-  .lesson-card{
-    display:flex;
-    gap:16px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:16px 18px;
-    margin-bottom:12px;
-    align-items:flex-start;
-  }
-
-  .lesson-num{
-    font-size:26px;
-    font-weight:700;
-    color:var(--muted);
-    min-width:26px;
-    padding-top:2px;
-  }
-
-  .lesson-time{
-    font-size:13px;
-    color:var(--muted);
-    min-width:48px;
-    line-height:1.6;
-    padding-top:2px;
-  }
-
-  .lesson-body{
-    flex:1;
-  }
-
-  .lesson-body .subj{
-    font-size:16px;
-    font-weight:600;
-  }
-
-  .lesson-body .meta{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:2px;
-  }
-
-  /* FREKWENCJA */
-
-  .att-summary{
-    background:linear-gradient(135deg,#132a52,#0a1526);
-    border:1px solid var(--line);
-    border-radius:22px;
-    padding:24px;
-    margin-bottom:18px;
-    text-align:center;
-  }
-
-  .att-summary .pct{
-    font-size:54px;
-    font-weight:700;
-    color:var(--accent);
-    letter-spacing:-0.02em;
-  }
-
-  .att-summary .sub{
-    color:var(--muted);
-    font-size:14px;
-    margin-top:4px;
-  }
-
-  .att-summary .breakdown{
-    display:flex;
-    justify-content:center;
-    gap:24px;
-    margin-top:16px;
-    padding-top:16px;
-    border-top:1px solid var(--line);
-  }
-
-  .att-summary .breakdown div{
-    text-align:center;
-  }
-
-  .att-summary .breakdown .num{
-    font-size:18px;
-    font-weight:700;
-  }
-
-  .att-summary .breakdown .lbl{
-    font-size:12px;
-    color:var(--muted);
-  }
-
-  .att-lesson{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px 18px;
-    margin-bottom:10px;
-  }
-
-  .att-lesson .lesson-num{
-    font-size:22px;
-  }
-
-  .att-lesson .lesson-time{
-    min-width:44px;
-  }
-
-  .att-lesson .lesson-body{
-    flex:1;
-  }
-
-  .att-lesson .lesson-body .subj{
-    font-size:15px;
-    font-weight:600;
-  }
-
-  .att-lesson .lesson-body .meta{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:1px;
-  }
-
-  .status-pill{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    background:var(--accent-dim);
-    color:var(--accent);
-    font-size:12px;
-    font-weight:600;
-    padding:6px 12px;
-    border-radius:999px;
-    white-space:nowrap;
-  }
-
-  .status-pill svg{
-    width:12px;
-    height:12px;
-  }
-
-  /* KATEGORIE */
-
-  .category-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    margin-bottom:18px;
-  }
-
-  .category-card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px 16px;
-    cursor:pointer;
-    transition:transform .18s ease,background .18s ease;
-  }
-
-  .category-card:active{
-    transform:scale(.97);
-    background:var(--card-hover);
-  }
-
-  .category-card .cat-ico{
-    width:40px;
-    height:40px;
-    border-radius:13px;
-    background:var(--accent-dim);
-    color:var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:12px;
-  }
-
-  .category-card b{
-    font-size:15px;
-    display:block;
-  }
-
-  .category-card span{
-    font-size:12px;
-    color:var(--muted);
-    display:block;
-    margin-top:3px;
-  }
-
-  /* WIĘCEJ */
-
-  .more-tools{
-    margin-top:18px;
-  }
-
-  .tool-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:15px 16px;
-    margin-bottom:10px;
-    cursor:pointer;
-  }
-
-  .tool-row:active{
-    background:var(--card-hover);
-  }
-
-  .tool-ico{
-    width:40px;
-    height:40px;
-    border-radius:13px;
-    background:var(--accent-dim);
-    color:var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:20px;
-    flex:none;
-  }
-
-  .tool-info{
-    flex:1;
-  }
-
-  .tool-info b{
-    display:block;
-    font-size:15px;
-  }
-
-  .tool-info span{
-    display:block;
-    font-size:12px;
-    color:var(--muted);
-    margin-top:3px;
-  }
-
-  .tool-arrow{
-    color:var(--muted);
-    font-size:20px;
-  }
-
-  .more-note{
-    background:linear-gradient(135deg,#132a52,#0a1526);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:18px;
-    margin-top:18px;
-  }
-
-  .more-note b{
-    font-size:15px;
-  }
-
-  .more-note p{
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.5;
-    margin-top:6px;
-  }
-
-  /* MODALE */
-
-  .modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.65);
-    display:none;
-    align-items:flex-end;
-    justify-content:center;
-    z-index:20;
-  }
-
-  .modal.show{
-    display:flex;
-  }
-
-  .modal-box{
-    width:100%;
-    max-width:430px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:24px 24px 0 0;
-    padding:22px;
-    max-height:80vh;
-    overflow:auto;
-  }
-
-  .modal-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
-  }
-
-  .modal-head h2{
-    font-size:20px;
-  }
-
-  .close-btn{
-    width:34px;
-    height:34px;
-    border:0;
-    border-radius:50%;
-    background:#232327;
-    color:var(--text);
-    font-size:20px;
-    cursor:pointer;
-  }
-
-  .setting-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px 0;
-    border-bottom:1px solid var(--line);
-    font-size:14px;
-  }
-
-  .setting-row:last-child{
-    border-bottom:0;
-  }
-
-  .toggle{
-    width:44px;
-    height:24px;
-    border-radius:999px;
-    background:#303035;
-    position:relative;
-    cursor:pointer;
-    transition:.2s;
-  }
-
-  .toggle::after{
-    content:"";
-    position:absolute;
-    width:18px;
-    height:18px;
-    top:3px;
-    left:3px;
-    border-radius:50%;
-    background:#aaa;
-    transition:.2s;
-  }
-
-  .toggle.on{
-    background:var(--accent-dim);
-  }
-
-  .toggle.on::after{
-    left:23px;
-    background:var(--accent);
-  }
-
-  .stat-box{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-
-  .stat-item{
-    background:#121216;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:15px;
-  }
-
-  .stat-item b{
-    font-size:22px;
-  }
-
-  .stat-item span{
-    display:block;
-    color:var(--muted);
-    font-size:12px;
-    margin-top:3px;
-  }
-
-  .note-input{
-    width:100%;
-    min-height:110px;
-    resize:vertical;
-    background:#121216;
-    color:var(--text);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:13px;
-    font:inherit;
-    font-size:14px;
-    outline:none;
-  }
-
-  .save-note{
-    width:100%;
-    margin-top:10px;
-    padding:12px;
-    border:0;
-    border-radius:13px;
-    background:var(--accent);
-    color:#08120e;
-    font-weight:700;
-    cursor:pointer;
-  }
-
-  /* WIADOMOŚCI */
-
-  .message-card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px;
-    margin-bottom:12px;
-  }
-
-  .message-category{
-    display:inline-flex;
-    align-items:center;
-    background:var(--accent-dim);
-    color:var(--accent);
-    font-size:12px;
-    font-weight:600;
-    padding:6px 10px;
-    border-radius:999px;
-    margin-bottom:12px;
-  }
-
-  .message-card h2{
-    font-size:17px;
-    margin-bottom:7px;
-  }
-
-  .message-card p{
-    font-size:14px;
-    line-height:1.55;
-    color:var(--muted);
-  }
-
-  .message-date{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:12px;
-  }
-
-  /* OCENY */
-
-  .empty-state{
-    text-align:center;
-    padding:60px 20px;
-    color:var(--muted);
-  }
-
-  .empty-state .ico{
-    font-size:40px;
-    margin-bottom:12px;
-  }
-
-  .empty-state .t{
-    font-size:15px;
-  }
-
-  /* LEWE MENU */
 
   nav.bottom{
-    flex:none;
-    width:84px;
-    height:100vh;
-    position:sticky;
-    top:0;
-    background:#08152a;
-    border-right:1px solid var(--line);
-    display:flex;
-    flex-direction:column;
-    align-items:stretch;
-    gap:4px;
-    padding:24px 6px;
+    width:230px;
+    height:100%;
+    padding:32px 16px;
   }
 
   nav.bottom button{
-    background:none;
-    border:none;
-    color:var(--muted);
-    display:flex;
-    flex-direction:column;
+    flex-direction:row;
+    justify-content:flex-start;
+    gap:14px;
+    font-size:14.5px;
+    padding:13px 16px;
+  }
+
+  header{
+    padding:34px 44px 22px;
+  }
+
+  main{
+    padding:0 44px 44px;
+  }
+
+  .view.active{
+    max-width:840px;
+    margin:0 auto;
+  }
+
+  .quick-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .category-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .modal{
     align-items:center;
-    gap:5px;
-    font-size:10.5px;
-    font-family:inherit;
-    padding:10px 2px;
-    border-radius:12px;
-    cursor:pointer;
   }
 
-  nav.bottom button svg{
-    width:21px;
-    height:21px;
+  .modal-box{
+    border-radius:22px;
   }
-
-  nav.bottom button.active{
-    color:#fff;
-    background:var(--accent-dim);
-  }
-
-  nav.bottom button.active svg{
-    color:var(--accent);
-  }
-
-  /* DESKTOP */
-
-  @media (min-width:900px){
-
-    body{
-      align-items:center;
-      padding:40px 20px;
-    }
-
-    .phone{
-      max-width:1140px;
-      width:100%;
-      height:calc(100vh - 80px);
-      min-height:600px;
-      border-radius:22px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      box-shadow:0 24px 70px rgba(0,0,0,.55);
-    }
-
-    nav.bottom{
-      width:230px;
-      height:100%;
-      padding:32px 16px;
-      gap:6px;
-    }
-
-    nav.bottom button{
-      flex-direction:row;
-      justify-content:flex-start;
-      gap:14px;
-      font-size:14.5px;
-      padding:13px 16px;
-    }
-
-    nav.bottom button svg{
-      width:20px;
-      height:20px;
-    }
-
-    .content{
-      height:100%;
-    }
-
-    header{
-      padding:34px 44px 22px;
-    }
-
-    header h1{
-      font-size:32px;
-    }
-
-    main{
-      padding:0 44px 44px;
-    }
-
-    .view.active{
-      max-width:840px;
-      margin:0 auto;
-    }
-
-    .quick-grid{
-      grid-template-columns:repeat(3,1fr);
-    }
-
-    .category-grid{
-      grid-template-columns:repeat(3,1fr);
-    }
-
-    .hero .big{
-      font-size:56px;
-    }
-
-    .att-summary .pct{
-      font-size:64px;
-    }
-
-    .lesson-card,
-    .att-lesson{
-      padding:18px 22px;
-    }
-
-    .modal{
-      align-items:center;
-    }
-
-    .modal-box{
-      border-radius:22px;
-      max-width:480px;
-    }
-  }
+}
 </style>
 </head>
 
@@ -860,500 +744,331 @@
 
 <div class="phone">
 
-  <!-- MENU -->
-  <nav class="bottom">
-
-    <button class="active" data-view="start" onclick="showView('start')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 11.5L12 4l8 7.5"/>
-        <path d="M6 10v9h12v-9"/>
-      </svg>
-      Start
-    </button>
-
-    <button data-view="wiadomosci" onclick="showView('wiadomosci')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z"/>
-        <path d="M8 7h8M8 10.5h5"/>
-      </svg>
-      Wiadomości
-    </button>
-
-    <button data-view="oceny" onclick="showView('oceny')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="4" y="3" width="16" height="18" rx="2"/>
-        <path d="M8 8h8M8 12h8M8 16h5"/>
-      </svg>
-      Oceny
-    </button>
-
-    <button data-view="plan" onclick="showView('plan')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="5" width="18" height="16" rx="2"/>
-        <path d="M3 10h18M8 3v4M16 3v4"/>
-      </svg>
-      Plan
-    </button>
-
-    <button data-view="frekwencja" onclick="showView('frekwencja')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 6L9 17l-5-5"/>
-      </svg>
-      Frekw.
-    </button>
-
-    <button data-view="wiecej" onclick="showView('wiecej')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="5" cy="12" r="1.5"/>
-        <circle cx="12" cy="12" r="1.5"/>
-        <circle cx="19" cy="12" r="1.5"/>
-      </svg>
-      Więcej
-    </button>
-
-  </nav>
-
-  <div class="content">
-
-    <header>
-      <h1 id="header-title">Start</h1>
-      <div class="avatar">AZ</div>
-    </header>
-
-    <main>
-
-      <!-- START -->
-
-      <section class="view active" id="view-start">
-
-        <div class="hero">
-          <div class="big">100%</div>
-          <div class="label">frekwencja w tym semestrze</div>
-        </div>
-
-        <div class="section-title" style="margin-top:0">
-          Dzisiaj
-        </div>
-
-        <div class="quick-grid">
-
-          <div class="quick-card">
-            <div class="n" id="start-lesson-count">0</div>
-            <div class="t">lekcji</div>
-          </div>
-
-          <div class="quick-card">
-            <div class="n" id="start-end-time">—</div>
-            <div class="t">koniec zajęć</div>
-          </div>
-
-        </div>
-
-        <div class="section-title">
-          Najbliższa lekcja
-        </div>
-
-        <div class="next-lesson" id="start-next-lesson">
-          <div class="time">—</div>
-
-          <div class="info">
-            <b>Brak zajęć</b>
-            <span>Na dzisiaj</span>
-          </div>
-        </div>
+<nav class="bottom">
 
-        <div class="section-title">
-          Mini plan lekcji
-        </div>
+  <button class="active" data-view="start" onclick="showView('start')">
+    🏠 Start
+  </button>
 
-        <div id="start-mini-plan"></div>
+  <button data-view="wiadomosci" onclick="showView('wiadomosci')">
+    💬 Wiadomości
+  </button>
 
-      </section>
+  <button data-view="oceny" onclick="showView('oceny')">
+    📘 Oceny
+  </button>
 
+  <button data-view="plan" onclick="showView('plan')">
+    📅 Plan
+  </button>
 
-      <!-- WIĘCEJ -->
+  <button data-view="frekwencja" onclick="showView('frekwencja')">
+    ✓ Frekw.
+  </button>
 
-      <section class="view" id="view-wiecej">
+  <button data-view="wiecej" onclick="showView('wiecej')">
+    ••• Więcej
+  </button>
 
-        <div class="section-title" style="margin-top:0">
-          Kategorie
-        </div>
+</nav>
 
-        <div class="category-grid">
+<div class="content">
 
-          <div class="category-card" onclick="showView('start')">
-            <div class="cat-ico">⌂</div>
-            <b>Start</b>
-            <span>Podsumowanie</span>
-          </div>
+<header>
+  <h1 id="header-title">Start</h1>
+  <div class="avatar">AZ</div>
+</header>
 
-          <div class="category-card" onclick="showView('wiadomosci')">
-            <div class="cat-ico">💬</div>
-            <b>Wiadomości</b>
-            <span>Komunikaty</span>
-          </div>
+<main>
 
-          <div class="category-card" onclick="showView('oceny')">
-            <div class="cat-ico">📘</div>
-            <b>Oceny</b>
-            <span>Twoje oceny</span>
-          </div>
+<!-- START -->
 
-          <div class="category-card" onclick="showView('plan')">
-            <div class="cat-ico">📅</div>
-            <b>Plan lekcji</b>
-            <span>Zajęcia</span>
-          </div>
+<section class="view active" id="view-start">
 
-          <div class="category-card" onclick="showView('frekwencja')">
-            <div class="cat-ico">✓</div>
-            <b>Frekwencja</b>
-            <span>Obecności</span>
-          </div>
+  <div class="hero">
+    <div class="big">100%</div>
+    <div class="label">frekwencja w tym semestrze</div>
+  </div>
 
-          <div class="category-card" onclick="showView('wiecej')">
-            <div class="cat-ico">•••</div>
-            <b>Więcej</b>
-            <span>Wszystkie kategorie</span>
-          </div>
+  <div class="section-title">
+    Wybrany dzień
+  </div>
 
-        </div>
+  <div class="day-nav">
 
-        <div class="section-title">
-          Narzędzia
-        </div>
+    <button onclick="changeDay(-1)">‹</button>
 
-        <div class="more-tools">
+    <div class="day-label" id="start-day-label"></div>
 
-          <div class="tool-row" onclick="openModal('statystyki')">
-            <div class="tool-ico">📊</div>
+    <button onclick="changeDay(1)">›</button>
 
-            <div class="tool-info">
-              <b>Statystyki</b>
-              <span>Podsumowanie tygodnia i frekwencji</span>
-            </div>
+  </div>
 
-            <div class="tool-arrow">›</div>
-          </div>
+  <div class="quick-grid">
 
-          <div class="tool-row" onclick="openModal('notatki')">
-            <div class="tool-ico">📝</div>
+    <div class="quick-card">
+      <div class="n" id="start-lesson-count">0</div>
+      <div class="t">lekcji</div>
+    </div>
 
-            <div class="tool-info">
-              <b>Notatki</b>
-              <span>Zapisz własne przypomnienie</span>
-            </div>
+    <div class="quick-card">
+      <div class="n" id="start-end-time">—</div>
+      <div class="t">koniec zajęć</div>
+    </div>
 
-            <div class="tool-arrow">›</div>
-          </div>
+  </div>
 
-          <div class="tool-row" onclick="openModal('ustawienia')">
-            <div class="tool-ico">⚙️</div>
+  <div class="section-title">
+    Najbliższa lekcja
+  </div>
 
-            <div class="tool-info">
-              <b>Ustawienia</b>
-              <span>Personalizacja dziennika</span>
-            </div>
+  <div class="next-lesson" id="start-next-lesson"></div>
 
-            <div class="tool-arrow">›</div>
-          </div>
+  <div class="section-title">
+    Mini plan lekcji
+  </div>
 
-          <div class="tool-row" onclick="openModal('pomoc')">
-            <div class="tool-ico">❔</div>
+  <div id="start-mini-plan"></div>
 
-            <div class="tool-info">
-              <b>Pomoc</b>
-              <span>Informacje o funkcjach aplikacji</span>
-            </div>
+</section>
 
-            <div class="tool-arrow">›</div>
-          </div>
 
-        </div>
+<!-- WIADOMOŚCI -->
 
-        <div class="more-note">
-          <b>💡 Szybki dostęp</b>
+<section class="view" id="view-wiadomosci">
 
-          <p>
-            Wszystkie najważniejsze funkcje dziennika masz teraz
-            w jednym miejscu.
-          </p>
-        </div>
+  <div class="message-card">
 
-      </section>
+    <div class="message-category">
+      Awaria
+    </div>
 
+    <h2>
+      Problemy z wiadomościami
+    </h2>
 
-      <!-- WIADOMOŚCI -->
+    <p>
+      Z przyczyn awarii chwilowo brak możliwości odczytu oraz
+      wysyłania wiadomości. Prosimy spróbować ponownie później.
+    </p>
 
-      <section class="view" id="view-wiadomosci">
+  </div>
 
-        <div class="message-card">
+</section>
 
-          <div class="message-category">
-            Awaria
-          </div>
 
-          <h2>
-            Problemy z wiadomościami
-          </h2>
+<!-- OCENY -->
 
-          <p>
-            Z przyczyn awarii chwilowo brak możliwości odczytu oraz
-            wysyłania wiadomości. Prosimy spróbować ponownie później.
-          </p>
+<section class="view" id="view-oceny">
 
-          <div class="message-date">
-            Aktualnie
-          </div>
+  <div class="empty-state">
 
-        </div>
+    <div class="ico">📘</div>
 
-      </section>
+    <div>
+      Brak nowych ocen
+    </div>
 
+  </div>
 
-      <!-- OCENY -->
+</section>
 
-      <section class="view" id="view-oceny">
 
-        <div class="empty-state">
+<!-- PLAN -->
 
-          <div class="ico">
-            📘
-          </div>
+<section class="view" id="view-plan">
 
-          <div class="t">
-            Brak nowych ocen
-          </div>
+  <div class="day-nav">
 
-        </div>
+    <button onclick="changeDay(-1)">‹</button>
 
-      </section>
+    <div class="day-label" id="plan-day-label"></div>
 
+    <button onclick="changeDay(1)">›</button>
 
-      <!-- PLAN LEKCJI -->
+  </div>
 
-      <section class="view" id="view-plan">
+  <div id="plan-list"></div>
 
-        <div class="day-nav">
+</section>
 
-          <button onclick="changeDay(-1)">
-            ‹
-          </button>
 
-          <div class="day-label" id="plan-day-label">
-          </div>
+<!-- FREKWENCJA -->
 
-          <button onclick="changeDay(1)">
-            ›
-          </button>
+<section class="view" id="view-frekwencja">
 
-        </div>
+  <div class="att-summary">
 
-        <div id="plan-list"></div>
+    <div class="pct" id="att-percent">
+      100%
+    </div>
 
-      </section>
+    <div class="sub">
+      obecności
+    </div>
 
+    <div class="breakdown">
 
-      <!-- FREKWENCJA -->
+      <div>
+        <div class="num" id="att-total">0</div>
+        <div class="lbl">Lekcje</div>
+      </div>
 
-      <section class="view" id="view-frekwencja">
+      <div>
+        <div class="num" id="att-present">0</div>
+        <div class="lbl">Obecności</div>
+      </div>
 
-        <div class="att-summary">
-
-          <div class="pct">
-            100%
-          </div>
-
-          <div class="sub">
-            obecności
-          </div>
-
-          <div class="breakdown">
-
-            <div>
-              <div class="num" id="att-total"></div>
-              <div class="lbl">Lekcje</div>
-            </div>
-
-            <div>
-              <div class="num" style="color:var(--accent)" id="att-present"></div>
-              <div class="lbl">Obecności</div>
-            </div>
-
-            <div>
-              <div class="num">0</div>
-              <div class="lbl">Nieobecności</div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="day-nav">
-
-          <button onclick="changeDay(-1)">
-            ‹
-          </button>
-
-          <div class="day-label" id="att-day-label">
-          </div>
-
-          <button onclick="changeDay(1)">
-            ›
-          </button>
-
-        </div>
-
-        <div id="att-list"></div>
-
-      </section>
-
-    </main>
-
-
-    <!-- STATYSTYKI -->
-
-    <div class="modal" id="modal-statystyki" onclick="closeModal(event)">
-
-      <div class="modal-box">
-
-        <div class="modal-head">
-          <h2>Statystyki</h2>
-
-          <button class="close-btn" onclick="closeModal()">
-            ×
-          </button>
-        </div>
-
-        <div class="stat-box">
-
-          <div class="stat-item">
-            <b>100%</b>
-            <span>Frekwencja</span>
-          </div>
-
-          <div class="stat-item">
-            <b>35</b>
-            <span>Lekcje w tygodniu</span>
-          </div>
-
-          <div class="stat-item">
-            <b>0</b>
-            <span>Nieobecności</span>
-          </div>
-
-          <div class="stat-item">
-            <b>5</b>
-            <span>Dni zajęć</span>
-          </div>
-
-        </div>
-
+      <div>
+        <div class="num" id="att-absent">0</div>
+        <div class="lbl">Nieobecności</div>
       </div>
 
     </div>
 
+  </div>
 
-    <!-- NOTATKI -->
+  <div class="day-nav">
 
-    <div class="modal" id="modal-notatki" onclick="closeModal(event)">
+    <button onclick="changeDay(-1)">‹</button>
 
-      <div class="modal-box">
+    <div class="day-label" id="att-day-label"></div>
 
-        <div class="modal-head">
-          <h2>Notatki</h2>
+    <button onclick="changeDay(1)">›</button>
 
-          <button class="close-btn" onclick="closeModal()">
-            ×
-          </button>
-        </div>
+  </div>
 
-        <textarea
-          class="note-input"
-          id="note-input"
-          placeholder="Np. sprawdzian z matematyki w piątek..."
-        ></textarea>
+  <div id="att-list"></div>
 
-        <button class="save-note" onclick="saveNote()">
-          Zapisz notatkę
-        </button>
+</section>
 
-        <p
-          id="note-status"
-          style="font-size:12px;color:var(--muted);margin-top:10px;"
-        ></p>
 
-      </div>
+<!-- WIĘCEJ -->
+
+<section class="view" id="view-wiecej">
+
+  <div class="section-title" style="margin-top:0">
+    Kategorie
+  </div>
+
+  <div class="category-grid">
+
+    <div class="category-card" onclick="showView('start')">
+      <div class="cat-ico">🏠</div>
+      <b>Start</b>
+      <span>Podsumowanie</span>
+    </div>
+
+    <div class="category-card" onclick="showView('wiadomosci')">
+      <div class="cat-ico">💬</div>
+      <b>Wiadomości</b>
+      <span>Komunikaty</span>
+    </div>
+
+    <div class="category-card" onclick="showView('oceny')">
+      <div class="cat-ico">📘</div>
+      <b>Oceny</b>
+      <span>Twoje oceny</span>
+    </div>
+
+    <div class="category-card" onclick="showView('plan')">
+      <div class="cat-ico">📅</div>
+      <b>Plan lekcji</b>
+      <span>Zajęcia</span>
+    </div>
+
+    <div class="category-card" onclick="showView('frekwencja')">
+      <div class="cat-ico">✓</div>
+      <b>Frekwencja</b>
+      <span>Obecności</span>
+    </div>
+
+  </div>
+
+  <div class="section-title">
+    Narzędzia
+  </div>
+
+  <div class="tool-row" onclick="openModal('statystyki')">
+
+    <div class="tool-ico">📊</div>
+
+    <div class="tool-info">
+      <b>Statystyki</b>
+      <span>Podsumowanie frekwencji</span>
+    </div>
+
+    <div class="tool-arrow">›</div>
+
+  </div>
+
+  <div class="tool-row" onclick="openModal('notatki')">
+
+    <div class="tool-ico">📝</div>
+
+    <div class="tool-info">
+      <b>Notatki</b>
+      <span>Własne przypomnienia</span>
+    </div>
+
+    <div class="tool-arrow">›</div>
+
+  </div>
+
+  <div class="tool-row" onclick="openModal('ustawienia')">
+
+    <div class="tool-ico">⚙️</div>
+
+    <div class="tool-info">
+      <b>Ustawienia</b>
+      <span>Personalizacja</span>
+    </div>
+
+    <div class="tool-arrow">›</div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- MODAL STATYSTYKI -->
+
+<div class="modal" id="modal-statystyki">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Statystyki</h2>
+
+      <button class="close-btn" onclick="closeModal()">
+        ×
+      </button>
 
     </div>
 
+    <div class="stat-box">
 
-    <!-- USTAWIENIA -->
-
-    <div class="modal" id="modal-ustawienia" onclick="closeModal(event)">
-
-      <div class="modal-box">
-
-        <div class="modal-head">
-          <h2>Ustawienia</h2>
-
-          <button class="close-btn" onclick="closeModal()">
-            ×
-          </button>
-        </div>
-
-        <div class="setting-row">
-          <span>Powiadomienia</span>
-
-          <div
-            class="toggle on"
-            onclick="this.classList.toggle('on')"
-          ></div>
-        </div>
-
-        <div class="setting-row">
-          <span>Pokazuj mini plan</span>
-
-          <div
-            class="toggle on"
-            onclick="this.classList.toggle('on')"
-          ></div>
-        </div>
-
-        <div class="setting-row">
-          <span>Przypomnienia o lekcjach</span>
-
-          <div
-            class="toggle"
-            onclick="this.classList.toggle('on')"
-          ></div>
-        </div>
-
+      <div class="stat-item">
+        <b>100%</b>
+        <span>Frekwencja</span>
       </div>
 
-    </div>
+      <div class="stat-item">
+        <b>35</b>
+        <span>Lekcje w tygodniu</span>
+      </div>
 
+      <div class="stat-item">
+        <b>0</b>
+        <span>Nieobecności</span>
+      </div>
 
-    <!-- POMOC -->
-
-    <div class="modal" id="modal-pomoc" onclick="closeModal(event)">
-
-      <div class="modal-box">
-
-        <div class="modal-head">
-          <h2>Pomoc</h2>
-
-          <button class="close-btn" onclick="closeModal()">
-            ×
-          </button>
-        </div>
-
-        <p style="color:var(--muted);font-size:14px;line-height:1.6;">
-          Korzystaj z dolnej nawigacji, aby szybko przełączać się
-          między Startem, Wiadomościami, Ocenami, Planem i Frekwencją.
-          W „Więcej” znajdziesz dodatkowe narzędzia i ustawienia.
-        </p>
-
+      <div class="stat-item">
+        <b>5</b>
+        <span>Dni zajęć</span>
       </div>
 
     </div>
@@ -1363,367 +1078,469 @@
 </div>
 
 
+<!-- MODAL NOTATKI -->
+
+<div class="modal" id="modal-notatki">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Notatki</h2>
+
+      <button class="close-btn" onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <textarea
+      class="note-input"
+      id="note-input"
+      placeholder="Wpisz notatkę..."
+    ></textarea>
+
+    <button class="save-note" onclick="saveNote()">
+      Zapisz notatkę
+    </button>
+
+    <p id="note-status"
+       style="font-size:12px;color:var(--muted);margin-top:10px;">
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- MODAL USTAWIENIA -->
+
+<div class="modal" id="modal-ustawienia">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Ustawienia</h2>
+
+      <button class="close-btn" onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div class="setting-row">
+
+      <span>Powiadomienia</span>
+
+      <div
+        class="toggle on"
+        onclick="this.classList.toggle('on')">
+      </div>
+
+    </div>
+
+    <div class="setting-row">
+
+      <span>Mini plan na starcie</span>
+
+      <div
+        class="toggle on"
+        onclick="this.classList.toggle('on')">
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+</div>
+
+
 <script>
 
-/* =========================
-   PLAN LEKCJI
-========================= */
+/* =====================================================
+   PLAN TYGODNIA
+   0 = niedziela
+   1 = poniedziałek
+   2 = wtorek
+   3 = środa
+   4 = czwartek
+   5 = piątek
+   6 = sobota
+===================================================== */
 
-const days = [
+const weeklyPlan = {
 
-  {
-    label:"Poniedziałek, 7 Wrzesień",
-
-    lessons:[
-      {
-        n:1,
-        start:"08:00",
-        end:"08:45",
-        subj:"Język polski",
-        room:"74",
-        teacher:"Joanna Ołdak"
-      },
-
-      {
-        n:2,
-        start:"08:50",
-        end:"09:35",
-        subj:"Język polski",
-        room:"74",
-        teacher:"Joanna Ołdak"
-      },
-
-      {
-        n:3,
-        start:"09:45",
-        end:"10:30",
-        subj:"Chemia",
-        room:"56",
-        teacher:"Małgorzata Witosławska"
-      },
-
-      {
-        n:4,
-        start:"10:40",
-        end:"11:25",
-        subj:"Matematyka",
-        room:"75",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:5,
-        start:"11:45",
-        end:"12:30",
-        subj:"Matematyka",
-        room:"75",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:6,
-        start:"12:50",
-        end:"13:35",
-        subj:"Zajęcia z wychowawcą",
-        room:"wych",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:7,
-        start:"13:45",
-        end:"14:30",
-        subj:"Wychowanie fizyczne",
-        room:"sg2",
-        teacher:"Agnieszka Hojniak"
-      }
-    ]
-  },
+  1: [
+    {
+      n:1,
+      start:"08:00",
+      end:"08:45",
+      subj:"Język polski",
+      room:"74",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:2,
+      start:"08:50",
+      end:"09:35",
+      subj:"Język polski",
+      room:"74",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:3,
+      start:"09:45",
+      end:"10:30",
+      subj:"Chemia",
+      room:"56",
+      teacher:"Małgorzata Witosławska"
+    },
+    {
+      n:4,
+      start:"10:40",
+      end:"11:25",
+      subj:"Matematyka",
+      room:"75",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:5,
+      start:"11:45",
+      end:"12:30",
+      subj:"Matematyka",
+      room:"75",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:6,
+      start:"12:50",
+      end:"13:35",
+      subj:"Zajęcia z wychowawcą",
+      room:"wych",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:7,
+      start:"13:45",
+      end:"14:30",
+      subj:"Wychowanie fizyczne",
+      room:"sg2",
+      teacher:"Agnieszka Hojniak"
+    }
+  ],
 
 
-  {
-    label:"Wtorek, 8 Wrzesień",
-
-    lessons:[
-      {
-        n:1,
-        start:"08:00",
-        end:"08:45",
-        subj:"Wiedza o społeczeństwie",
-        room:"65",
-        teacher:"Marta Kwiatkowska"
-      },
-
-      {
-        n:2,
-        start:"08:50",
-        end:"09:35",
-        subj:"Fizyka",
-        room:"74",
-        teacher:"Edyta Gaworek"
-      },
-
-      {
-        n:3,
-        start:"09:45",
-        end:"10:30",
-        subj:"Język angielski",
-        room:"57",
-        teacher:"Agata Lewandowska"
-      },
-
-      {
-        n:4,
-        start:"10:40",
-        end:"11:25",
-        subj:"Matematyka",
-        room:"75",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:5,
-        start:"11:45",
-        end:"12:30",
-        subj:"Informatyka",
-        room:"52",
-        teacher:"Piotr Antoniuk"
-      },
-
-      {
-        n:6,
-        start:"12:50",
-        end:"13:35",
-        subj:"Historia",
-        room:"61",
-        teacher:"Marta Kwiatkowska"
-      },
-
-      {
-        n:7,
-        start:"13:45",
-        end:"14:30",
-        subj:"Edukacja dla bezpieczeństwa",
-        room:"20",
-        teacher:"Anna Kula"
-      }
-    ]
-  },
+  2: [
+    {
+      n:1,
+      start:"08:00",
+      end:"08:45",
+      subj:"Wiedza o społeczeństwie",
+      room:"65",
+      teacher:"Marta Kwiatkowska"
+    },
+    {
+      n:2,
+      start:"08:50",
+      end:"09:35",
+      subj:"Fizyka",
+      room:"74",
+      teacher:"Edyta Gaworek"
+    },
+    {
+      n:3,
+      start:"09:45",
+      end:"10:30",
+      subj:"Język angielski",
+      room:"57",
+      teacher:"Agata Lewandowska"
+    },
+    {
+      n:4,
+      start:"10:40",
+      end:"11:25",
+      subj:"Matematyka",
+      room:"75",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:5,
+      start:"11:45",
+      end:"12:30",
+      subj:"Informatyka",
+      room:"52",
+      teacher:"Piotr Antoniuk"
+    },
+    {
+      n:6,
+      start:"12:50",
+      end:"13:35",
+      subj:"Historia",
+      room:"61",
+      teacher:"Marta Kwiatkowska"
+    },
+    {
+      n:7,
+      start:"13:45",
+      end:"14:30",
+      subj:"Edukacja dla bezpieczeństwa",
+      room:"20",
+      teacher:"Anna Kula"
+    }
+  ],
 
 
-  {
-    label:"Środa, 9 Wrzesień",
-
-    lessons:[
-      {
-        n:1,
-        start:"08:00",
-        end:"08:45",
-        subj:"Język niemiecki",
-        room:"gs",
-        teacher:"Marta Kamińska"
-      },
-
-      {
-        n:2,
-        start:"08:50",
-        end:"09:35",
-        subj:"Język niemiecki",
-        room:"gs",
-        teacher:"Marta Kamińska"
-      },
-
-      {
-        n:3,
-        start:"09:45",
-        end:"10:30",
-        subj:"Wychowanie fizyczne",
-        room:"sg1",
-        teacher:"Agnieszka Hojniak"
-      },
-
-      {
-        n:4,
-        start:"10:40",
-        end:"11:25",
-        subj:"MAK",
-        room:"68",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:5,
-        start:"11:45",
-        end:"12:30",
-        subj:"Matematyka",
-        room:"61",
-        teacher:"Małgorzata Jankowska"
-      },
-
-      {
-        n:6,
-        start:"12:50",
-        end:"13:35",
-        subj:"POK",
-        room:"20",
-        teacher:"Joanna Ołdak"
-      },
-
-      {
-        n:7,
-        start:"13:45",
-        end:"14:30",
-        subj:"Chemia",
-        room:"56",
-        teacher:"Małgorzata Witosławska"
-      }
-    ]
-  },
+  3: [
+    {
+      n:1,
+      start:"08:00",
+      end:"08:45",
+      subj:"Język niemiecki",
+      room:"gs",
+      teacher:"Marta Kamińska"
+    },
+    {
+      n:2,
+      start:"08:50",
+      end:"09:35",
+      subj:"Język niemiecki",
+      room:"gs",
+      teacher:"Marta Kamińska"
+    },
+    {
+      n:3,
+      start:"09:45",
+      end:"10:30",
+      subj:"Wychowanie fizyczne",
+      room:"sg1",
+      teacher:"Agnieszka Hojniak"
+    },
+    {
+      n:4,
+      start:"10:40",
+      end:"11:25",
+      subj:"MAK",
+      room:"68",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:5,
+      start:"11:45",
+      end:"12:30",
+      subj:"Matematyka",
+      room:"61",
+      teacher:"Małgorzata Jankowska"
+    },
+    {
+      n:6,
+      start:"12:50",
+      end:"13:35",
+      subj:"POK",
+      room:"20",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:7,
+      start:"13:45",
+      end:"14:30",
+      subj:"Chemia",
+      room:"56",
+      teacher:"Małgorzata Witosławska"
+    }
+  ],
 
 
-  {
-    label:"Czwartek, 10 Wrzesień",
-
-    lessons:[
-      {
-        n:2,
-        start:"08:50",
-        end:"09:35",
-        subj:"Wychowanie fizyczne",
-        room:"sg2",
-        teacher:"Agnieszka Hojniak"
-      },
-
-      {
-        n:3,
-        start:"09:45",
-        end:"10:30",
-        subj:"Język angielski",
-        room:"57",
-        teacher:"Agata Lewandowska"
-      },
-
-      {
-        n:4,
-        start:"10:40",
-        end:"11:25",
-        subj:"Język angielski",
-        room:"57",
-        teacher:"Agata Lewandowska"
-      },
-
-      {
-        n:5,
-        start:"11:45",
-        end:"12:30",
-        subj:"Język polski",
-        room:"61",
-        teacher:"Joanna Ołdak"
-      },
-
-      {
-        n:6,
-        start:"12:50",
-        end:"13:35",
-        subj:"Historia",
-        room:"65",
-        teacher:"Marta Kwiatkowska"
-      }
-    ]
-  },
+  4: [
+    {
+      n:2,
+      start:"08:50",
+      end:"09:35",
+      subj:"Wychowanie fizyczne",
+      room:"sg2",
+      teacher:"Agnieszka Hojniak"
+    },
+    {
+      n:3,
+      start:"09:45",
+      end:"10:30",
+      subj:"Język angielski",
+      room:"57",
+      teacher:"Agata Lewandowska"
+    },
+    {
+      n:4,
+      start:"10:40",
+      end:"11:25",
+      subj:"Język angielski",
+      room:"57",
+      teacher:"Agata Lewandowska"
+    },
+    {
+      n:5,
+      start:"11:45",
+      end:"12:30",
+      subj:"Język polski",
+      room:"61",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:6,
+      start:"12:50",
+      end:"13:35",
+      subj:"Historia",
+      room:"65",
+      teacher:"Marta Kwiatkowska"
+    }
+  ],
 
 
-  {
-    label:"Piątek, 11 Wrzesień",
+  5: [
+    {
+      n:1,
+      start:"08:00",
+      end:"08:45",
+      subj:"Geografia",
+      room:"65",
+      teacher:"Joanna Sosińska"
+    },
+    {
+      n:2,
+      start:"08:50",
+      end:"09:35",
+      subj:"Wychowanie fizyczne",
+      room:"sg1",
+      teacher:"Agnieszka Hojniak"
+    },
+    {
+      n:3,
+      start:"09:45",
+      end:"10:30",
+      subj:"Fizyka",
+      room:"74",
+      teacher:"Edyta Gaworek"
+    },
+    {
+      n:4,
+      start:"10:40",
+      end:"11:25",
+      subj:"Język polski",
+      room:"68",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:5,
+      start:"11:45",
+      end:"12:30",
+      subj:"Język polski",
+      room:"68",
+      teacher:"Joanna Ołdak"
+    },
+    {
+      n:6,
+      start:"12:50",
+      end:"13:35",
+      subj:"Biologia",
+      room:"61",
+      teacher:"Justyna Kubiak"
+    },
+    {
+      n:7,
+      start:"13:45",
+      end:"14:30",
+      subj:"Wiedza o społeczeństwie",
+      room:"61",
+      teacher:"Marta Kwiatkowska"
+    },
+    {
+      n:8,
+      start:"14:35",
+      end:"15:20",
+      subj:"Edukacja zdrowotna",
+      room:"66",
+      teacher:"Agnieszka Hojniak"
+    }
+  ]
 
-    lessons:[
-      {
-        n:1,
-        start:"08:00",
-        end:"08:45",
-        subj:"Geografia",
-        room:"65",
-        teacher:"Joanna Sosińska"
-      },
+};
 
-      {
-        n:2,
-        start:"08:50",
-        end:"09:35",
-        subj:"Wychowanie fizyczne",
-        room:"sg1",
-        teacher:"Agnieszka Hojniak"
-      },
 
-      {
-        n:3,
-        start:"09:45",
-        end:"10:30",
-        subj:"Fizyka",
-        room:"74",
-        teacher:"Edyta Gaworek"
-      },
+/* =====================================================
+   PRAWDZIWA DATA
+   Startujemy od piątku 11 września 2026
+===================================================== */
 
-      {
-        n:4,
-        start:"10:40",
-        end:"11:25",
-        subj:"Język polski",
-        room:"68",
-        teacher:"Joanna Ołdak"
-      },
+let currentDate = new Date(2026,8,11);
 
-      {
-        n:5,
-        start:"11:45",
-        end:"12:30",
-        subj:"Język polski",
-        room:"68",
-        teacher:"Joanna Ołdak"
-      },
 
-      {
-        n:6,
-        start:"12:50",
-        end:"13:35",
-        subj:"Biologia",
-        room:"61",
-        teacher:"Justyna Kubiak"
-      },
+/* =====================================================
+   NAZWY DNI I MIESIĘCY
+===================================================== */
 
-      {
-        n:7,
-        start:"13:45",
-        end:"14:30",
-        subj:"Wiedza o społeczeństwie",
-        room:"61",
-        teacher:"Marta Kwiatkowska"
-      },
+const dayNames = [
+  "Niedziela",
+  "Poniedziałek",
+  "Wtorek",
+  "Środa",
+  "Czwartek",
+  "Piątek",
+  "Sobota"
+];
 
-      {
-        n:8,
-        start:"14:35",
-        end:"15:20",
-        subj:"Edukacja zdrowotna",
-        room:"66",
-        teacher:"Agnieszka Hojniak"
-      }
-    ]
-  }
-
+const monthNames = [
+  "Stycznia",
+  "Lutego",
+  "Marca",
+  "Kwietnia",
+  "Maja",
+  "Czerwca",
+  "Lipca",
+  "Sierpnia",
+  "Września",
+  "Października",
+  "Listopada",
+  "Grudnia"
 ];
 
 
-/* =========================
-   AKTUALNY DZIEŃ
-========================= */
+/* =====================================================
+   FORMATOWANIE DATY
+===================================================== */
 
-let dayIndex = 4;
+function formatDate(date){
+
+  return (
+    dayNames[date.getDay()]
+    + ", "
+    + date.getDate()
+    + " "
+    + monthNames[date.getMonth()]
+    + " "
+    + date.getFullYear()
+  );
+
+}
 
 
-/* =========================
-   IKONA OBECNOŚCI
-========================= */
+/* =====================================================
+   POBIERANIE LEKCJI DLA DATY
+===================================================== */
+
+function getLessons(date){
+
+  const weekday = date.getDay();
+
+  return weeklyPlan[weekday] || [];
+
+}
+
+
+/* =====================================================
+   IKONA
+===================================================== */
 
 function checkIcon(){
 
@@ -1741,30 +1558,31 @@ function checkIcon(){
 }
 
 
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
 
 function renderStart(){
 
-  const day = days[dayIndex];
+  const lessons = getLessons(currentDate);
 
-  const count = day.lessons.length;
+  document.getElementById(
+    "start-day-label"
+  ).textContent = formatDate(currentDate);
+
 
   document.getElementById(
     "start-lesson-count"
-  ).textContent = count;
+  ).textContent = lessons.length;
 
 
   document.getElementById(
     "start-end-time"
   ).textContent =
-    count
-      ? day.lessons[count - 1].end
+    lessons.length
+      ? lessons[lessons.length-1].end
       : "—";
 
-
-  const next = day.lessons[0];
 
   const nextBox =
     document.getElementById(
@@ -1772,7 +1590,9 @@ function renderStart(){
     );
 
 
-  if(next){
+  if(lessons.length){
+
+    const next = lessons[0];
 
     nextBox.innerHTML = `
 
@@ -1809,7 +1629,7 @@ function renderStart(){
         </b>
 
         <span>
-          Na dzisiaj
+          Dzień wolny od lekcji
         </span>
 
       </div>
@@ -1819,152 +1639,114 @@ function renderStart(){
   }
 
 
-  document.getElementById(
-    "start-mini-plan"
-  ).innerHTML = day.lessons.map(l => `
-
-    <div class="mini-lesson">
-
-      <div class="mini-num">
-        ${l.n}
-      </div>
-
-      <div class="mini-time">
-        ${l.start}<br>
-        ${l.end}
-      </div>
-
-      <div class="mini-info">
-
-        <b>
-          ${l.subj}
-        </b>
-
-        <span>
-          Sala ${l.room} · ${l.teacher}
-        </span>
-
-      </div>
-
-    </div>
-
-  `).join("");
-
-}
-
-
-/* =========================
-   MODALE
-========================= */
-
-function openModal(name){
-
-  document
-    .querySelectorAll(".modal")
-    .forEach(m =>
-      m.classList.remove("show")
+  const mini =
+    document.getElementById(
+      "start-mini-plan"
     );
 
 
-  const modal =
-    document.getElementById(
-      "modal-" + name
-    );
+  if(!lessons.length){
 
+    mini.innerHTML = `
 
-  if(modal){
-    modal.classList.add("show");
-  }
+      <div class="empty-state">
 
+        <div class="ico">
+          💤
+        </div>
 
-  if(name === "notatki"){
+        <div>
+          Brak lekcji tego dnia
+        </div>
 
-    document.getElementById(
-      "note-input"
-    ).value =
-      localStorage.getItem(
-        "dziennik_note"
-      ) || "";
+      </div>
 
+    `;
 
-    document.getElementById(
-      "note-status"
-    ).textContent = "";
-
-  }
-
-}
-
-
-function closeModal(event){
-
-  if(
-    event &&
-    event.target !== event.currentTarget
-  ){
     return;
+
   }
 
-  document
-    .querySelectorAll(".modal")
-    .forEach(m =>
-      m.classList.remove("show")
-    );
+
+  mini.innerHTML =
+    lessons.map(l => `
+
+      <div class="mini-lesson">
+
+        <div class="mini-num">
+          ${l.n}
+        </div>
+
+        <div class="mini-time">
+          ${l.start}<br>
+          ${l.end}
+        </div>
+
+        <div class="mini-info">
+
+          <b>
+            ${l.subj}
+          </b>
+
+          <span>
+            Sala ${l.room} · ${l.teacher}
+          </span>
+
+        </div>
+
+      </div>
+
+    `).join("");
 
 }
 
 
-function saveNote(){
+/* =====================================================
+   RENDEROWANIE PLANU
+===================================================== */
 
-  const value =
-    document
-      .getElementById("note-input")
-      .value
-      .trim();
+function renderPlan(){
 
+  const lessons = getLessons(currentDate);
 
-  localStorage.setItem(
-    "dziennik_note",
-    value
-  );
-
-
-  document.getElementById(
-    "note-status"
-  ).textContent =
-    value
-      ? "Notatka została zapisana."
-      : "Notatka została usunięta.";
-
-}
-
-
-/* =========================
-   RENDEROWANIE DNIA
-========================= */
-
-function renderDay(){
-
-  const day = days[dayIndex];
-
-
-  /* START */
-
-  renderStart();
-
-
-  /* PLAN */
 
   document.getElementById(
     "plan-day-label"
   ).textContent =
-    day.label;
+    formatDate(currentDate);
 
 
-  document.getElementById(
-    "plan-list"
-  ).innerHTML =
-    day.lessons.map(l => `
+  const list =
+    document.getElementById(
+      "plan-list"
+    );
+
+
+  if(!lessons.length){
+
+    list.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="ico">
+          💤
+        </div>
+
+        <div>
+          Brak lekcji tego dnia
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    lessons.map(l => `
 
       <div class="lesson-card">
 
@@ -1993,31 +1775,72 @@ function renderDay(){
 
     `).join("");
 
+}
 
-  /* FREKWENCJA */
+
+/* =====================================================
+   FREKWENCJA
+===================================================== */
+
+function renderAttendance(){
+
+  const lessons = getLessons(currentDate);
+
 
   document.getElementById(
     "att-day-label"
   ).textContent =
-    day.label;
+    formatDate(currentDate);
 
 
   document.getElementById(
     "att-total"
   ).textContent =
-    day.lessons.length;
+    lessons.length;
 
 
   document.getElementById(
     "att-present"
   ).textContent =
-    day.lessons.length;
+    lessons.length;
 
 
   document.getElementById(
-    "att-list"
-  ).innerHTML =
-    day.lessons.map(l => `
+    "att-absent"
+  ).textContent = 0;
+
+
+  const list =
+    document.getElementById(
+      "att-list"
+    );
+
+
+  if(!lessons.length){
+
+    list.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="ico">
+          💤
+        </div>
+
+        <div>
+          Brak lekcji tego dnia
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    lessons.map(l => `
 
       <div class="att-lesson">
 
@@ -2057,54 +1880,47 @@ function renderDay(){
 }
 
 
-/* =========================
-   ZMIANA DATY
-========================= */
+/* =====================================================
+   WSZYSTKO RAZEM
+===================================================== */
 
-function changeDay(delta){
+function renderAll(){
 
-  /*
-    Zwiększamy albo zmniejszamy
-    indeks aktualnego dnia.
-  */
+  renderStart();
 
-  dayIndex += delta;
+  renderPlan();
 
-
-  /*
-    Jeśli przejdziemy za piątek,
-    wracamy do poniedziałku.
-  */
-
-  if(dayIndex >= days.length){
-    dayIndex = 0;
-  }
-
-
-  /*
-    Jeśli cofniemy się przed poniedziałek,
-    przechodzimy na piątek.
-  */
-
-  if(dayIndex < 0){
-    dayIndex = days.length - 1;
-  }
-
-
-  /*
-    Odświeżenie całego interfejsu.
-    Dzięki temu Plan, Frekwencja
-    i Start pokazują ten sam dzień.
-  */
-
-  renderDay();
+  renderAttendance();
 
 }
 
 
-/* =========================
+/* =====================================================
+   ZMIANA PRAWDZIWEJ DATY
+===================================================== */
+
+function changeDay(delta){
+
+  /*
+    Tutaj NIE MA już żadnego dayIndex.
+
+    Data przesuwa się normalnie:
+    11 → 12 → 13 → 14 → 15 → ...
+  */
+
+  currentDate.setDate(
+    currentDate.getDate() + delta
+  );
+
+
+  renderAll();
+
+}
+
+
+/* =====================================================
    PRZEŁĄCZANIE WIDOKÓW
-========================= */
+===================================================== */
 
 function showView(name){
 
@@ -2127,7 +1943,9 @@ function showView(name){
 
 
   document
-    .querySelectorAll("nav.bottom button")
+    .querySelectorAll(
+      "nav.bottom button"
+    )
     .forEach(b =>
       b.classList.remove("active")
     );
@@ -2169,11 +1987,80 @@ function showView(name){
 }
 
 
-/* =========================
-   START APLIKACJI
-========================= */
+/* =====================================================
+   MODALE
+===================================================== */
 
-renderDay();
+function openModal(name){
+
+  const modal =
+    document.getElementById(
+      "modal-" + name
+    );
+
+
+  if(modal){
+    modal.classList.add("show");
+  }
+
+
+  if(name === "notatki"){
+
+    document.getElementById(
+      "note-input"
+    ).value =
+      localStorage.getItem(
+        "dziennik_note"
+      ) || "";
+
+  }
+
+}
+
+
+function closeModal(){
+
+  document
+    .querySelectorAll(".modal")
+    .forEach(m =>
+      m.classList.remove("show")
+    );
+
+}
+
+
+/* =====================================================
+   NOTATKI
+===================================================== */
+
+function saveNote(){
+
+  const value =
+    document
+      .getElementById("note-input")
+      .value
+      .trim();
+
+
+  localStorage.setItem(
+    "dziennik_note",
+    value
+  );
+
+
+  document.getElementById(
+    "note-status"
+  ).textContent =
+    "Notatka została zapisana.";
+
+}
+
+
+/* =====================================================
+   START APLIKACJI
+===================================================== */
+
+renderAll();
 
 </script>
 
