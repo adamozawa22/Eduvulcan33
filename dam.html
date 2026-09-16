@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel administracyjny – Dziennik</title>
+<style>
+/* FRUTIGER AERO 2006-2009: intentionally confusing admin UI */
+*{box-sizing:border-box}
+html,body{min-height:100%;}
+body{margin:0;color:#083b55;font-family:"Trebuchet MS","Tahoma",Arial,sans-serif;background:#7bd7ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.35'%3E%3Cellipse cx='30' cy='50' rx='55' ry='18'/%3E%3Cellipse cx='140' cy='125' rx='70' ry='22'/%3E%3C/g%3E%3C/svg%3E") repeat;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% -10%,rgba(255,255,255,.95),rgba(255,255,255,0) 36%),linear-gradient(180deg,rgba(255,255,255,.15),rgba(0,120,170,.15));z-index:-1}
+.wrap{width:94%;max-width:1180px;margin:18px auto;padding:10px;background:linear-gradient(#eaffff,#8edfff 8%,#d7fbff 55%,#78cce9);border:4px ridge #eaffff;border-radius:22px;box-shadow:0 3px 0 #3389a8,0 15px 35px rgba(0,70,100,.35),inset 0 0 25px white}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;padding:10px 15px;border:3px outset #c8f7ff;border-radius:15px;background:linear-gradient(#faffff,#5fc8ee 48%,#e7ffff);box-shadow:inset 0 0 10px white,0 2px 5px #4a9db7}
+.top h1{margin:0;color:#005b7d;font-size:27px;text-shadow:1px 1px white,0 2px 2px #73b9cc}.top span{color:#17617b;font-size:12px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(215,249,255,.95) 45%,rgba(151,222,241,.96));border:3px outset #dfffff;border-radius:14px;padding:14px;margin-bottom:11px;box-shadow:inset 0 0 12px white,0 2px 7px rgba(0,70,100,.28);position:relative;overflow:hidden}
+.card:after{content:"";position:absolute;right:-35px;top:-55px;width:180px;height:100px;background:rgba(255,255,255,.5);transform:rotate(22deg);border-radius:50%;pointer-events:none}
+h2{font-size:18px;color:#00678a;margin:0 0 10px;text-shadow:1px 1px white}
+.tabs{display:flex;gap:4px;margin-bottom:8px;overflow:auto;padding:3px;background:linear-gradient(#65c9ed,#bff5ff);border:2px inset #fff;border-radius:8px}
+.tab,.day-tab,button.primary,button.secondary{font-family:inherit;font-weight:bold;cursor:pointer;text-shadow:1px 1px #fff}
+.tab{padding:7px 13px;border:3px outset #dfffff;border-radius:8px;background:linear-gradient(#fff,#9be6ff 45%,#38addb);color:#005d7b;white-space:nowrap;box-shadow:inset 0 0 6px white}
+.tab:hover{filter:brightness(1.08)}.tab.active{background:linear-gradient(#ffffcf,#eaff68 45%,#83c92e);color:#315900;border-color:#efffbe}
+.panel{display:none}.panel.active{display:block}
+.day-tabs{display:flex;gap:4px;overflow:auto;margin-bottom:10px;padding:3px;background:rgba(255,255,255,.6);border-radius:7px}
+.day-tab{flex:1;min-width:105px;padding:8px;border:3px outset #dffcff;border-radius:7px;background:linear-gradient(#fff,#b9f4ff 45%,#6dc8e6);color:#075b78}.day-tab.active{background:linear-gradient(#ffffd5,#f5ff71 45%,#94d83a);color:#315900}
+.schedule{display:grid;grid-template-columns:78px repeat(5,minmax(120px,1fr));gap:4px;min-width:700px}.schedule-head{font-size:11px;color:#14647b;padding:5px;text-align:center}
+.lesson,.att-cell{min-height:82px;padding:7px;border:3px outset #e8ffff;border-radius:9px;background:linear-gradient(145deg,#faffff,#a9ecff 55%,#48b5d9);color:#064a65;cursor:pointer;box-shadow:inset 0 0 9px white,0 2px 3px rgba(0,80,110,.2)}
+.lesson:hover,.att-cell:hover{transform:scale(1.015);background:linear-gradient(145deg,#fff,#eaffaa,#75ce42)}
+.lesson .num{font-size:11px;color:#397287}.lesson .subject{font-weight:bold;margin-top:6px;color:#00597a}.lesson .meta{font-size:10px;color:#397287;margin-top:4px}.lesson .meta b{color:#07506a}
+.timecell{display:flex;align-items:center;justify-content:center;color:#0a617c;font-size:11px;border:3px inset #e8ffff;border-radius:9px;background:linear-gradient(#eaffff,#8bd8ef);box-shadow:inset 0 0 7px white}
+.att-grid{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:5px;min-width:700px}.att-cell{min-height:82px}.att-cell.present{background:linear-gradient(#faffff,#a9ffce,#5adf87)}.att-cell.absent{background:linear-gradient(#fff,#ffc0bd,#ef6f68)}.att-cell.late{background:linear-gradient(#fff,#fff4a5,#efca45)}.att-cell .status{font-weight:bold;font-size:13px;color:#07506a}.att-cell .sub{font-size:10px;color:#397287;margin-top:4px}
+.modal{position:fixed;inset:0;background:rgba(0,120,170,.38);display:none;align-items:center;justify-content:center;padding:12px;z-index:20}.modal.show{display:flex}.modal-box{width:min(520px,100%);background:linear-gradient(#ffffff,#bff3ff 40%,#63c5e4);border:5px outset #eaffff;border-radius:18px;padding:16px;box-shadow:0 8px 35px rgba(0,70,100,.5),inset 0 0 15px white}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.modal-head h3{margin:0;color:#006282;text-shadow:1px 1px white}.close{width:29px;height:29px;border:3px outset #eaffff;border-radius:50%;background:linear-gradient(#fff,#ff9d9d,#e64e4e);color:#7d0000;font-size:18px;cursor:pointer}
+label{display:block;font-size:11px;color:#14617a;margin:8px 0 4px;font-weight:bold}input,select{width:100%;background:linear-gradient(#fff,#e9fdff);color:#064a65;border:3px inset #c4f6ff;border-radius:5px;padding:8px;outline:none}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+button.primary{border:3px outset #eaffff;border-radius:7px;padding:8px 13px;background:linear-gradient(#fff,#efff85 45%,#87c52c);color:#315900}.primary:active,.secondary:active,.tab:active,.day-tab:active{border-style:inset}button.secondary{border:3px outset #eaffff;border-radius:7px;padding:8px 13px;background:linear-gradient(#fff,#aeeeff 45%,#39a8d4);color:#07556f}
+.status-msg{min-height:18px;color:#21677c;font-size:11px;margin-top:8px}.hint{font-size:10px;color:#21677c}.teacher-box{margin-top:10px;padding:11px;background:linear-gradient(#f8ffff,#a9eaff);border:3px inset #eaffff;border-radius:9px;box-shadow:inset 0 0 10px white}.teacher-box h4{margin:0 0 8px;font-size:12px;color:#07566e}.check-row{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12px;color:#07566e}.check-row input{width:auto}.sub-wrap{display:none;margin-top:8px}.sub-wrap.show{display:block}.login{max-width:430px;margin:70px auto}.login h1{margin-top:0}.auto-hint{font-size:10px;margin-top:4px}.auto-hint.ok{color:#16833e}.auto-hint.warn{color:#a16b00}.teacher-row{display:flex;align-items:center;gap:9px;padding:9px;background:linear-gradient(#fff,#b5edff,#68c6e4);border:3px outset #eaffff;border-radius:8px;margin-bottom:6px}.teacher-row .tr-subject{font-weight:bold;flex:1;color:#07556f}.teacher-row .tr-teacher{color:#21677c;flex:1}.teacher-row .tr-actions{display:flex;gap:4px}.teacher-row .tr-actions button{padding:6px 9px;font-size:11px}
+/* deliberately weird extras */
+.top:before{content:"☁  Internet Explorer 7  •  ONLINE  •  Web 2.0  ☁";position:absolute;transform:translateY(-39px);font-size:9px;color:#fff;text-shadow:1px 1px #17617b}.top{position:relative}
+@media(max-width:800px){.wrap{width:98%;padding:6px}.schedule,.att-grid{overflow-x:auto}.form-grid{grid-template-columns:1fr}.teacher-row{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div id="loginScreen" class="login card">
+  <div style="font-size:9px;color:#2380a0">[ SYSTEM / AQUA-NET / MODULE 07 ] — kliknij właściwe miejsce, jeśli wiesz które</div>
+  <h1>☁ AquaDziennik™ // Panel administracyjny</h1>
+  <p style="color:var(--muted)">Zaloguj się, żeby edytować plan i frekwencję.</p>
+  <label>E-mail</label><input id="loginEmail" type="email">
+  <label>Hasło</label><input id="loginPassword" type="password">
+  <div class="actions"><button class="primary" onclick="login()">Zaloguj</button></div>
+  <div class="status-msg" id="loginStatus"></div>
+</div>
+
+<div id="app" class="wrap" style="display:none">
+  <div class="top">
+    <div><h1>☁ AquaDziennik™ // Panel administracyjny</h1><span>Plan lekcji i frekwencja · v0.7.3β · najlepiej działa po odświeżeniu</span></div>
+    <button class="secondary" onclick="logout()">↪ zakończ sesję (chyba)</button>
+  </div>
+
+  <div style="font-size:9px;color:#28748a;margin:3px 8px">Nawigacja: moduły ←→ → status niebieski = nie wiadomo</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchPanel('plan',this)">Plan lekcji</button>
+    <button class="tab" onclick="switchPanel('frekwencja',this)">Frekwencja</button>
+    <button class="tab" onclick="switchPanel('nauczyciele',this)">Nauczyciele</button>
+  </div>
+
+  <section id="panel-plan" class="panel active">
+    <div class="card">
+      <h2>Plan lekcji</h2>
+      <div class="day-tabs" id="planDays"></div>
+      <div style="overflow:auto"><div class="schedule" id="schedule"></div></div>
+      <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia. Nauczyciel uzupełnia się automatycznie na podstawie przypisań w zakładce „Nauczyciele”.</div>
+    </div>
+  </section>
+
+  <section id="panel-frekwencja" class="panel">
+    <div class="card">
+      <h2>Frekwencja</h2>
+      <div class="day-tabs" id="attDays"></div>
+      <div style="overflow:auto"><div class="att-grid" id="attGrid"></div></div>
+      <div class="status-msg">Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.</div>
+    </div>
+  </section>
+
+  <section id="panel-nauczyciele" class="panel">
+    <div class="card">
+      <h2>Nauczyciele przedmiotów</h2>
+      <div class="status-msg" style="margin-top:0;margin-bottom:14px">Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w planie lekcji, nauczyciel uzupełni się sam.</div>
+      <div class="form-grid">
+        <div><label>Przedmiot</label><input id="tSubject" list="subjectDatalist" placeholder="np. Matematyka"></div>
+        <div><label>Nauczyciel</label><input id="tTeacher" placeholder="np. Anna Kowalska"></div>
+      </div>
+      <datalist id="subjectDatalist"></datalist>
+      <div class="actions">
+        <button class="primary" onclick="saveTeacherMapping()">Zapisz przypisanie</button>
+        <button class="secondary" id="cancelEditTeacher" style="display:none" onclick="cancelTeacherEdit()">Anuluj edycję</button>
+      </div>
+      <div class="status-msg" id="teacherMsg"></div>
+      <div id="teacherList" style="margin-top:18px"></div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="lessonModal">
+ <div class="modal-box">
+  <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
+  <div class="form-grid">
+   <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
+   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select></div>
+   <div><div><label>Od</label><input id="mStart" type="time"></div></div>
+   <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
+   <div><label>Sala</label><input id="mRoom"></div>
+   <div>
+    <label>Nauczyciel</label>
+    <input id="mTeacher" readonly>
+    <div class="auto-hint" id="teacherHint"></div>
+   </div>
+  </div>
+  <div class="teacher-box">
+   <h4>Nieobecność nauczyciela i zastępstwo</h4>
+   <label class="check-row"><input id="mTeacherAbsent" type="checkbox" onchange="toggleSubstitute()"> Nauczyciel jest nieobecny</label>
+   <div class="sub-wrap" id="subWrap">
+    <label>Data nieobecności / zastępstwa</label><input id="mChangeDate" type="date">
+    <label>Zastępstwo</label><select id="mSubstitute"></select>
+    <label>Informacja dla ucznia</label><input id="mSubNote" placeholder="np. zastępstwo za nauczyciela">
+   </div>
+  </div>
+  <div class="actions"><button class="primary" onclick="saveLesson()">Zapisz</button><button class="secondary" onclick="deleteLesson()">Usuń lekcję</button></div>
+  <div class="status-msg" id="lessonMsg"></div>
+ </div>
+</div>
+
+<div class="modal" id="attModal">
+ <div class="modal-box">
+  <div class="modal-head"><h3 id="attModalTitle">Frekwencja</h3><button class="close" onclick="closeModal('attModal')">×</button></div>
+  <label>Status</label>
+  <select id="mAttStatus"><option value="present">Obecność</option><option value="absent">Nieobecność</option><option value="late">Spóźnienie</option></select>
+  <label>Data</label><input id="mAttDate" type="date">
+  <div class="actions"><button class="primary" onclick="saveAttendance()">Zapisz</button><button class="secondary" onclick="deleteAttendance()">Wyczyść</button></div>
+  <div class="status-msg" id="attMsg"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
+const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
+const defaultTimes=[
+ ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
+ ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
+];
+let plan=[], attendance=[], subjectTeachers=[], teacherChanges=[];
+let selectedDay=0, selectedLesson=null, selectedAtt=null, editingTeacherId=null;
+
+const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
+
+const DEFAULT_SUBJECT_TEACHERS=[
+ {subject:"Geografia",teacher:"Joanna Sosińska"},
+ {subject:"Wychowanie fizyczne",teacher:"Agnieszka Hojniak"},
+ {subject:"Fizyka",teacher:"Edyta Gaworek"},
+ {subject:"Język polski",teacher:"Joanna Ołdak"},
+ {subject:"Biologia",teacher:"Justyna Kubiak"},
+ {subject:"Wiedza o społeczeństwie",teacher:"Marta Kwiatkowska"},
+ {subject:"Edukacja zdrowotna",teacher:"Agnieszka Hojniak"},
+ {subject:"Język angielski",teacher:"Agata Lewandowska"},
+ {subject:"Historia",teacher:"Marta Kwiatkowska"},
+ {subject:"Język niemiecki",teacher:"Marta Kamińska"},
+ {subject:"MAK",teacher:"Małgorzata Jankowska"},
+ {subject:"Matematyka",teacher:"Małgorzata Jankowska"},
+ {subject:"POK",teacher:"Joanna Ołdak"},
+ {subject:"Chemia",teacher:"Małgorzata Witosławska"},
+ {subject:"Informatyka",teacher:"Piotr Antoniuk"},
+ {subject:"Edukacja dla bezpieczeństwa",teacher:"Anna Kula"},
+ {subject:"Zajęcia z wychowawcą",teacher:"Małgorzata Jankowska"},
+];
+
+function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
+async function login(){
+ try{
+  db();
+  const {error}=await sb.auth.signInWithPassword({email:loginEmail.value,password:loginPassword.value});
+  if(error)throw error;
+  showApp();
+ }catch(e){loginStatus.textContent=e.message}
+}
+async function logout(){if(sb)await sb.auth.signOut();location.reload()}
+async function showApp(){
+ const {data}=await sb.auth.getSession();
+ if(!data.session)return;
+ loginScreen.style.display="none";app.style.display="block";await loadData();
+}
+async function loadData(){
+ try{
+  db();
+  const p=await sb.from("lesson_plan").select("*").order("weekday").order("lesson_number");
+  if(p.error)throw p.error; plan=p.data||[];
+  const a=await sb.from("attendance").select("*").order("weekday").order("lesson_number");
+  if(a.error)throw a.error; attendance=a.data||[];
+  const st=await sb.from("subject_teachers").select("*").order("subject");
+  if(st.error && st.error.code !== "42P01") throw st.error;
+  subjectTeachers=st.data||[];
+  if(!subjectTeachers.length && st.error?.code !== "42P01"){
+   const seed=await sb.from("subject_teachers").insert(DEFAULT_SUBJECT_TEACHERS);
+   if(!seed.error){
+    const st2=await sb.from("subject_teachers").select("*").order("subject");
+    subjectTeachers=st2.data||[];
+   }
+  }
+  const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
+  if(tc.error && tc.error.code !== "42P01") throw tc.error;
+  teacherChanges=tc.data||[];
+  prepareSubjectOptions();prepareSubstituteOptions();prepareSubjectDatalist();
+  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();renderTeachers();
+ }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
+}
+function switchPanel(name,btn){
+ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+ document.getElementById("panel-"+name).classList.add("active");
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+}
+function renderPlanDays(){
+ planDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderPlanDays();renderSchedule()">${d}</button>`).join("");
+}
+function renderSchedule(){
+ let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
+ let max=Math.max(8,...rows.map(x=>Number(x.lesson_number)));
+ let out="";
+ for(let n=1;n<=max;n++){
+   const t=rows.find(x=>Number(x.lesson_number)===n);
+   const st=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
+   const en=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
+   out+=`<div class="timecell">${st}<br>${en}</div>`;
+   out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
+     <div class="num">${n}. lekcja</div>
+     <div class="subject">${t?esc(t.subject):'<span style="color:#555">Wolna godzina</span>'}</div>
+     <div class="meta">${t?(esc(t.room||'')+' · <b>'+esc(t.teacher||'—')+'</b>'):''}</div>
+   </div>`;
+   out+=`<div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
+   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>`;
+ }
+ schedule.innerHTML=out;
+}
+function allKnownSubjects(){
+ return [...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
+}
+function prepareSubjectOptions(){
+ mSubject.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+}
+function prepareSubjectDatalist(){
+ subjectDatalist.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">`).join("");
+}
+function prepareSubstituteOptions(){
+ const teachers=[...new Set((subjectTeachers||[]).map(x=>x.teacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pl"));
+ mSubstitute.innerHTML=`<option value="">Wybierz nauczyciela zastępującego</option>`+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+}
+function getTeacherForSubject(subject){
+ const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject||"").toLowerCase());
+ return row?.teacher||"";
+}
+function subjectChanged(){
+ const t=getTeacherForSubject(mSubject.value);
+ mTeacher.value=t;
+ updateTeacherHint(t);
+}
+function updateTeacherHint(t){
+ if(t){
+  teacherHint.textContent="Uzupełniono automatycznie na podstawie przypisania przedmiotu.";
+  teacherHint.className="auto-hint ok";
+ }else{
+  teacherHint.textContent="Brak przypisanego nauczyciela dla tego przedmiotu — dodaj go w zakładce „Nauczyciele”.";
+  teacherHint.className="auto-hint warn";
+ }
+}
+function toggleSubstitute(){
+ subWrap.classList.toggle("show",mTeacherAbsent.checked);
+}
+function getTeacherChange(lessonId){
+ const today=new Date().toISOString().slice(0,10);
+ return teacherChanges.find(x=>Number(x.lesson_plan_id)===Number(lessonId)&&x.lesson_date===today);
+}
+function openLesson(id,n){
+ selectedLesson={id,n,weekday:selectedDay};
+ const t=plan.find(x=>x.id===id);
+ lessonModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
+ prepareSubjectOptions();prepareSubstituteOptions();
+ mNum.value=t?.lesson_number||n;
+ mSubject.value=t?.subject||fallbackSubjects[0];
+ mStart.value=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
+ mEnd.value=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
+ mRoom.value=t?.room||"";
+ const autoTeacher=getTeacherForSubject(mSubject.value);
+ mTeacher.value=autoTeacher||t?.teacher||"";
+ updateTeacherHint(autoTeacher);
+ const change=t?.id?getTeacherChange(t.id):null;
+ mTeacherAbsent.checked=!!change?.teacher_absent;
+ mChangeDate.value=change?.lesson_date||new Date().toISOString().slice(0,10);
+ mSubstitute.value=change?.substitute_teacher||"";
+ mSubNote.value=change?.note||"";
+ toggleSubstitute();lessonMsg.textContent="";
+ lessonModal.classList.add("show");
+}
+async function saveLesson(){
+ try{
+  db();
+  const autoTeacher=getTeacherForSubject(mSubject.value);
+  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:autoTeacher||mTeacher.value.trim()};
+  if(!p.subject||!p.start_time||!p.end_time)throw new Error("Uzupełnij przedmiot i godziny.");
+  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p).select().single();
+  if(r.error)throw r.error;
+  const lessonId=selectedLesson.id||r.data.id;
+  const date=mChangeDate.value||new Date().toISOString().slice(0,10);
+  if(mTeacherAbsent.checked){
+    const ch={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:true,substitute_teacher:mSubstitute.value||null,note:mSubNote.value.trim()};
+    const cr=await sb.from("teacher_changes").upsert(ch,{onConflict:"lesson_plan_id,lesson_date"});
+    if(cr.error)throw cr.error;
+  }else if(lessonId){
+    const cr=await sb.from("teacher_changes").delete().eq("lesson_plan_id",lessonId).eq("lesson_date",date);
+    if(cr.error)throw cr.error;
+  }
+  closeModal("lessonModal");await loadData();
+ }catch(e){lessonMsg.textContent="Błąd: "+e.message}
+}
+async function deleteLesson(){
+ if(!selectedLesson?.id){closeModal("lessonModal");return}
+ try{db();const {error}=await sb.from("lesson_plan").delete().eq("id",selectedLesson.id);if(error)throw error;closeModal("lessonModal");await loadData()}catch(e){lessonMsg.textContent=e.message}
+}
+function renderAttDays(){
+ attDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderAttDays();renderAttendance()">${d}</button>`).join("");
+}
+function renderAttendance(){
+ let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
+ if(!rows.length){attGrid.innerHTML="<div style='color:var(--muted);padding:20px'>Brak lekcji. Najpierw dodaj plan.</div>";return}
+ let out="";
+ rows.forEach(t=>{
+  let a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===Number(t.lesson_number));
+  let cls=a?.status||"present";
+  let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
+  out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
+    <div class="status">${label}</div>
+    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${fmtTime(t.start_time)}–${fmtTime(t.end_time)}<br><b>${esc(t.teacher||'—')}</b></div>
+  </div>`;
+ });
+ attGrid.innerHTML=out;
+}
+function openAtt(n){
+ selectedAtt={weekday:selectedDay,lesson_number:n};
+ const a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===n);
+ attModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
+ mAttStatus.value=a?.status||"present";mAttDate.value=a?.lesson_date||new Date().toISOString().slice(0,10);attMsg.textContent="";
+ attModal.classList.add("show");
+}
+async function saveAttendance(){
+ try{
+  db();
+  const p={weekday:selectedAtt.weekday,lesson_number:selectedAtt.lesson_number,status:mAttStatus.value,lesson_date:mAttDate.value||null};
+  const {error}=await sb.from("attendance").upsert(p,{onConflict:"weekday,lesson_number,lesson_date"});if(error)throw error;
+  closeModal("attModal");await loadData();
+ }catch(e){attMsg.textContent="Błąd: "+e.message}
+}
+async function deleteAttendance(){
+ try{
+  db();
+  const q=sb.from("attendance").delete().eq("weekday",selectedAtt.weekday).eq("lesson_number",selectedAtt.lesson_number);
+  const {error}=await q;if(error)throw error;closeModal("attModal");await loadData();
+ }catch(e){attMsg.textContent=e.message}
+}
+
+/* ---- NAUCZYCIELE (mapowanie przedmiot -> nauczyciel) ---- */
+function renderTeachers(){
+ teacherList.innerHTML=(subjectTeachers||[]).length
+  ? subjectTeachers.map(x=>`
+    <div class="teacher-row">
+      <div class="tr-subject">${esc(x.subject)}</div>
+      <div class="tr-teacher">${esc(x.teacher)}</div>
+      <div class="tr-actions">
+        <button class="secondary" onclick="editTeacher(${x.id})">Edytuj</button>
+        <button class="secondary" onclick="removeTeacher(${x.id})">Usuń</button>
+      </div>
+    </div>`).join("")
+  : "<div style='color:var(--muted);padding:10px 0'>Brak przypisań. Dodaj pierwsze powyżej.</div>";
+}
+function editTeacher(id){
+ const row=subjectTeachers.find(x=>x.id===id);
+ if(!row)return;
+ editingTeacherId=id;
+ tSubject.value=row.subject;
+ tTeacher.value=row.teacher;
+ cancelEditTeacher.style.display="inline-block";
+ teacherMsg.textContent="";
+ tSubject.focus();
+}
+function cancelTeacherEdit(){
+ editingTeacherId=null;
+ tSubject.value="";tTeacher.value="";
+ cancelEditTeacher.style.display="none";
+ teacherMsg.textContent="";
+}
+async function saveTeacherMapping(){
+ try{
+  db();
+  const subject=tSubject.value.trim();
+  const teacher=tTeacher.value.trim();
+  if(!subject||!teacher)throw new Error("Podaj przedmiot i nauczyciela.");
+  let id=editingTeacherId;
+  if(!id){
+   const existing=subjectTeachers.find(x=>x.subject.toLowerCase()===subject.toLowerCase());
+   if(existing)id=existing.id;
+  }
+  const {error}=id
+   ? await sb.from("subject_teachers").update({subject,teacher}).eq("id",id)
+   : await sb.from("subject_teachers").insert({subject,teacher});
+  if(error)throw error;
+  cancelTeacherEdit();
+  teacherMsg.textContent="Zapisano. Przedmiot zostanie teraz automatycznie łączony z tym nauczycielem.";
+  await loadData();
+ }catch(e){teacherMsg.textContent="Błąd: "+e.message}
+}
+async function removeTeacher(id){
+ try{
+  db();
+  const {error}=await sb.from("subject_teachers").delete().eq("id",id);
+  if(error)throw error;
+  await loadData();
+ }catch(e){teacherMsg.textContent="Błąd: "+e.message}
+}
+
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fmtTime(t){return t?String(t).slice(0,5):""}
+if(sb)sb.auth.getSession().then(showApp);
+</script>
+</body>
+</html>
