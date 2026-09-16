@@ -3,344 +3,605 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel administracyjny – Dziennik</title>
+<title>Dziennik</title>
 <style>
-:root{--bg:#0d0d0f;--card:#18181b;--line:#29292e;--text:#f2f2f3;--muted:#92929a;--accent:#34d399;--danger:#f87171}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.app-shell{display:flex;min-height:100vh;max-width:1400px;margin:auto}
-.sidebar{width:240px;flex:none;background:#111114;border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.sidebar .brand{padding:6px 10px 22px;border-bottom:1px solid var(--line);margin-bottom:18px}
-.sidebar .brand b{font-size:17px;display:block}
-.sidebar .brand span{font-size:12px;color:var(--muted)}
-.side-nav{display:flex;flex-direction:column;gap:4px;flex:1}
-.side-link{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:none;border:0;color:var(--muted);font-size:14px;font-weight:600;text-align:left;cursor:pointer;width:100%}
-.side-link svg{width:19px;height:19px;flex:none}
-.side-link.active{background:#1c2e27;color:var(--accent)}
-.side-link:hover:not(.active){background:#1a1a1e;color:var(--text)}
-.sidebar .logout{margin-top:auto;padding-top:16px;border-top:1px solid var(--line)}
-.wrap{flex:1;max-width:1100px;margin:0;padding:28px 32px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.top h1{margin:0;font-size:26px}.top span{color:var(--muted)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px}
-h2{font-size:18px;margin:0 0 16px}
-.panel{display:none}.panel.active{display:block}
-.day-tabs{display:flex;gap:7px;overflow:auto;margin-bottom:18px}
-.day-tab{flex:1;min-width:110px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#111114;color:var(--muted);cursor:pointer}
-.day-tab.active{background:#253a32;color:var(--accent);border-color:#315a4a}
-.schedule{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
-.schedule-head{font-size:12px;color:var(--muted);padding:8px;text-align:center}
-.lesson{min-height:92px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;transition:.15s}
-.lesson:hover{border-color:#4b4b54;transform:translateY(-1px)}
-.lesson .num{font-size:12px;color:var(--muted)}.lesson .subject{font-weight:700;margin-top:7px}.lesson .meta{font-size:11px;color:var(--muted);margin-top:5px}.lesson .meta b{color:var(--text);font-weight:600}
-.timecell{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:14px;background:#151518}
-.att-grid{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
-.att-cell{min-height:82px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}
-.att-cell.present{border-color:#275b46}.att-cell.absent{border-color:#66383b}.att-cell.late{border-color:#6a5730}
-.att-cell .status{font-weight:700;font-size:13px}.present .status{color:var(--accent)}.absent .status{color:var(--danger)}.late .status{color:#fbbf24}
-.att-cell .sub{font-size:11px;color:var(--muted);margin-top:5px}
-.att-cell .teacher{font-size:11px;color:var(--text);margin-top:3px;font-weight:600}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
-.modal.show{display:flex}.modal-box{width:min(520px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}
-.close{width:34px;height:34px;border:0;border-radius:50%;background:#29292e;color:white;font-size:20px;cursor:pointer}
-label{display:block;font-size:12px;color:var(--muted);margin:11px 0 6px}
-input,select{width:100%;background:#111114;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.actions{display:flex;gap:8px;margin-top:18px}
-button.primary{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:#07120e;font-weight:700;cursor:pointer}
-button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292e;color:var(--text);font-weight:600;cursor:pointer}
-.status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}.hint{font-size:11px;color:var(--muted);margin-top:5px}.teacher-box{margin-top:14px;padding:14px;background:#111114;border:1px solid var(--line);border-radius:14px}.teacher-box h4{margin:0 0 10px;font-size:13px}.check-row{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;color:var(--text)}.check-row input{width:auto}.sub-wrap{display:none;margin-top:10px}.sub-wrap.show{display:block}
-.login{max-width:430px;margin:70px auto}.login h1{margin-top:0}
-@media(max-width:900px){
- .app-shell{flex-direction:column}
- .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:14px 16px;overflow-x:auto}
- .sidebar .brand{display:none}
- .side-nav{flex-direction:row}
- .side-link{white-space:nowrap}
- .sidebar .logout{margin-top:0;padding-top:0;border-top:0;margin-left:8px}
- .wrap{padding:15px}.schedule,.att-grid{grid-template-columns:62px repeat(5,minmax(115px,1fr));overflow-x:auto}
- .schedule{min-width:650px}.att-grid{min-width:650px}.card{overflow:hidden}
- .form-grid{grid-template-columns:1fr}
-}
+  :root{
+    --bg:#0d0d0f;
+    --card:#18181b;
+    --card-hover:#1f1f23;
+    --text:#f2f2f3;
+    --muted:#8c8c92;
+    --accent:#34d399;
+    --accent-dim:#1a3b30;
+    --line:#232327;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+  .phone{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  @media (min-width: 800px){
+    body{justify-content:center;}
+    .phone{
+      max-width:1180px;
+      min-height:100vh;
+      background:var(--bg);
+    }
+    header{
+      padding:30px 42px 20px;
+      border-bottom:1px solid var(--line);
+    }
+    header h1{font-size:30px;}
+    main{
+      padding:26px 42px 40px;
+      overflow-y:visible;
+    }
+    .view.active{
+      max-width:1050px;
+      margin:0 auto;
+    }
+    .hero{padding:30px;}
+    .quick-grid{grid-template-columns:repeat(2, minmax(0, 1fr));}
+    .category-grid{grid-template-columns:repeat(3, minmax(0, 1fr));}
+    .lesson-card{padding:18px 22px;}
+    .modal-box{
+      max-width:620px;
+      border-radius:24px;
+      margin:auto;
+    }
+    .modal{align-items:center;}
+    nav.bottom{
+      position:sticky;
+      left:auto;
+      bottom:auto;
+      transform:none;
+      max-width:none;
+      width:100%;
+      border-top:0;
+      border-bottom:1px solid var(--line);
+      order:-1;
+      padding:8px 36px;
+      background:rgba(13,13,15,.96);
+    }
+    nav.bottom button{
+      flex-direction:row;
+      justify-content:center;
+      gap:8px;
+      font-size:13px;
+      padding:10px 14px;
+    }
+    nav.bottom button svg{width:20px;height:20px;}
+  }
+
+  @media (min-width: 1100px){
+    .view.active{max-width:1100px;}
+    .quick-grid{grid-template-columns:repeat(2, 1fr);}
+    .hero .big{font-size:52px;}
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:28px 22px 18px;
+  }
+  header h1{
+    font-size:28px;
+    font-weight:600;
+    letter-spacing:-0.02em;
+  }
+  .avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#2a2a2e;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    font-weight:600;
+    color:var(--text);
+  }
+  main{
+    flex:1;
+    padding:0 22px 100px;
+    overflow-y:auto;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---- START ---- */
+  .hero{
+    background:linear-gradient(135deg,#16241d,#10151f);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:18px;
+  }
+  .hero .big{
+    font-size:46px;
+    font-weight:700;
+    color:var(--accent);
+    letter-spacing:-0.02em;
+  }
+  .hero .label{
+    color:var(--muted);
+    font-size:14px;
+    margin-top:4px;
+  }
+  .quick-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .quick-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px;
+  }
+  .quick-card .n{font-size:22px; font-weight:700;}
+  .quick-card .t{color:var(--muted); font-size:13px; margin-top:2px;}
+  .next-lesson{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .next-lesson .time{
+    font-size:15px;
+    color:var(--accent);
+    font-weight:600;
+    min-width:52px;
+  }
+  .next-lesson .info b{font-size:16px; display:block;}
+  .next-lesson .info span{font-size:13px; color:var(--muted);}
+  .mini-lesson{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px 14px;
+    margin-bottom:8px;
+  }
+  .mini-lesson .mini-time{
+    min-width:42px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.45;
+  }
+  .mini-lesson .mini-info{flex:1;}
+  .mini-lesson .mini-info b{font-size:14px; display:block;}
+  .mini-lesson .mini-info span{font-size:12px; color:var(--muted);}
+  .mini-lesson .mini-num{
+    font-size:13px;
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .section-title{
+    font-size:14px;
+    color:var(--muted);
+    margin:22px 0 10px;
+  }
+
+  /* ---- DAY NAV (shared by plan / frekwencja) ---- */
+  .day-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--card);
+    border-radius:16px;
+    padding:12px 8px;
+    margin-bottom:18px;
+    border:1px solid var(--line);
+  }
+  .day-nav button{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:none;
+    background:#232327;
+    color:var(--text);
+    font-size:16px;
+    cursor:pointer;
+  }
+  .day-nav button:active{background:#2c2c31;}
+  .day-nav .day-label{
+    font-weight:600;
+    font-size:15px;
+    text-align:center;
+  }
+
+  /* ---- PLAN LEKCJI ---- */
+  .lesson-card{
+    display:flex;
+    gap:16px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px 18px;
+    margin-bottom:12px;
+    align-items:flex-start;
+  }
+  .lesson-num{
+    font-size:26px;
+    font-weight:700;
+    color:var(--muted);
+    min-width:26px;
+    padding-top:2px;
+  }
+  .lesson-time{
+    font-size:13px;
+    color:var(--muted);
+    min-width:48px;
+    line-height:1.6;
+    padding-top:2px;
+  }
+  .lesson-body{flex:1;}
+  .lesson-body .subj{font-size:16px; font-weight:600;}
+  .lesson-body .meta{font-size:13px; color:var(--muted); margin-top:2px;}
+
+  /* ---- FREKWENCJA ---- */
+  .att-summary{
+    background:linear-gradient(135deg,#16241d,#10151f);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:18px;
+    text-align:center;
+  }
+  .att-summary .pct{
+    font-size:54px;
+    font-weight:700;
+    color:var(--accent);
+    letter-spacing:-0.02em;
+  }
+  .att-summary .sub{
+    color:var(--muted);
+    font-size:14px;
+    margin-top:4px;
+  }
+  .att-summary .breakdown{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+  }
+  .att-summary .breakdown div{text-align:center;}
+  .att-summary .breakdown .num{font-size:18px; font-weight:700;}
+  .att-summary .breakdown .lbl{font-size:12px; color:var(--muted);}
+
+  .att-lesson{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px 18px;
+    margin-bottom:10px;
+  }
+  .att-lesson .lesson-num{font-size:22px;}
+  .att-lesson .lesson-time{min-width:44px;}
+  .att-lesson .lesson-body{flex:1;}
+  .att-lesson .lesson-body .subj{font-size:15px; font-weight:600;}
+  .att-lesson .lesson-body .meta{font-size:12px; color:var(--muted); margin-top:1px;}
+  .status-pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .status-pill svg{width:12px; height:12px;}
+
+  /* ---- KATEGORIE ---- */
+  .category-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .category-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 16px;
+    cursor:pointer;
+    transition:transform .18s ease, background .18s ease;
+  }
+  .category-card:active{
+    transform:scale(.97);
+    background:var(--card-hover);
+  }
+  .category-card .cat-ico{
+    width:40px;
+    height:40px;
+    border-radius:13px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:12px;
+  }
+  .category-card svg{width:21px;height:21px;}
+  .category-card b{font-size:15px;display:block;}
+  .category-card span{font-size:12px;color:var(--muted);display:block;margin-top:3px;}
+
+  /* ---- DODATKOWE W WIĘCEJ ---- */
+  .more-tools{margin-top:18px;}
+  .tool-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 16px;margin-bottom:10px;cursor:pointer;}
+  .tool-row:active{background:var(--card-hover);}
+  .tool-ico{width:40px;height:40px;border-radius:13px;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
+  .tool-info{flex:1}.tool-info b{display:block;font-size:15px}.tool-info span{display:block;font-size:12px;color:var(--muted);margin-top:3px;}
+  .tool-arrow{color:var(--muted);font-size:20px;}
+  .more-note{background:linear-gradient(135deg,#16241d,#10151f);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px;}
+  .more-note b{font-size:15px}.more-note p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:6px;}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;z-index:20;}
+  .modal.show{display:flex}.modal-box{width:100%;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:22px;max-height:80vh;overflow:auto;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{font-size:20px;}
+  .close-btn{width:34px;height:34px;border:0;border-radius:50%;background:#232327;color:var(--text);font-size:20px;cursor:pointer;}
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .setting-row:last-child{border-bottom:0}.toggle{width:44px;height:24px;border-radius:999px;background:#303035;position:relative;cursor:pointer;transition:.2s;}
+  .toggle::after{content:"";position:absolute;width:18px;height:18px;top:3px;left:3px;border-radius:50%;background:#aaa;transition:.2s;}
+  .toggle.on{background:var(--accent-dim)}.toggle.on::after{left:23px;background:var(--accent);}
+  .stat-box{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-item{background:#121216;border:1px solid var(--line);border-radius:16px;padding:15px;}
+  .stat-item b{font-size:22px}.stat-item span{display:block;color:var(--muted);font-size:12px;margin-top:3px;}
+  .note-input{width:100%;min-height:110px;resize:vertical;background:#121216;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:13px;font:inherit;font-size:14px;outline:none;}
+  .save-note{width:100%;margin-top:10px;padding:12px;border:0;border-radius:13px;background:var(--accent);color:#08120e;font-weight:700;cursor:pointer;}
+
+  /* ---- WIADOMOŚCI ---- */
+  .message-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:12px;
+  }
+  .message-category{
+    display:inline-flex;
+    align-items:center;
+    background:var(--accent-dim);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:600;
+    padding:6px 10px;
+    border-radius:999px;
+    margin-bottom:12px;
+  }
+  .message-card h2{
+    font-size:17px;
+    margin-bottom:7px;
+  }
+  .message-card p{
+    font-size:14px;
+    line-height:1.55;
+    color:var(--muted);
+  }
+  .message-date{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:12px;
+  }
+
+  /* ---- OCENY (placeholder prosty) ---- */
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+  }
+  .empty-state .ico{font-size:40px; margin-bottom:12px;}
+  .empty-state .t{font-size:15px;}
+
+  /* ---- BOTTOM NAV ---- */
+  nav.bottom{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:430px;
+    background:rgba(13,13,15,0.92);
+    backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+  }
+  nav.bottom button{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--muted);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-size:11px;
+    font-family:inherit;
+    padding:6px 0;
+    cursor:pointer;
+  }
+  nav.bottom button svg{width:22px; height:22px;}
+  nav.bottom button.active{color:var(--accent);}
 </style>
 </head>
 <body>
-<div id="loginScreen" class="login card">
-  <h1>Panel administracyjny</h1>
-  <p style="color:var(--muted)">Zaloguj się, żeby edytować plan i frekwencję.</p>
-  <label>E-mail</label><input id="loginEmail" type="email">
-  <label>Hasło</label><input id="loginPassword" type="password">
-  <div class="actions"><button class="primary" onclick="login()">Zaloguj</button></div>
-  <div class="status-msg" id="loginStatus"></div>
-</div>
+<div class="phone">
 
-<div id="app" class="app-shell" style="display:none">
+  <header>
+    <h1 id="header-title">Start</h1>
+    <div class="avatar">AZ</div>
+  </header>
 
-  <aside class="sidebar">
-    <div class="brand"><b>Dziennik</b><span>Panel administracyjny</span></div>
-    <nav class="side-nav">
-      <button class="side-link active" data-panel="plan" onclick="switchPanel('plan',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-        Plan lekcji
-      </button>
-      <button class="side-link" data-panel="frekwencja" onclick="switchPanel('frekwencja',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-        Frekwencja
-      </button>
-    </nav>
-    <div class="logout"><button class="secondary" style="width:100%" onclick="logout()">Wyloguj</button></div>
-  </aside>
+  <main>
 
-  <div class="wrap">
-    <div class="top">
-      <div><h1 id="pageTitle">Plan lekcji</h1><span>Zarządzaj planem i frekwencją</span></div>
+    <!-- START -->
+    <section class="view active" id="view-start">
+      <div class="hero">
+        <div class="big">100%</div>
+        <div class="label">frekwencja w tym semestrze</div>
+      </div>
+
+      <div class="section-title" style="margin-top:0">Dzisiaj</div>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="n" id="start-lesson-count">0</div>
+          <div class="t">lekcji</div>
+        </div>
+        <div class="quick-card">
+          <div class="n" id="start-end-time">—</div>
+          <div class="t">koniec zajęć</div>
+        </div>
+      </div>
+
+      <div class="section-title">Najbliższa lekcja</div>
+      <div class="next-lesson" id="start-next-lesson">
+        <div class="time">—</div>
+        <div class="info">
+          <b>Brak zajęć</b>
+          <span>Na dzisiaj</span>
+        </div>
+      </div>
+
+      <div class="section-title">Mini plan lekcji</div>
+      <div id="start-mini-plan"></div>
+    </section>
+
+    <!-- WIĘCEJ -->
+    <section class="view" id="view-wiecej">
+      <div class="section-title" style="margin-top:0">Kategorie</div>
+      <div class="category-grid">
+        <div class="category-card" onclick="showView('start')"><div class="cat-ico">⌂</div><b>Start</b><span>Podsumowanie</span></div>
+        <div class="category-card" onclick="showView('wiadomosci')"><div class="cat-ico">💬</div><b>Wiadomości</b><span>Komunikaty</span></div>
+        <div class="category-card" onclick="showView('oceny')"><div class="cat-ico">📘</div><b>Oceny</b><span>Twoje oceny</span></div>
+        <div class="category-card" onclick="showView('plan')"><div class="cat-ico">📅</div><b>Plan lekcji</b><span>Zajęcia</span></div>
+        <div class="category-card" onclick="showView('frekwencja')"><div class="cat-ico">✓</div><b>Frekwencja</b><span>Obecności</span></div>
+        <div class="category-card" onclick="showView('wiecej')"><div class="cat-ico">•••</div><b>Więcej</b><span>Wszystkie kategorie</span></div>
+      </div>
+
+      <div class="section-title">Narzędzia</div>
+      <div class="more-tools">
+        <div class="tool-row" onclick="openModal('statystyki')"><div class="tool-ico">📊</div><div class="tool-info"><b>Statystyki</b><span>Podsumowanie tygodnia i frekwencji</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('notatki')"><div class="tool-ico">📝</div><div class="tool-info"><b>Notatki</b><span>Zapisz własne przypomnienie</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('ustawienia')"><div class="tool-ico">⚙️</div><div class="tool-info"><b>Ustawienia</b><span>Personalizacja dziennika</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('pomoc')"><div class="tool-ico">❔</div><div class="tool-info"><b>Pomoc</b><span>Informacje o funkcjach aplikacji</span></div><div class="tool-arrow">›</div></div>
+      </div>
+
+      <div class="more-note"><b>💡 Szybki dostęp</b><p>Wszystkie najważniejsze funkcje dziennika masz teraz w jednym miejscu.</p></div>
+    </section>
+
+    <!-- WIADOMOŚCI -->
+    <section class="view" id="view-wiadomosci">
+      <div class="message-card">
+        <div class="message-category">Awaria</div>
+        <h2>Problemy z wiadomościami</h2>
+        <p>
+          Z przyczyn awarii chwilowo brak możliwości odczytu oraz wysyłania wiadomości.
+          Prosimy spróbować ponownie później.
+        </p>
+        <div class="message-date">Aktualnie</div>
+      </div>
+    </section>
+
+    <!-- OCENY -->
+    <section class="view" id="view-oceny">
+      <div class="empty-state">
+        <div class="ico">📘</div>
+        <div class="t">Brak nowych ocen</div>
+      </div>
+    </section>
+
+    <!-- PLAN LEKCJI -->
+    <section class="view" id="view-plan">
+      <div class="day-nav">
+        <button onclick="changeDay(-1)">‹</button>
+        <div class="day-label" id="plan-day-label"></div>
+        <button onclick="changeDay(1)">›</button>
+      </div>
+      <div id="plan-list"></div>
+    </section>
+
+    <!-- FREKWENCJA -->
+    <section class="view" id="view-frekwencja">
+      <div class="att-summary">
+        <div class="pct">100%</div>
+        <div class="sub">obecności</div>
+        <div class="breakdown">
+          <div><div class="num" id="att-total"></div><div class="lbl">Lekcje</div></div>
+          <div><div class="num" style="color:var(--accent)" id="att-present"></div><div class="lbl">Obecności</div></div>
+          <div><div class="num">0</div><div class="lbl">Nieobecności</div></div>
+        </div>
+      </div>
+      <div class="day-nav">
+        <button onclick="changeDay(-1)">‹</button>
+        <div class="day-label" id="att-day-label"></div>
+        <button onclick="changeDay(1)">›</button>
+      </div>
+      <div id="att-list"></div>
+    </section>
+
+  </main>
+
+  <div class="modal" id="modal-statystyki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Statystyki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="stat-box">
+        <div class="stat-item"><b>100%</b><span>Frekwencja</span></div>
+        <div class="stat-item"><b>35</b><span>Lekcje w tygodniu</span></div>
+        <div class="stat-item"><b>0</b><span>Nieobecności</span></div>
+        <div class="stat-item"><b>5</b><span>Dni zajęć</span></div>
+      </div>
     </div>
-
-    <section id="panel-plan" class="panel active">
-      <div class="card">
-        <h2>Plan lekcji</h2>
-        <div class="day-tabs" id="planDays"></div>
-        <div style="overflow:auto"><div class="schedule" id="schedule"></div></div>
-        <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia.</div>
-      </div>
-    </section>
-
-    <section id="panel-frekwencja" class="panel">
-      <div class="card">
-        <h2>Frekwencja</h2>
-        <div class="day-tabs" id="attDays"></div>
-        <div style="overflow:auto"><div class="att-grid" id="attGrid"></div></div>
-        <div class="status-msg">Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.</div>
-      </div>
-    </section>
   </div>
-</div>
-
-<div class="modal" id="lessonModal">
- <div class="modal-box">
-  <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
-  <div class="form-grid">
-   <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
-   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select><div class="hint">Po wyborze przedmiotu nauczyciel uzupełni się automatycznie.</div></div>
-   <div><div><label>Od</label><input id="mStart" type="time"></div></div>
-   <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
-   <div><label>Sala</label><input id="mRoom"></div>
-   <div><label>Nauczyciel</label><input id="mTeacher" readonly></div>
+  <div class="modal" id="modal-notatki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Notatki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <textarea class="note-input" id="note-input" placeholder="Np. sprawdzian z matematyki w piątek..."></textarea>
+      <button class="save-note" onclick="saveNote()">Zapisz notatkę</button><p id="note-status" style="font-size:12px;color:var(--muted);margin-top:10px;"></p>
+    </div>
   </div>
-  <div class="teacher-box">
-   <h4>Nieobecność nauczyciela i zastępstwo</h4>
-   <label class="check-row"><input id="mTeacherAbsent" type="checkbox" onchange="toggleSubstitute()"> Nauczyciel jest nieobecny</label>
-   <div class="sub-wrap" id="subWrap">
-    <label>Data nieobecności / zastępstwa</label><input id="mChangeDate" type="date">
-    <label>Zastępstwo</label><select id="mSubstitute"></select>
-    <label>Informacja dla ucznia</label><input id="mSubNote" placeholder="np. zastępstwo za nauczyciela">
-   </div>
+  <div class="modal" id="modal-ustawienia" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Ustawienia</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="setting-row"><span>Powiadomienia</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Pokazuj mini plan</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Przypomnienia o lekcjach</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
   </div>
-  <div class="actions"><button class="primary" onclick="saveLesson()">Zapisz</button><button class="secondary" onclick="deleteLesson()">Usuń lekcję</button></div>
-  <div class="status-msg" id="lessonMsg"></div>
- </div>
-</div>
+  <div class="modal" id="modal-pomoc" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Pomoc</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6;">Korzystaj z dolnej nawigacji, aby szybko przełączać się między Startem, Wiadomościami, Ocenami, Planem i Frekwencją. W „Więcej” znajdziesz dodatkowe narzędzia i ustawienia.</p>
+    </div>
+  </div>
 
-<div class="modal" id="attModal">
- <div class="modal-box">
-  <div class="modal-head"><h3 id="attModalTitle">Frekwencja</h3><button class="close" onclick="closeModal('attModal')">×</button></div>
-  <label>Status</label>
-  <select id="mAttStatus"><option value="present">Obecność</option><option value="absent">Nieobecność</option><option value="late">Spóźnienie</option></select>
-  <label>Data</label><input id="mAttDate" type="date">
-  <div class="actions"><button class="primary" onclick="saveAttendance()">Zapisz</button><button class="secondary" onclick="deleteAttendance()">Wyczyść</button></div>
-  <div class="status-msg" id="attMsg"></div>
- </div>
-</div>
+  <nav class="bottom">
+    <button class="active" data-view="start" onclick="showView('start')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
+      Start
+    </button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
-const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
-const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
-const defaultTimes=[
- ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
- ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
-];
-let plan=[], attendance=[], subjectTeachers=[], teacherChanges=[];
-let selectedDay=0, selectedLesson=null, selectedAtt=null;
-
-const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
-
-function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
-async function login(){
- try{
-  db();
-  const {error}=await sb.auth.signInWithPassword({email:loginEmail.value,password:loginPassword.value});
-  if(error)throw error;
-  showApp();
- }catch(e){loginStatus.textContent=e.message}
-}
-async function logout(){if(sb)await sb.auth.signOut();location.reload()}
-async function showApp(){
- const {data}=await sb.auth.getSession();
- if(!data.session)return;
- loginScreen.style.display="none";app.style.display="flex";await loadData();
-}
-async function loadData(){
- try{
-  db();
-  const p=await sb.from("lesson_plan").select("*").order("weekday").order("lesson_number");
-  if(p.error)throw p.error; plan=p.data||[];
-  const a=await sb.from("attendance").select("*").order("weekday").order("lesson_number");
-  if(a.error)throw a.error; attendance=a.data||[];
-  const st=await sb.from("subject_teachers").select("*").order("subject");
-  if(st.error && st.error.code !== "42P01") throw st.error;
-  subjectTeachers=st.data||[];
-  const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
-  if(tc.error && tc.error.code !== "42P01") throw tc.error;
-  teacherChanges=tc.data||[];
-  prepareSubjectOptions();prepareSubstituteOptions();
-  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();
- }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
-}
-function switchPanel(name,btn){
- document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
- document.getElementById("panel-"+name).classList.add("active");
- document.querySelectorAll(".side-link").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
- document.getElementById("pageTitle").textContent = name==="plan" ? "Plan lekcji" : "Frekwencja";
-}
-function renderPlanDays(){
- planDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderPlanDays();renderSchedule()">${d}</button>`).join("");
-}
-function renderSchedule(){
- let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
- let max=Math.max(8,...rows.map(x=>Number(x.lesson_number)));
- let out="";
- for(let n=1;n<=max;n++){
-   const t=rows.find(x=>Number(x.lesson_number)===n);
-   const st=t?.start_time||defaultTimes[n-1]?.[0]||"";
-   const en=t?.end_time||defaultTimes[n-1]?.[1]||"";
-   out+=`<div class="timecell">${st}<br>${en}</div>`;
-   out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
-     <div class="num">${n}. lekcja</div>
-     <div class="subject">${t?esc(t.subject):'<span style="color:#555">Wolna godzina</span>'}</div>
-     <div class="meta">${t?(esc(t.room||'')+' · <b>'+esc(t.teacher||'—')+'</b>'):''}</div>
-   </div>`;
-   out+=`<div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>`;
- }
- schedule.innerHTML=out;
-}
-function prepareSubjectOptions(){
- const subjects=[...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
- mSubject.innerHTML=subjects.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
-}
-function prepareSubstituteOptions(){
- const teachers=[...new Set((subjectTeachers||[]).map(x=>x.teacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pl"));
- mSubstitute.innerHTML=`<option value="">Wybierz nauczyciela zastępującego</option>`+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
-}
-function getTeacherForSubject(subject){
- const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject).toLowerCase());
- return row?.teacher||"";
-}
-function subjectChanged(){
- const t=getTeacherForSubject(mSubject.value);
- if(t) mTeacher.value=t;
-}
-function toggleSubstitute(){
- subWrap.classList.toggle("show",mTeacherAbsent.checked);
-}
-function getTeacherChange(lessonId){
- const today=new Date().toISOString().slice(0,10);
- return teacherChanges.find(x=>Number(x.lesson_plan_id)===Number(lessonId)&&x.lesson_date===today);
-}
-function openLesson(id,n){
- selectedLesson={id,n,weekday:selectedDay};
- const t=plan.find(x=>x.id===id);
- lessonModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
- prepareSubjectOptions();prepareSubstituteOptions();
- mNum.value=t?.lesson_number||n;
- mSubject.value=t?.subject||fallbackSubjects[0];
- mStart.value=t?.start_time||defaultTimes[n-1]?.[0]||"";
- mEnd.value=t?.end_time||defaultTimes[n-1]?.[1]||"";
- mRoom.value=t?.room||"";mTeacher.value=t?.teacher||getTeacherForSubject(mSubject.value);
- const change=t?.id?getTeacherChange(t.id):null;
- mTeacherAbsent.checked=!!change?.teacher_absent;
- mChangeDate.value=change?.lesson_date||new Date().toISOString().slice(0,10);
- mSubstitute.value=change?.substitute_teacher||"";
- mSubNote.value=change?.note||"";
- toggleSubstitute();lessonMsg.textContent="";
- lessonModal.classList.add("show");
-}
-async function saveLesson(){
- try{
-  db();
-  const autoTeacher=getTeacherForSubject(mSubject.value);
-  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:autoTeacher||mTeacher.value.trim()};
-  if(!p.subject||!p.start_time||!p.end_time)throw new Error("Uzupełnij przedmiot i godziny.");
-  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p).select().single();
-  if(r.error)throw r.error;
-  const lessonId=selectedLesson.id||r.data.id;
-  const date=mChangeDate.value||new Date().toISOString().slice(0,10);
-  if(mTeacherAbsent.checked){
-    const ch={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:true,substitute_teacher:mSubstitute.value||null,note:mSubNote.value.trim()};
-    const cr=await sb.from("teacher_changes").upsert(ch,{onConflict:"lesson_plan_id,lesson_date"});
-    if(cr.error)throw cr.error;
-  }else if(lessonId){
-    const cr=await sb.from("teacher_changes").delete().eq("lesson_plan_id",lessonId).eq("lesson_date",date);
-    if(cr.error)throw cr.error;
-  }
-  closeModal("lessonModal");await loadData();
- }catch(e){lessonMsg.textContent="Błąd: "+e.message}
-}
-async function deleteLesson(){
- if(!selectedLesson?.id){closeModal("lessonModal");return}
- try{db();const {error}=await sb.from("lesson_plan").delete().eq("id",selectedLesson.id);if(error)throw error;closeModal("lessonModal");await loadData()}catch(e){lessonMsg.textContent=e.message}
-}
-function renderAttDays(){
- attDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderAttDays();renderAttendance()">${d}</button>`).join("");
-}
-function renderAttendance(){
- let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
- if(!rows.length){attGrid.innerHTML="<div style='color:var(--muted);padding:20px'>Brak lekcji. Najpierw dodaj plan.</div>";return}
- let out="";
- rows.forEach(t=>{
-  let a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===Number(t.lesson_number));
-  let cls=a?.status||"present";
-  let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
-  out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
-    <div class="status">${label}</div>
-    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${t.start_time}–${t.end_time}</div>
-    <div class="teacher">${esc(t.teacher||'—')}</div>
-  </div>`;
- });
- attGrid.innerHTML=out;
-}
-function openAtt(n){
- selectedAtt={weekday:selectedDay,lesson_number:n};
- const a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===n);
- attModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
- mAttStatus.value=a?.status||"present";mAttDate.value=a?.lesson_date||new Date().toISOString().slice(0,10);attMsg.textContent="";
- attModal.classList.add("show");
-}
-async function saveAttendance(){
- try{
-  db();
-  const p={weekday:selectedAtt.weekday,lesson_number:selectedAtt.lesson_number,status:mAttStatus.value,lesson_date:mAttDate.value||null};
-  const {error}=await sb.from("attendance").upsert(p,{onConflict:"weekday,lesson_number,lesson_date"});if(error)throw error;
-  closeModal("attModal");await loadData();
- }catch(e){attMsg.textContent="Błąd: "+e.message}
-}
-async function deleteAttendance(){
- try{
-  db();
-  const q=sb.from("attendance").delete().eq("weekday",selectedAtt.weekday).eq("lesson_number",selectedAtt.lesson_number);
-  const {error}=await q;if(error)throw error;closeModal("attModal");await loadData();
- }catch(e){attMsg.textContent=e.message}
-}
-function closeModal(id){document.getElementById(id).classList.remove("show")}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-if(sb)sb.auth.getSession().then(showApp);
-</script>
-</body>
-</html>
+    <button data-view="wiadomosci" onclick="showView('wiadomosci')">
+     
