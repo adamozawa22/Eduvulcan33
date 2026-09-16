@@ -399,6 +399,50 @@
   nav.bottom button svg{width:21px; height:21px;}
   nav.bottom button.active{color:#fff; background:var(--accent-dim);}
   nav.bottom button.active svg{color:var(--accent);}
+
+  /* ---- DESKTOP / KOMPUTER ---- */
+  @media (min-width: 900px){
+    body{
+      align-items:center;
+      padding:40px 20px;
+    }
+    .phone{
+      max-width:1140px;
+      width:100%;
+      height:calc(100vh - 80px);
+      min-height:600px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      box-shadow:0 24px 70px rgba(0,0,0,.55);
+    }
+    nav.bottom{
+      width:230px;
+      height:100%;
+      padding:32px 16px;
+      gap:6px;
+    }
+    nav.bottom button{
+      flex-direction:row;
+      justify-content:flex-start;
+      gap:14px;
+      font-size:14.5px;
+      padding:13px 16px;
+    }
+    nav.bottom button svg{width:20px;height:20px;}
+    .content{height:100%;}
+    header{padding:34px 44px 22px;}
+    header h1{font-size:32px;}
+    main{padding:0 44px 44px;}
+    .view.active{max-width:840px;margin:0 auto;}
+    .quick-grid{grid-template-columns:repeat(3,1fr);}
+    .category-grid{grid-template-columns:repeat(3,1fr);}
+    .hero .big{font-size:56px;}
+    .att-summary .pct{font-size:64px;}
+    .lesson-card,.att-lesson{padding:18px 22px;}
+    .modal{align-items:center;}
+    .modal-box{border-radius:22px;max-width:480px;}
+  }
 </style>
 </head>
 <body>
