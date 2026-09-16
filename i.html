@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dziennik</title>
+<style>
+  :root{
+    --bg:#b9f3ff;
+    --card:#eaffff;
+    --card2:#c9f7ff;
+    --text:#073b5c;
+    --muted:#397b9c;
+    --accent:#008cff;
+    --accent2:#20c95a;
+    --line:#69cfe8;
+    --shadow:0 5px 0 #4aa8c5, 0 10px 22px rgba(0,100,160,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    color:var(--text);
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 15% 15%,#fff 0 35px,transparent 37px),
+      radial-gradient(circle at 25% 14%,#fff 0 48px,transparent 50px),
+      radial-gradient(circle at 35% 17%,#fff 0 35px,transparent 37px),
+      linear-gradient(#74dcff 0%,#c9f8ff 55%,#70d99a 100%);
+    background-attachment:fixed;
+  }
+  body:before{
+    content:"";
+    position:fixed;left:0;right:0;top:0;height:14px;z-index:50;
+    background:linear-gradient(#fff,#a9efff 45%,#43b8e9 55%,#087fc1);
+    border-bottom:2px solid #006ba8;
+  }
+  .phone{
+    width:100%;max-width:1150px;min-height:100vh;
+    display:flex;flex-direction:row;position:relative;
+    margin:24px 12px;
+    border:3px ridge #fff;
+    border-radius:20px;
+    overflow:hidden;
+    background:rgba(225,253,255,.82);
+    box-shadow:0 15px 45px rgba(0,70,120,.35);
+  }
+  .content{flex:1;min-width:0;display:flex;flex-direction:column}
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 28px 16px;
+    background:linear-gradient(#fff,#d9fbff 50%,#9eeaff);
+    border-bottom:3px ridge #fff;
+  }
+  header h1{
+    font-size:30px;font-weight:900;color:#006fb7;
+    text-shadow:1px 2px #fff,2px 3px rgba(0,100,160,.25);
+  }
+  .avatar{
+    width:48px;height:48px;border-radius:50%;
+    background:radial-gradient(circle at 35% 25%,#fff 0 12%,#9ff5ff 13% 35%,#22a9e8 70%,#0874b8);
+    border:3px outset #fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:900;color:#fff;
+    text-shadow:1px 1px #075b91;
+    box-shadow:0 2px 5px #65a9c1;
+  }
+  main{flex:1;padding:0 28px 28px;overflow-y:auto}
+  .view{display:none}.view.active{display:block}
+
+  .hero,.att-summary{
+    background:
+      radial-gradient(circle at 80% 15%,rgba(255,255,255,.9) 0 25px,transparent 27px),
+      linear-gradient(135deg,#eaffff,#8eeaff 48%,#fff);
+    border:3px outset #fff;border-radius:20px;padding:22px;margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
+  .hero .big,.att-summary .pct{
+    font-size:52px;font-weight:900;color:#0089df;
+    text-shadow:2px 3px #fff,3px 4px #54afd0;
+  }
+  .hero .label,.att-summary .sub{color:var(--muted);font-size:14px;font-weight:bold}
+  .quick-grid,.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .quick-card,.category-card,.next-lesson,.mini-lesson,.lesson-card,.att-lesson,.message-card,.tool-row{
+    background:linear-gradient(#fff,#e8fdff 45%,#c5f5ff);
+    border:3px outset #fff;
+    border-radius:14px;
+    box-shadow:0 4px 0 #58aec9,0 7px 12px rgba(0,100,160,.14);
+  }
+  .quick-card{padding:17px}
+  .quick-card .n{font-size:25px;font-weight:900;color:#007bc8}.quick-card .t{color:var(--muted);font-size:13px}
+  .section-title{font-size:15px;color:#075d89;margin:20px 0 10px;font-weight:900}
+  .next-lesson{padding:17px;display:flex;align-items:center;gap:14px}
+  .next-lesson .time,.lesson-time,.mini-time{color:#0089d7;font-weight:900}
+  .next-lesson .info b,.lesson-body .subj{color:#07547c}
+  .next-lesson .info span,.lesson-body .meta,.mini-info span{color:var(--muted)}
+  .mini-lesson{display:flex;align-items:center;gap:12px;padding:11px 14px;margin-bottom:9px}
+  .mini-info{flex:1}.mini-num,.lesson-num{color:#009b42;font-weight:900}
+
+  .day-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(#fff,#d7faff,#91e4ff);
+    border:3px outset #fff;border-radius:16px;padding:10px;margin-bottom:18px;
+    box-shadow:var(--shadow)
+  }
+  .day-nav button{
+    width:40px;height:40px;border-radius:10px;
+    border:3px outset #fff;background:linear-gradient(#8fe9ff,#159de1);
+    color:#fff;font-size:23px;font-weight:900;text-shadow:1px 1px #08608d;cursor:pointer
+  }
+  .day-nav button:active{border-style:inset}
+  .day-label{font-weight:900;color:#07547c;text-shadow:1px 1px #fff}
+
+  .lesson-card{display:flex;gap:16px;padding:16px 18px;margin-bottom:12px;align-items:flex-start}
+  .lesson-num{font-size:28px;min-width:28px}
+  .lesson-time{font-size:13px;min-width:50px;line-height:1.6}
+  .lesson-body{flex:1}.lesson-body .subj{font-size:16px;font-weight:900}.lesson-body .meta{font-size:13px}
+
+  .att-summary{text-align:center}
+  .att-summary .breakdown{display:flex;justify-content:center;gap:28px;margin-top:16px;padding-top:14px;border-top:2px ridge #fff}
+  .att-summary .num{font-size:20px;font-weight:900;color:#009b42}
+  .att-summary .lbl{font-size:12px;color:var(--muted)}
+  .att-lesson{display:flex;gap:16px;align-items:center;padding:14px 18px;margin-bottom:10px}
+  .att-lesson .lesson-body{flex:1}
+  .status-pill{
+    display:flex;align-items:center;gap:6px;
+    background:linear-gradient(#b9ffd1,#34d66c);
+    border:2px outset #fff;border-radius:12px;
+    color:#056b2d;font-size:12px;font-weight:900;padding:6px 10px;white-space:nowrap
+  }
+  .status-pill svg{width:12px;height:12px}
+
+  .category-card{padding:18px 16px;cursor:pointer}
+  .category-card:active,.tool-row:active{border-style:inset;transform:translateY(2px)}
+  .cat-ico,.tool-ico{
+    width:42px;height:42px;border-radius:10px;
+    background:linear-gradient(#fff,#8eeaff 45%,#0b9fe1);
+    border:3px outset #fff;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:10px;text-shadow:1px 1px #00658f
+  }
+  .category-card b,.tool-info b{font-size:15px;color:#07547c}.category-card span,.tool-info span{font-size:12px;color:var(--muted);display:block;margin-top:3px}
+
+  .more-tools{margin-top:18px}
+  .tool-row{display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
+  .tool-ico{margin:0;flex:none;font-size:20px}
+  .tool-info{flex:1}.tool-arrow{font-size:24px;color:#0089d7;font-weight:900}
+  .more-note{
+    background:linear-gradient(#fff,#d5faff,#76d9f5);
+    border:3px outset #fff;border-radius:16px;padding:18px;margin-top:18px;
+    box-shadow:var(--shadow)
+  }
+  .more-note b{color:#07547c}.more-note p{font-size:13px;color:var(--muted);line-height:1.5;margin-top:6px}
+
+  .message-card{padding:18px;margin-bottom:12px}
+  .message-category{
+    display:inline-flex;background:linear-gradient(#fff6a7,#ffd72b);
+    border:2px outset #fff;color:#755600;font-size:12px;font-weight:900;
+    padding:5px 10px;border-radius:10px;margin-bottom:12px
+  }
+  .message-card h2{font-size:18px;color:#07547c;margin-bottom:7px}
+  .message-card p{font-size:14px;line-height:1.55;color:var(--muted)}
+  .message-date{font-size:12px;color:var(--muted);margin-top:12px}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty-state .ico{font-size:45px;margin-bottom:12px}.empty-state .t{font-weight:bold}
+
+  nav.bottom{
+    flex:none;width:220px;min-height:100%;
+    background:linear-gradient(90deg,#eaffff,#a9efff 55%,#61cce9);
+    border-right:3px ridge #fff;
+    display:flex;flex-direction:column;gap:6px;padding:20px 12px
+  }
+  nav.bottom:before{
+    content:"☁ Dziennik 2008 ☁";
+    display:block;text-align:center;padding:10px 4px;margin-bottom:8px;
+    color:#0069a8;font-weight:900;background:linear-gradient(#fff,#bff5ff);
+    border:3px outset #fff;border-radius:12px
+  }
+  nav.bottom button{
+    background:linear-gradient(#fff,#d9fbff 45%,#8bdff6);
+    border:3px outset #fff;color:#07547c;
+    display:flex;align-items:center;gap:13px;font-size:14px;font-weight:900;
+    font-family:inherit;padding:12px;border-radius:11px;cursor:pointer;
+    text-shadow:1px 1px #fff
+  }
+  nav.bottom button svg{width:21px;height:21px}
+  nav.bottom button.active{
+    background:linear-gradient(#d9ffd9,#7eea9b 45%,#24b957);
+    border-color:#fff;color:#064f28;text-shadow:1px 1px #c8ffd7
+  }
+
+  .modal{position:fixed;inset:0;background:rgba(0,70,120,.45);display:none;align-items:center;justify-content:center;z-index:20}
+  .modal.show{display:flex}
+  .modal-box{
+    width:100%;max-width:480px;background:linear-gradient(#fff,#dffbff);
+    border:4px ridge #fff;border-radius:18px;padding:22px;max-height:80vh;overflow:auto;
+    box-shadow:0 10px 35px rgba(0,70,120,.4)
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .modal-head h2{font-size:20px;color:#006dad}
+  .close-btn{
+    width:35px;height:35px;border:3px outset #fff;border-radius:9px;
+    background:linear-gradient(#ffbcbc,#ef4c4c);color:#fff;font-size:20px;font-weight:900;cursor:pointer
+  }
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:2px ridge #fff}
+  .toggle{width:48px;height:25px;border:2px inset #fff;border-radius:10px;background:#82b5c2;position:relative;cursor:pointer}
+  .toggle:after{content:"";position:absolute;width:18px;height:18px;top:2px;left:2px;border-radius:7px;background:#fff;border:2px outset #fff}
+  .toggle.on{background:#32c95e}.toggle.on:after{left:23px}
+  .stat-box{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat-item{background:#e9fdff;border:3px inset #fff;border-radius:10px;padding:15px}
+  .stat-item b{font-size:22px;color:#0089d7}.stat-item span{display:block;color:var(--muted);font-size:12px}
+  .note-input{width:100%;min-height:110px;resize:vertical;background:#fff;color:var(--text);border:3px inset #fff;border-radius:10px;padding:13px;font:inherit;font-size:14px}
+  .save-note{width:100%;margin-top:10px;padding:12px;border:3px outset #fff;border-radius:10px;background:linear-gradient(#bfffd0,#28c95a);color:#075b27;font-weight:900;cursor:pointer}
+
+  @media(max-width:850px){
+    .phone{margin:14px 6px;flex-direction:column}
+    nav.bottom{order:2;width:100%;min-height:auto;height:auto;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;border-right:0;border-top:3px ridge #fff;padding:7px}
+    nav.bottom:before{display:none}
+    nav.bottom button{flex-direction:column;justify-content:center;gap:3px;font-size:10px;padding:7px 2px}
+    .quick-grid,.category-grid{grid-template-columns:1fr 1fr}
+    header{padding:18px 16px 13px}main{padding:0 16px 18px}
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <nav class="bottom">
+    <button class="active" data-view="start" onclick="showView('start')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
+      Start
+    </button>
+
+    <button data-view="wiadomosci" onclick="showView('wiadomosci')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z"/>
+        <path d="M8 7h8M8 10.5h5"/>
+      </svg>
+      Wiadomości
+    </button>
+
+    <button data-view="oceny" onclick="showView('oceny')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+      Oceny
+    </button>
+
+    <button data-view="plan" onclick="showView('plan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Plan
+    </button>
+
+    <button data-view="frekwencja" onclick="showView('frekwencja')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      Frekw.
+    </button>
+
+    <button data-view="wiecej" onclick="showView('wiecej')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
+      </svg>
+      Więcej
+    </button>
+  </nav>
+
+  <div class="content">
+
+  <header>
+    <h1 id="header-title">Start</h1>
+    <div class="avatar">AZ</div>
+  </header>
+
+  <main>
+
+    <!-- START -->
+    <section class="view active" id="view-start">
+      <div class="hero">
+        <div class="big">100%</div>
+        <div class="label">frekwencja w tym semestrze</div>
+      </div>
+
+      <div class="section-title" style="margin-top:0">Dzisiaj</div>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="n" id="start-lesson-count">0</div>
+          <div class="t">lekcji</div>
+        </div>
+        <div class="quick-card">
+          <div class="n" id="start-end-time">—</div>
+          <div class="t">koniec zajęć</div>
+        </div>
+      </div>
+
+      <div class="section-title">Najbliższa lekcja</div>
+      <div class="next-lesson" id="start-next-lesson">
+        <div class="time">—</div>
+        <div class="info">
+          <b>Brak zajęć</b>
+          <span>Na dzisiaj</span>
+        </div>
+      </div>
+
+      <div class="section-title">Mini plan lekcji</div>
+      <div id="start-mini-plan"></div>
+    </section>
+
+    <!-- WIĘCEJ -->
+    <section class="view" id="view-wiecej">
+      <div class="section-title" style="margin-top:0">Kategorie</div>
+      <div class="category-grid">
+        <div class="category-card" onclick="showView('start')"><div class="cat-ico">⌂</div><b>Start</b><span>Podsumowanie</span></div>
+        <div class="category-card" onclick="showView('wiadomosci')"><div class="cat-ico">💬</div><b>Wiadomości</b><span>Komunikaty</span></div>
+        <div class="category-card" onclick="showView('oceny')"><div class="cat-ico">📘</div><b>Oceny</b><span>Twoje oceny</span></div>
+        <div class="category-card" onclick="showView('plan')"><div class="cat-ico">📅</div><b>Plan lekcji</b><span>Zajęcia</span></div>
+        <div class="category-card" onclick="showView('frekwencja')"><div class="cat-ico">✓</div><b>Frekwencja</b><span>Obecności</span></div>
+        <div class="category-card" onclick="showView('wiecej')"><div class="cat-ico">•••</div><b>Więcej</b><span>Wszystkie kategorie</span></div>
+      </div>
+
+      <div class="section-title">Narzędzia</div>
+      <div class="more-tools">
+        <div class="tool-row" onclick="openModal('statystyki')"><div class="tool-ico">📊</div><div class="tool-info"><b>Statystyki</b><span>Podsumowanie tygodnia i frekwencji</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('notatki')"><div class="tool-ico">📝</div><div class="tool-info"><b>Notatki</b><span>Zapisz własne przypomnienie</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('ustawienia')"><div class="tool-ico">⚙️</div><div class="tool-info"><b>Ustawienia</b><span>Personalizacja dziennika</span></div><div class="tool-arrow">›</div></div>
+        <div class="tool-row" onclick="openModal('pomoc')"><div class="tool-ico">❔</div><div class="tool-info"><b>Pomoc</b><span>Informacje o funkcjach aplikacji</span></div><div class="tool-arrow">›</div></div>
+      </div>
+
+      <div class="more-note"><b>💡 Szybki dostęp</b><p>Wszystkie najważniejsze funkcje dziennika masz teraz w jednym miejscu.</p></div>
+    </section>
+
+    <!-- WIADOMOŚCI -->
+    <section class="view" id="view-wiadomosci">
+      <div class="message-card">
+        <div class="message-category">Awaria</div>
+        <h2>Problemy z wiadomościami</h2>
+        <p>
+          Z przyczyn awarii chwilowo brak możliwości odczytu oraz wysyłania wiadomości.
+          Prosimy spróbować ponownie później.
+        </p>
+        <div class="message-date">Aktualnie</div>
+      </div>
+    </section>
+
+    <!-- OCENY -->
+    <section class="view" id="view-oceny">
+      <div class="empty-state">
+        <div class="ico">📘</div>
+        <div class="t">Brak nowych ocen</div>
+      </div>
+    </section>
+
+    <!-- PLAN LEKCJI -->
+    <section class="view" id="view-plan">
+      <div class="day-nav">
+        <button onclick="changeDay(-1)">‹</button>
+        <div class="day-label" id="plan-day-label"></div>
+        <button onclick="changeDay(1)">›</button>
+      </div>
+      <div id="plan-list"></div>
+    </section>
+
+    <!-- FREKWENCJA -->
+    <section class="view" id="view-frekwencja">
+      <div class="att-summary">
+        <div class="pct">100%</div>
+        <div class="sub">obecności</div>
+        <div class="breakdown">
+          <div><div class="num" id="att-total"></div><div class="lbl">Lekcje</div></div>
+          <div><div class="num" style="color:var(--accent)" id="att-present"></div><div class="lbl">Obecności</div></div>
+          <div><div class="num">0</div><div class="lbl">Nieobecności</div></div>
+        </div>
+      </div>
+      <div class="day-nav">
+        <button onclick="changeDay(-1)">‹</button>
+        <div class="day-label" id="att-day-label"></div>
+        <button onclick="changeDay(1)">›</button>
+      </div>
+      <div id="att-list"></div>
+    </section>
+
+  </main>
+
+  <div class="modal" id="modal-statystyki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Statystyki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="stat-box">
+        <div class="stat-item"><b>100%</b><span>Frekwencja</span></div>
+        <div class="stat-item"><b>35</b><span>Lekcje w tygodniu</span></div>
+        <div class="stat-item"><b>0</b><span>Nieobecności</span></div>
+        <div class="stat-item"><b>5</b><span>Dni zajęć</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modal-notatki" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Notatki</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <textarea class="note-input" id="note-input" placeholder="Np. sprawdzian z matematyki w piątek..."></textarea>
+      <button class="save-note" onclick="saveNote()">Zapisz notatkę</button><p id="note-status" style="font-size:12px;color:var(--muted);margin-top:10px;"></p>
+    </div>
+  </div>
+  <div class="modal" id="modal-ustawienia" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Ustawienia</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <div class="setting-row"><span>Powiadomienia</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Pokazuj mini plan</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><span>Przypomnienia o lekcjach</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+  <div class="modal" id="modal-pomoc" onclick="closeModal(event)">
+    <div class="modal-box"><div class="modal-head"><h2>Pomoc</h2><button class="close-btn" onclick="closeModal()">×</button></div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6;">Korzystaj z dolnej nawigacji, aby szybko przełączać się między Startem, Wiadomościami, Ocenami, Planem i Frekwencją. W „Więcej” znajdziesz dodatkowe narzędzia i ustawienia.</p>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<script>
+const days = [
+  {
+    label: "Poniedziałek, 7 Wrzesień",
+    lessons: [
+      {n:1, start:"08:00", end:"08:45", subj:"Język polski", room:"74", teacher:"Joanna Ołdak"},
+      {n:2, start:"08:50", end:"09:35", subj:"Język polski", room:"74", teacher:"Joanna Ołdak"},
+      {n:3, start:"09:45", end:"10:30", subj:"Chemia", room:"56", teacher:"Małgorzata Witosławska"},
+      {n:4, start:"10:40", end:"11:25", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
+      {n:5, start:"11:45", end:"12:30", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
+      {n:6, start:"12:50", end:"13:35", subj:"Zajęcia z wychowawcą", room:"wych", teacher:"Małgorzata Jankowska"},
+      {n:7, start:"13:45", end:"14:30", subj:"Wychowanie fizyczne", room:"sg2", teacher:"Agnieszka Hojniak"},
+    ]
+  },
+  {
+    label: "Wtorek, 8 Wrzesień",
+    lessons: [
+      {n:1, start:"08:00", end:"08:45", subj:"Wiedza o społeczeństwie", room:"65", teacher:"Marta Kwiatkowska"},
+      {n:2, start:"08:50", end:"09:35", subj:"Fizyka", room:"74", teacher:"Edyta Gaworek"},
+      {n:3, start:"09:45", end:"10:30", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
+      {n:4, start:"10:40", end:"11:25", subj:"Matematyka", room:"75", teacher:"Małgorzata Jankowska"},
+      {n:5, start:"11:45", end:"12:30", subj:"Informatyka", room:"52", teacher:"Piotr Antoniuk"},
+      {n:6, start:"12:50", end:"13:35", subj:"Historia", room:"61", teacher:"Marta Kwiatkowska"},
+      {n:7, start:"13:45", end:"14:30", subj:"Edukacja dla bezpieczeństwa", room:"20", teacher:"Anna Kula"},
+    ]
+  },
+  {
+    label: "Środa, 9 Wrzesień",
+    lessons: [
+      {n:1, start:"08:00", end:"08:45", subj:"Język niemiecki", room:"gs", teacher:"Marta Kamińska"},
+      {n:2, start:"08:50", end:"09:35", subj:"Język niemiecki", room:"gs", teacher:"Marta Kamińska"},
+      {n:3, start:"09:45", end:"10:30", subj:"Wychowanie fizyczne", room:"sg1", teacher:"Agnieszka Hojniak"},
+      {n:4, start:"10:40", end:"11:25", subj:"MAK", room:"68", teacher:"Małgorzata Jankowska"},
+      {n:5, start:"11:45", end:"12:30", subj:"Matematyka", room:"61", teacher:"Małgorzata Jankowska"},
+      {n:6, start:"12:50", end:"13:35", subj:"POK", room:"20", teacher:"Joanna Ołdak"},
+      {n:7, start:"13:45", end:"14:30", subj:"Chemia", room:"56", teacher:"Małgorzata Witosławska"},
+    ]
+  },
+  {
+    label: "Czwartek, 10 Wrzesień",
+    lessons: [
+      {n:2, start:"08:50", end:"09:35", subj:"Wychowanie fizyczne", room:"sg2", teacher:"Agnieszka Hojniak"},
+      {n:3, start:"09:45", end:"10:30", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
+      {n:4, start:"10:40", end:"11:25", subj:"Język angielski", room:"57", teacher:"Agata Lewandowska"},
+      {n:5, start:"11:45", end:"12:30", subj:"Język polski", room:"61", teacher:"Joanna Ołdak"},
+      {n:6, start:"12:50", end:"13:35", subj:"Historia", room:"65", teacher:"Marta Kwiatkowska"},
+    ]
+  },
+  {
+    label: "Piątek, 11 Wrzesień",
+    lessons: [
+      {n:1, start:"08:00", end:"08:45", subj:"Geografia", room:"65", teacher:"Joanna Sosińska"},
+      {n:2, start:"08:50", end:"09:35", subj:"Wychowanie fizyczne", room:"sg1", teacher:"Agnieszka Hojniak"},
+      {n:3, start:"09:45", end:"10:30", subj:"Fizyka", room:"74", teacher:"Edyta Gaworek"},
+      {n:4, start:"10:40", end:"11:25", subj:"Język polski", room:"68", teacher:"Joanna Ołdak"},
+      {n:5, start:"11:45", end:"12:30", subj:"Język polski", room:"68", teacher:"Joanna Ołdak"},
+      {n:6, start:"12:50", end:"13:35", subj:"Biologia", room:"61", teacher:"Justyna Kubiak"},
+      {n:7, start:"13:45", end:"14:30", subj:"Wiedza o społeczeństwie", room:"61", teacher:"Marta Kwiatkowska"},
+      {n:8, start:"14:35", end:"15:20", subj:"Edukacja zdrowotna", room:"66", teacher:"Agnieszka Hojniak"},
+    ]
+  }
+];
+
+let dayIndex = 4; // domyślnie piątek (dzisiejszy dzień na screenach)
+
+function checkIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>`;
+}
+
+function renderStart(){
+  const day = days[dayIndex];
+  const count = day.lessons.length;
+
+  document.getElementById('start-lesson-count').textContent = count;
+  document.getElementById('start-end-time').textContent =
+    count ? day.lessons[count - 1].end : '—';
+
+  const next = day.lessons[0];
+  const nextBox = document.getElementById('start-next-lesson');
+
+  if(next){
+    nextBox.innerHTML = `
+      <div class="time">${next.start}</div>
+      <div class="info">
+        <b>${next.subj}</b>
+        <span>Sala ${next.room} · ${next.teacher}</span>
+      </div>
+    `;
+  } else {
+    nextBox.innerHTML = `
+      <div class="time">—</div>
+      <div class="info">
+        <b>Brak zajęć</b>
+        <span>Na dzisiaj</span>
+      </div>
+    `;
+  }
+
+  document.getElementById('start-mini-plan').innerHTML = day.lessons.map(l => `
+    <div class="mini-lesson">
+      <div class="mini-num">${l.n}</div>
+      <div class="mini-time">${l.start}<br>${l.end}</div>
+      <div class="mini-info">
+        <b>${l.subj}</b>
+        <span>Sala ${l.room} · ${l.teacher}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(name){
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+  const modal = document.getElementById('modal-' + name);
+  if(modal) modal.classList.add('show');
+  if(name === 'notatki'){
+    document.getElementById('note-input').value = localStorage.getItem('dziennik_note') || '';
+    document.getElementById('note-status').textContent = '';
+  }
+}
+function closeModal(event){
+  if(event && event.target !== event.currentTarget) return;
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+}
+function saveNote(){
+  const value = document.getElementById('note-input').value.trim();
+  localStorage.setItem('dziennik_note', value);
+  document.getElementById('note-status').textContent = value ? 'Notatka została zapisana.' : 'Notatka została usunięta.';
+}
+
+function renderDay(){
+  const day = days[dayIndex];
+  renderStart();
+
+  // Plan lekcji
+  document.getElementById('plan-day-label').textContent = day.label;
+  document.getElementById('plan-list').innerHTML = day.lessons.map(l => `
+    <div class="lesson-card">
+      <div class="lesson-num">${l.n}</div>
+      <div class="lesson-time">${l.start}<br>${l.end}</div>
+      <div class="lesson-body">
+        <div class="subj">${l.subj}</div>
+        <div class="meta">${l.room} ${l.teacher}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Frekwencja
+  document.getElementById('att-day-label').textContent = day.label;
+  document.getElementById('att-total').textContent = day.lessons.length;
+  document.getElementById('att-present').textContent = day.lessons.length;
+  document.getElementById('att-list').innerHTML = day.lessons.map(l => `
+    <div class="att-lesson">
+      <div class="lesson-num">${l.n}</div>
+      <div class="lesson-time">${l.start}<br>${l.end}</div>
+      <div class="lesson-body">
+        <div class="subj">${l.subj}</div>
+        <div class="meta">${l.room} ${l.teacher}</div>
+      </div>
+      <div class="status-pill">${checkIcon()} Obecność</div>
+    </div>
+  `).join('');
+}
+
+function changeDay(delta){
+  dayIndex = (dayIndex + delta + days.length) % days.length;
+  renderDay();
+}
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('nav.bottom button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`nav.bottom button[data-view="${name}"]`).classList.add('active');
+  const titles = {start:"Start", wiadomosci:"Wiadomości", oceny:"Oceny", plan:"Plan lekcji", frekwencja:"Frekwencja", wiecej:"Więcej"};
+  document.getElementById('header-title').textContent = titles[name];
+}
+
+renderDay();
+</script>
+</body>
+</html>
