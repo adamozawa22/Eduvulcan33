@@ -172,6 +172,26 @@ let selectedDay=0, selectedLesson=null, selectedAtt=null, editingTeacherId=null;
 
 const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
 
+const DEFAULT_SUBJECT_TEACHERS=[
+ {subject:"Geografia",teacher:"Joanna Sosińska"},
+ {subject:"Wychowanie fizyczne",teacher:"Agnieszka Hojniak"},
+ {subject:"Fizyka",teacher:"Edyta Gaworek"},
+ {subject:"Język polski",teacher:"Joanna Ołdak"},
+ {subject:"Biologia",teacher:"Justyna Kubiak"},
+ {subject:"Wiedza o społeczeństwie",teacher:"Marta Kwiatkowska"},
+ {subject:"Edukacja zdrowotna",teacher:"Agnieszka Hojniak"},
+ {subject:"Język angielski",teacher:"Agata Lewandowska"},
+ {subject:"Historia",teacher:"Marta Kwiatkowska"},
+ {subject:"Język niemiecki",teacher:"Marta Kamińska"},
+ {subject:"MAK",teacher:"Małgorzata Jankowska"},
+ {subject:"Matematyka",teacher:"Małgorzata Jankowska"},
+ {subject:"POK",teacher:"Joanna Ołdak"},
+ {subject:"Chemia",teacher:"Małgorzata Witosławska"},
+ {subject:"Informatyka",teacher:"Piotr Antoniuk"},
+ {subject:"Edukacja dla bezpieczeństwa",teacher:"Anna Kula"},
+ {subject:"Zajęcia z wychowawcą",teacher:"Małgorzata Jankowska"},
+];
+
 function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
 async function login(){
  try{
@@ -197,6 +217,13 @@ async function loadData(){
   const st=await sb.from("subject_teachers").select("*").order("subject");
   if(st.error && st.error.code !== "42P01") throw st.error;
   subjectTeachers=st.data||[];
+  if(!subjectTeachers.length && st.error?.code !== "42P01"){
+   const seed=await sb.from("subject_teachers").insert(DEFAULT_SUBJECT_TEACHERS);
+   if(!seed.error){
+    const st2=await sb.from("subject_teachers").select("*").order("subject");
+    subjectTeachers=st2.data||[];
+   }
+  }
   const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
   if(tc.error && tc.error.code !== "42P01") throw tc.error;
   teacherChanges=tc.data||[];
