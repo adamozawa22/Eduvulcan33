@@ -245,8 +245,8 @@ function renderSchedule(){
  let out="";
  for(let n=1;n<=max;n++){
    const t=rows.find(x=>Number(x.lesson_number)===n);
-   const st=t?.start_time||defaultTimes[n-1]?.[0]||"";
-   const en=t?.end_time||defaultTimes[n-1]?.[1]||"";
+   const st=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
+   const en=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
    out+=`<div class="timecell">${st}<br>${en}</div>`;
    out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
      <div class="num">${n}. lekcja</div>
@@ -305,8 +305,8 @@ function openLesson(id,n){
  prepareSubjectOptions();prepareSubstituteOptions();
  mNum.value=t?.lesson_number||n;
  mSubject.value=t?.subject||fallbackSubjects[0];
- mStart.value=t?.start_time||defaultTimes[n-1]?.[0]||"";
- mEnd.value=t?.end_time||defaultTimes[n-1]?.[1]||"";
+ mStart.value=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
+ mEnd.value=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
  mRoom.value=t?.room||"";
  const autoTeacher=getTeacherForSubject(mSubject.value);
  mTeacher.value=autoTeacher||t?.teacher||"";
@@ -357,7 +357,7 @@ function renderAttendance(){
   let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
   out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
     <div class="status">${label}</div>
-    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${t.start_time}–${t.end_time}<br><b>${esc(t.teacher||'—')}</b></div>
+    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${fmtTime(t.start_time)}–${fmtTime(t.end_time)}<br><b>${esc(t.teacher||'—')}</b></div>
   </div>`;
  });
  attGrid.innerHTML=out;
@@ -446,6 +446,7 @@ async function removeTeacher(id){
 
 function closeModal(id){document.getElementById(id).classList.remove("show")}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fmtTime(t){return t?String(t).slice(0,5):""}
 if(sb)sb.auth.getSession().then(showApp);
 </script>
 </body>
