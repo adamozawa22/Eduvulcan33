@@ -24,7 +24,7 @@ h2{font-size:18px;margin:0 0 16px}
 .schedule-head{font-size:12px;color:var(--muted);padding:8px;text-align:center}
 .lesson{min-height:92px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;transition:.15s}
 .lesson:hover{border-color:#4b4b54;transform:translateY(-1px)}
-.lesson .num{font-size:12px;color:var(--muted)}.lesson .subject{font-weight:700;margin-top:7px}.lesson .meta{font-size:11px;color:var(--muted);margin-top:5px}
+.lesson .num{font-size:12px;color:var(--muted)}.lesson .subject{font-weight:700;margin-top:7px}.lesson .meta{font-size:11px;color:var(--muted);margin-top:5px}.lesson .meta b{color:var(--text);font-weight:600}
 .timecell{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:14px;background:#151518}
 .att-grid{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
 .att-cell{min-height:82px;background:#111114;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}
@@ -43,10 +43,17 @@ button.primary{border:0;border-radius:11px;padding:11px 15px;background:var(--ac
 button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292e;color:var(--text);font-weight:600;cursor:pointer}
 .status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}.hint{font-size:11px;color:var(--muted);margin-top:5px}.teacher-box{margin-top:14px;padding:14px;background:#111114;border:1px solid var(--line);border-radius:14px}.teacher-box h4{margin:0 0 10px;font-size:13px}.check-row{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;color:var(--text)}.check-row input{width:auto}.sub-wrap{display:none;margin-top:10px}.sub-wrap.show{display:block}
 .login{max-width:430px;margin:70px auto}.login h1{margin-top:0}
+.auto-hint{font-size:11px;margin-top:5px}.auto-hint.ok{color:var(--accent)}.auto-hint.warn{color:#fbbf24}
+.teacher-row{display:flex;align-items:center;gap:12px;padding:12px;background:#111114;border:1px solid var(--line);border-radius:13px;margin-bottom:8px}
+.teacher-row .tr-subject{font-weight:700;flex:1}
+.teacher-row .tr-teacher{color:var(--muted);flex:1}
+.teacher-row .tr-actions{display:flex;gap:6px}
+.teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
 @media(max-width:800px){
  .wrap{padding:15px}.schedule,.att-grid{grid-template-columns:62px repeat(5,minmax(115px,1fr));overflow-x:auto}
  .schedule{min-width:650px}.att-grid{min-width:650px}.card{overflow:hidden}
  .form-grid{grid-template-columns:1fr}
+ .teacher-row{flex-wrap:wrap}
 }
 </style>
 </head>
@@ -69,6 +76,7 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
   <div class="tabs">
     <button class="tab active" onclick="switchPanel('plan',this)">Plan lekcji</button>
     <button class="tab" onclick="switchPanel('frekwencja',this)">Frekwencja</button>
+    <button class="tab" onclick="switchPanel('nauczyciele',this)">Nauczyciele</button>
   </div>
 
   <section id="panel-plan" class="panel active">
@@ -76,7 +84,7 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
       <h2>Plan lekcji</h2>
       <div class="day-tabs" id="planDays"></div>
       <div style="overflow:auto"><div class="schedule" id="schedule"></div></div>
-      <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia.</div>
+      <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia. Nauczyciel uzupełnia się automatycznie na podstawie przypisań w zakładce „Nauczyciele”.</div>
     </div>
   </section>
 
@@ -88,6 +96,24 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
       <div class="status-msg">Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.</div>
     </div>
   </section>
+
+  <section id="panel-nauczyciele" class="panel">
+    <div class="card">
+      <h2>Nauczyciele przedmiotów</h2>
+      <div class="status-msg" style="margin-top:0;margin-bottom:14px">Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w planie lekcji, nauczyciel uzupełni się sam.</div>
+      <div class="form-grid">
+        <div><label>Przedmiot</label><input id="tSubject" list="subjectDatalist" placeholder="np. Matematyka"></div>
+        <div><label>Nauczyciel</label><input id="tTeacher" placeholder="np. Anna Kowalska"></div>
+      </div>
+      <datalist id="subjectDatalist"></datalist>
+      <div class="actions">
+        <button class="primary" onclick="saveTeacherMapping()">Zapisz przypisanie</button>
+        <button class="secondary" id="cancelEditTeacher" style="display:none" onclick="cancelTeacherEdit()">Anuluj edycję</button>
+      </div>
+      <div class="status-msg" id="teacherMsg"></div>
+      <div id="teacherList" style="margin-top:18px"></div>
+    </div>
+  </section>
 </div>
 
 <div class="modal" id="lessonModal">
@@ -95,11 +121,15 @@ button.secondary{border:0;border-radius:11px;padding:11px 15px;background:#29292
   <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
   <div class="form-grid">
    <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
-   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select><div class="hint">Po wyborze przedmiotu nauczyciel uzupełni się automatycznie.</div></div>
+   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select></div>
    <div><div><label>Od</label><input id="mStart" type="time"></div></div>
    <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
    <div><label>Sala</label><input id="mRoom"></div>
-   <div><label>Nauczyciel</label><input id="mTeacher" readonly></div>
+   <div>
+    <label>Nauczyciel</label>
+    <input id="mTeacher" readonly>
+    <div class="auto-hint" id="teacherHint"></div>
+   </div>
   </div>
   <div class="teacher-box">
    <h4>Nieobecność nauczyciela i zastępstwo</h4>
@@ -138,7 +168,7 @@ const defaultTimes=[
  ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
 ];
 let plan=[], attendance=[], subjectTeachers=[], teacherChanges=[];
-let selectedDay=0, selectedLesson=null, selectedAtt=null;
+let selectedDay=0, selectedLesson=null, selectedAtt=null, editingTeacherId=null;
 
 const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
 
@@ -170,8 +200,8 @@ async function loadData(){
   const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
   if(tc.error && tc.error.code !== "42P01") throw tc.error;
   teacherChanges=tc.data||[];
-  prepareSubjectOptions();prepareSubstituteOptions();
-  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();
+  prepareSubjectOptions();prepareSubstituteOptions();prepareSubjectDatalist();
+  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();renderTeachers();
  }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
 }
 function switchPanel(name,btn){
@@ -185,10 +215,7 @@ function renderPlanDays(){
 function renderSchedule(){
  let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
  let max=Math.max(8,...rows.map(x=>Number(x.lesson_number)));
- let out=`<div class="schedule-head">Godzina</div><div class="schedule-head">Pon</div><div class="schedule-head">Wt</div><div class="schedule-head">Śr</div><div class="schedule-head">Czw</div><div class="schedule-head">Pt</div>`;
- // Normalny widok tygodnia: pokazujemy wybrany dzień jako pełną listę w 5 kolumnach,
- // z pustymi polami jako możliwymi do kliknięcia.
- out="";
+ let out="";
  for(let n=1;n<=max;n++){
    const t=rows.find(x=>Number(x.lesson_number)===n);
    const st=t?.start_time||defaultTimes[n-1]?.[0]||"";
@@ -197,7 +224,7 @@ function renderSchedule(){
    out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
      <div class="num">${n}. lekcja</div>
      <div class="subject">${t?esc(t.subject):'<span style="color:#555">Wolna godzina</span>'}</div>
-     <div class="meta">${t?[esc(t.room||'')+' '+esc(t.teacher||'')]:''}</div>
+     <div class="meta">${t?(esc(t.room||'')+' · <b>'+esc(t.teacher||'—')+'</b>'):''}</div>
    </div>`;
    out+=`<div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
    <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
@@ -206,21 +233,36 @@ function renderSchedule(){
  }
  schedule.innerHTML=out;
 }
+function allKnownSubjects(){
+ return [...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
+}
 function prepareSubjectOptions(){
- const subjects=[...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
- mSubject.innerHTML=subjects.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+ mSubject.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+}
+function prepareSubjectDatalist(){
+ subjectDatalist.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">`).join("");
 }
 function prepareSubstituteOptions(){
  const teachers=[...new Set((subjectTeachers||[]).map(x=>x.teacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pl"));
  mSubstitute.innerHTML=`<option value="">Wybierz nauczyciela zastępującego</option>`+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
 }
 function getTeacherForSubject(subject){
- const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject).toLowerCase());
+ const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject||"").toLowerCase());
  return row?.teacher||"";
 }
 function subjectChanged(){
  const t=getTeacherForSubject(mSubject.value);
- if(t) mTeacher.value=t;
+ mTeacher.value=t;
+ updateTeacherHint(t);
+}
+function updateTeacherHint(t){
+ if(t){
+  teacherHint.textContent="Uzupełniono automatycznie na podstawie przypisania przedmiotu.";
+  teacherHint.className="auto-hint ok";
+ }else{
+  teacherHint.textContent="Brak przypisanego nauczyciela dla tego przedmiotu — dodaj go w zakładce „Nauczyciele”.";
+  teacherHint.className="auto-hint warn";
+ }
 }
 function toggleSubstitute(){
  subWrap.classList.toggle("show",mTeacherAbsent.checked);
@@ -238,7 +280,10 @@ function openLesson(id,n){
  mSubject.value=t?.subject||fallbackSubjects[0];
  mStart.value=t?.start_time||defaultTimes[n-1]?.[0]||"";
  mEnd.value=t?.end_time||defaultTimes[n-1]?.[1]||"";
- mRoom.value=t?.room||"";mTeacher.value=t?.teacher||getTeacherForSubject(mSubject.value);
+ mRoom.value=t?.room||"";
+ const autoTeacher=getTeacherForSubject(mSubject.value);
+ mTeacher.value=autoTeacher||t?.teacher||"";
+ updateTeacherHint(autoTeacher);
  const change=t?.id?getTeacherChange(t.id):null;
  mTeacherAbsent.checked=!!change?.teacher_absent;
  mChangeDate.value=change?.lesson_date||new Date().toISOString().slice(0,10);
@@ -284,7 +329,8 @@ function renderAttendance(){
   let cls=a?.status||"present";
   let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
   out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
-    <div class="status">${label}</div><div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${t.start_time}–${t.end_time}</div>
+    <div class="status">${label}</div>
+    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${t.start_time}–${t.end_time}<br><b>${esc(t.teacher||'—')}</b></div>
   </div>`;
  });
  attGrid.innerHTML=out;
@@ -311,6 +357,66 @@ async function deleteAttendance(){
   const {error}=await q;if(error)throw error;closeModal("attModal");await loadData();
  }catch(e){attMsg.textContent=e.message}
 }
+
+/* ---- NAUCZYCIELE (mapowanie przedmiot -> nauczyciel) ---- */
+function renderTeachers(){
+ teacherList.innerHTML=(subjectTeachers||[]).length
+  ? subjectTeachers.map(x=>`
+    <div class="teacher-row">
+      <div class="tr-subject">${esc(x.subject)}</div>
+      <div class="tr-teacher">${esc(x.teacher)}</div>
+      <div class="tr-actions">
+        <button class="secondary" onclick="editTeacher(${x.id})">Edytuj</button>
+        <button class="secondary" onclick="removeTeacher(${x.id})">Usuń</button>
+      </div>
+    </div>`).join("")
+  : "<div style='color:var(--muted);padding:10px 0'>Brak przypisań. Dodaj pierwsze powyżej.</div>";
+}
+function editTeacher(id){
+ const row=subjectTeachers.find(x=>x.id===id);
+ if(!row)return;
+ editingTeacherId=id;
+ tSubject.value=row.subject;
+ tTeacher.value=row.teacher;
+ cancelEditTeacher.style.display="inline-block";
+ teacherMsg.textContent="";
+ tSubject.focus();
+}
+function cancelTeacherEdit(){
+ editingTeacherId=null;
+ tSubject.value="";tTeacher.value="";
+ cancelEditTeacher.style.display="none";
+ teacherMsg.textContent="";
+}
+async function saveTeacherMapping(){
+ try{
+  db();
+  const subject=tSubject.value.trim();
+  const teacher=tTeacher.value.trim();
+  if(!subject||!teacher)throw new Error("Podaj przedmiot i nauczyciela.");
+  let id=editingTeacherId;
+  if(!id){
+   const existing=subjectTeachers.find(x=>x.subject.toLowerCase()===subject.toLowerCase());
+   if(existing)id=existing.id;
+  }
+  const {error}=id
+   ? await sb.from("subject_teachers").update({subject,teacher}).eq("id",id)
+   : await sb.from("subject_teachers").insert({subject,teacher});
+  if(error)throw error;
+  cancelTeacherEdit();
+  teacherMsg.textContent="Zapisano. Przedmiot zostanie teraz automatycznie łączony z tym nauczycielem.";
+  await loadData();
+ }catch(e){teacherMsg.textContent="Błąd: "+e.message}
+}
+async function removeTeacher(id){
+ try{
+  db();
+  const {error}=await sb.from("subject_teachers").delete().eq("id",id);
+  if(error)throw error;
+  await loadData();
+ }catch(e){teacherMsg.textContent="Błąd: "+e.message}
+}
+
 function closeModal(id){document.getElementById(id).classList.remove("show")}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 if(sb)sb.auth.getSession().then(showApp);
