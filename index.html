@@ -728,6 +728,87 @@ nav.bottom button svg{
   stroke-linejoin:round;
 }
 
+
+/* PASEK OFFLINE */
+
+.notice{
+  display:none;
+  margin:0 0 14px;
+  padding:11px 14px;
+  border-radius:12px;
+  background:var(--danger-dim);
+  border:1px solid #f3c9c6;
+  color:#8d2b26;
+  font-size:12.5px;
+  line-height:1.45;
+}
+
+.notice.show{display:block}
+
+/* ZASTEPSTWO */
+
+.sub-note{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:6px;
+  padding:4px 9px;
+  border-radius:999px;
+  background:#fff4d6;
+  color:#8a5a00;
+  font-size:11.5px;
+  font-weight:600;
+}
+
+.lesson-body .meta s{
+  color:#a9b2c0;
+  text-decoration-thickness:1px;
+}
+
+/* MENU NA TELEFONIE */
+
+@media(max-width:640px){
+
+  .phone{
+    flex-direction:column;
+    min-height:100dvh;
+  }
+
+  nav.bottom{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    top:auto;
+    width:100%;
+    height:auto;
+    flex-direction:row;
+    gap:2px;
+    border-right:none;
+    border-top:1px solid var(--line);
+    padding:7px 4px calc(7px + env(safe-area-inset-bottom,0px));
+    z-index:10;
+  }
+
+  nav.bottom button{
+    flex:1;
+    min-width:0;
+    font-size:9.5px;
+    padding:7px 1px;
+    gap:4px;
+  }
+
+  nav.bottom button svg{
+    width:19px;
+    height:19px;
+  }
+
+  main{
+    padding-bottom:88px;
+  }
+
+}
+
 @media(min-width:900px){
 
   body{
@@ -820,7 +901,7 @@ Więcej
 
 <header>
 <div class="brand">
-<img src="vulcan-logo.png" alt="VULCAN">
+<img src="vulcan-logo.png" alt="VULCAN" onerror="this.remove()">
 <span class="vulcan-text">VULCAN</span>
 <h1 id="header-title">Start</h1>
 </div>
@@ -828,6 +909,8 @@ Więcej
 </header>
 
 <main>
+
+<div class="notice" id="data-notice"></div>
 
 <section class="view active" id="view-start">
 
@@ -1123,13 +1206,43 @@ const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
 
 const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVNwLJXAx8jipA_rV0lZfdD";
 
-const sb=window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+/*
+  Jeżeli biblioteka Supabase się nie załaduje
+  (brak internetu, blokada CDN), to sb będzie null.
+  Aplikacja działa wtedy na planie zapasowym,
+  zamiast wywalać się na starcie.
+*/
+
+const sb=
+  (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      )
+    : null;
 
 let lessonPlanData=[];
 let attendanceData=[];
+let teacherChangesData=[];
+
+
+function showNotice(text){
+
+  const box=
+    document.getElementById("data-notice");
+
+  if(!box)return;
+
+  if(!text){
+    box.classList.remove("show");
+    box.textContent="";
+    return;
+  }
+
+  box.textContent=text;
+  box.classList.add("show");
+
+}
 
 
 /* =====================================================
@@ -1290,24 +1403,44 @@ function getLessonsFromSupabase(date){
 
   if(weekday<0)return [];
 
+  const dateISO=formatISODate(date);
+
   return lessonPlanData
     .filter(x=>Number(x.weekday)===weekday)
     .sort((a,b)=>Number(a.lesson_number)-Number(b.lesson_number))
-    .map(x=>({
+    .map(x=>{
 
-      n:Number(x.lesson_number),
+      const change=
+        teacherChangesData.find(c=>
+          String(c.lesson_plan_id)===String(x.id) &&
+          String(c.lesson_date||"")===dateISO
+        );
 
-      start:String(x.start_time||"").slice(0,5),
+      return {
 
-      end:String(x.end_time||"").slice(0,5),
+        n:Number(x.lesson_number),
 
-      subj:x.subject||"",
+        start:String(x.start_time||"").slice(0,5),
 
-      room:x.room||"",
+        end:String(x.end_time||"").slice(0,5),
 
-      teacher:x.teacher||""
+        subj:x.subject||"",
 
-    }));
+        room:x.room||"",
+
+        teacher:x.teacher||"",
+
+        /* zastępstwo na ten konkretny dzień */
+
+        absent:!!(change && change.teacher_absent),
+
+        substitute:(change && change.substitute_teacher)||"",
+
+        note:(change && change.note)||""
+
+      };
+
+    });
 
 }
 
@@ -1324,7 +1457,111 @@ function getLessons(date){
 
   }
 
-  return weeklyPlan[date.getDay()]||[];
+  /*
+    Plan zapasowy. Kopiujemy obiekty,
+    żeby przypadkiem ich nie nadpisać.
+  */
+
+  return (weeklyPlan[date.getDay()]||[])
+    .map(l=>({...l,absent:false,substitute:"",note:""}));
+
+}
+
+
+/* =====================================================
+   OPIS NAUCZYCIELA (z zastępstwem)
+===================================================== */
+
+function teacherLine(l){
+
+  if(l.absent && l.substitute){
+
+    return `<s>${escapeHTML(l.teacher)}</s> ${escapeHTML(l.substitute)}`;
+
+  }
+
+  if(l.absent){
+
+    return `<s>${escapeHTML(l.teacher)}</s> zastępstwo`;
+
+  }
+
+  return escapeHTML(l.teacher);
+
+}
+
+
+function noteLine(l){
+
+  if(!l.absent)return "";
+
+  const text=
+    l.note
+      ? l.note
+      : (l.substitute
+          ? "Zastępstwo: "+l.substitute
+          : "Nauczyciel nieobecny");
+
+  return `<div class="sub-note">! ${escapeHTML(text)}</div>`;
+
+}
+
+
+/* =====================================================
+   GODZINA -> MINUTY
+===================================================== */
+
+function toMinutes(time){
+
+  const parts=String(time||"").split(":");
+
+  const h=Number(parts[0]);
+  const m=Number(parts[1]);
+
+  if(Number.isNaN(h)||Number.isNaN(m))return null;
+
+  return h*60+m;
+
+}
+
+
+function isToday(date){
+
+  const today=new Date();
+  today.setHours(0,0,0,0);
+
+  return date.getTime()===today.getTime();
+
+}
+
+
+/* =====================================================
+   NAJBLIŻSZA LEKCJA
+===================================================== */
+
+function getNextLesson(lessons,date){
+
+  if(!lessons.length)return null;
+
+  if(!isToday(date))return lessons[0];
+
+  const now=new Date();
+
+  const minutes=
+    now.getHours()*60+now.getMinutes();
+
+  /*
+    Pierwsza lekcja, która jeszcze się nie skończyła.
+    Jeżeli wszystkie się skończyły, zwracamy null.
+  */
+
+  return lessons.find(l=>{
+
+    const end=toMinutes(l.end);
+
+    return end===null || end>minutes;
+
+  })||null;
 
 }
 
@@ -1334,6 +1571,18 @@ function getLessons(date){
 ===================================================== */
 
 async function loadSupabaseData(){
+
+  if(!sb){
+
+    showNotice(
+      "Nie udało się połączyć z bazą danych. Widzisz stały plan lekcji, bez frekwencji."
+    );
+
+    renderAll();
+
+    return;
+
+  }
 
   try{
 
@@ -1361,6 +1610,29 @@ async function loadSupabaseData(){
     attendanceData=attendance.data||[];
 
 
+    /*
+      Zastępstwa są opcjonalne.
+      Jeżeli tabela nie istnieje (42P01),
+      po prostu jedziemy dalej.
+    */
+
+    const changes=
+      await sb
+        .from("teacher_changes")
+        .select("*")
+        .order("lesson_date");
+
+    if(changes.error && changes.error.code!=="42P01"){
+
+      throw changes.error;
+
+    }
+
+    teacherChangesData=changes.data||[];
+
+
+    showNotice("");
+
     renderAll();
 
   }catch(error){
@@ -1368,6 +1640,10 @@ async function loadSupabaseData(){
     console.error(
       "Błąd pobierania danych Supabase:",
       error
+    );
+
+    showNotice(
+      "Nie udało się pobrać danych z dziennika. Widzisz stały plan lekcji. Szczegóły błędu są w konsoli."
     );
 
     renderAll();
@@ -1385,12 +1661,13 @@ function getAttendanceForLesson(date,lessonNumber){
 
   const dateISO=formatISODate(date);
 
-  const weekday=adminWeekdayFromDate(date);
-
-  if(weekday<0)return null;
+  /*
+    Kluczem jest data i numer lekcji.
+    Kolumna weekday bywa pusta w starszych wpisach,
+    więc nie może decydować o dopasowaniu.
+  */
 
   return attendanceData.find(x=>
-    Number(x.weekday)===weekday &&
     Number(x.lesson_number)===Number(lessonNumber) &&
     String(x.lesson_date||"")===dateISO
   )||null;
@@ -1521,9 +1798,10 @@ function renderStart(){
     document.getElementById("start-next-lesson");
 
 
-  if(lessons.length){
+  const next=getNextLesson(lessons,currentDate);
 
-    const next=lessons[0];
+
+  if(next){
 
     nextBox.innerHTML=`
 
@@ -1540,7 +1818,25 @@ function renderStart(){
         <span>
           Sala ${escapeHTML(next.room)}
           ·
-          ${escapeHTML(next.teacher)}
+          ${teacherLine(next)}
+        </span>
+
+      </div>
+
+    `;
+
+  }else if(lessons.length){
+
+    nextBox.innerHTML=`
+
+      <div class="time">—</div>
+
+      <div class="info">
+
+        <b>Koniec lekcji</b>
+
+        <span>
+          Zajęcia na dziś już się skończyły
         </span>
 
       </div>
@@ -1615,7 +1911,7 @@ function renderStart(){
         <span>
           Sala ${escapeHTML(l.room)}
           ·
-          ${escapeHTML(l.teacher)}
+          ${teacherLine(l)}
         </span>
 
       </div>
@@ -1684,8 +1980,10 @@ function renderPlan(){
         <div class="meta">
           Sala ${escapeHTML(l.room)}
           ·
-          ${escapeHTML(l.teacher)}
+          ${teacherLine(l)}
         </div>
+
+        ${noteLine(l)}
 
       </div>
 
@@ -1827,7 +2125,7 @@ function renderAttendance(){
           <div class="meta">
             Sala ${escapeHTML(l.room)}
             ·
-            ${escapeHTML(l.teacher)}
+            ${teacherLine(l)}
           </div>
 
         </div>
