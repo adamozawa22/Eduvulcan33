@@ -2768,117 +2768,189 @@ function bulkScopeLabel(){
 }
 
 
-/* =====================================================
-   MASOWE ZAZNACZANIE (DZIEŃ LUB TYDZIEŃ)
-===================================================== */
+/*
+  Zwraca listę {weekday, date, lesson} dla dni
+  objętych aktualnym zakresem (dzień albo tydzień).
+*/
 
-async function markBulk(status){
+function bulkRows(){
+
+  const out=[];
+
+
+  bulkDays().forEach(d=>{
+
+    const rows=
+      plan.filter(
+        x=>
+          Number(x.weekday)===d
+      );
+
+    if(!rows.length)
+      return;
+
+
+    const date=
+      localDateISO(
+        getWeekDate(d)
+      );
+
+
+    rows.forEach(t=>{
+
+      out.push({
+        weekday:d,
+        date,
+        lesson:t
+      });
+
+    });
+
+  });
+
+
+  return out;
+
+}
+
+
+/*
+  Stan oczekującego potwierdzenia (bez window.confirm,
+  które bywa blokowane wewnątrz podglądu artefaktu).
+*/
+
+let pendingBulk=null;
+
+
+function askBulkConfirm(kind,status){
+
+  const rows=
+    bulkRows();
+
+
+  if(!rows.length){
+
+    bulkMsg.textContent=
+      "Brak lekcji w wybranym zakresie. Najpierw dodaj plan.";
+
+    pendingBulk=null;
+
+    return;
+
+  }
+
+
+  pendingBulk={kind,status,rows};
+
+
+  const question=
+    kind==="clear"
+      ? `Usunąć wszystkie wpisy frekwencji (${rows.length}) – ${bulkScopeLabel()}?`
+      : `Oznaczyć wszystkie lekcje (${rows.length}) – ${bulkScopeLabel()} – jako "${statusLabel(status)}"?`;
+
+
+  bulkMsg.innerHTML=
+    `<span>${esc(question)}</span> `+
+    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="confirmBulk()">Tak, wykonaj</button> `+
+    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px" onclick="cancelBulk()">Anuluj</button>`;
+
+}
+
+
+function cancelBulk(){
+
+  pendingBulk=null;
+
+  updateBulkLabels();
+
+}
+
+
+async function confirmBulk(){
+
+  if(!pendingBulk)
+    return;
+
+
+  const {kind,status,rows}=
+    pendingBulk;
+
+  pendingBulk=null;
+
 
   try{
 
     db();
 
 
-    const tasks=[];
-
-    let count=0;
-
-
-    bulkDays().forEach(d=>{
-
-      const rows=
-        plan.filter(
-          x=>
-            Number(x.weekday)===d
-        );
-
-      if(!rows.length)
-        return;
+    bulkMsg.textContent=
+      kind==="clear"
+        ? "Usuwanie..."
+        : "Zapisywanie...";
 
 
-      const date=
-        localDateISO(
-          getWeekDate(d)
-        );
+    const tasks=
+      rows.map(r=>{
 
+        if(kind==="clear"){
 
-      rows.forEach(t=>{
+          return sb
+            .from("attendance")
+            .delete()
+            .eq(
+              "lesson_number",
+              Number(r.lesson.lesson_number)
+            )
+            .eq(
+              "lesson_date",
+              r.date
+            );
 
-        count++;
+        }
 
 
         const existing=
           attendance.find(
             x=>
               Number(x.lesson_number)===
-                Number(t.lesson_number) &&
+                Number(r.lesson.lesson_number) &&
               String(x.lesson_date||"")===
-                date
+                r.date
           );
 
 
         if(existing){
 
-          tasks.push(
-            sb
-              .from("attendance")
-              .update({
-                status,
-                weekday:d
-              })
-              .eq(
-                "id",
-                existing.id
-              )
-          );
-
-          return;
+          return sb
+            .from("attendance")
+            .update({
+              status,
+              weekday:r.weekday
+            })
+            .eq(
+              "id",
+              existing.id
+            );
 
         }
 
 
-        tasks.push(
-          sb
-            .from("attendance")
-            .insert({
+        return sb
+          .from("attendance")
+          .insert({
 
-              weekday:d,
+            weekday:r.weekday,
 
-              lesson_number:
-                Number(t.lesson_number),
+            lesson_number:
+              Number(r.lesson.lesson_number),
 
-              status,
+            status,
 
-              lesson_date:date
+            lesson_date:r.date
 
-            })
-        );
+          });
 
       });
-
-    });
-
-
-    if(!count){
-
-      bulkMsg.textContent=
-        "Brak lekcji w wybranym zakresie. Najpierw dodaj plan.";
-
-      return;
-
-    }
-
-
-    const ok=
-      confirm(
-        `Oznaczyć wszystkie lekcje (${count}) – ${bulkScopeLabel()} – jako "${statusLabel(status)}"?`
-      );
-
-    if(!ok)return;
-
-
-    bulkMsg.textContent=
-      "Zapisywanie...";
 
 
     const results=
@@ -2894,8 +2966,11 @@ async function markBulk(status){
 
     await loadData();
 
+
     bulkMsg.textContent=
-      `Zapisano: ${statusLabel(status).toLowerCase()} dla ${count} lekcji (${bulkScopeLabel()}).`;
+      kind==="clear"
+        ? `Wyczyszczono wpisy – ${bulkScopeLabel()}.`
+        : `Zapisano: ${statusLabel(status).toLowerCase()} dla ${rows.length} lekcji (${bulkScopeLabel()}).`;
 
 
   }catch(e){
@@ -2909,108 +2984,23 @@ async function markBulk(status){
 
 
 /* =====================================================
+   MASOWE ZAZNACZANIE (DZIEŃ LUB TYDZIEŃ)
+===================================================== */
+
+function markBulk(status){
+
+  askBulkConfirm("mark",status);
+
+}
+
+
+/* =====================================================
    CZYSZCZENIE (DZIEŃ LUB TYDZIEŃ)
 ===================================================== */
 
-async function clearBulk(){
+function clearBulk(){
 
-  try{
-
-    db();
-
-
-    const tasks=[];
-
-    let count=0;
-
-
-    bulkDays().forEach(d=>{
-
-      const rows=
-        plan.filter(
-          x=>
-            Number(x.weekday)===d
-        );
-
-      if(!rows.length)
-        return;
-
-
-      const date=
-        localDateISO(
-          getWeekDate(d)
-        );
-
-
-      rows.forEach(t=>{
-
-        count++;
-
-
-        tasks.push(
-          sb
-            .from("attendance")
-            .delete()
-            .eq(
-              "lesson_number",
-              Number(t.lesson_number)
-            )
-            .eq(
-              "lesson_date",
-              date
-            )
-        );
-
-      });
-
-    });
-
-
-    if(!count){
-
-      bulkMsg.textContent=
-        "Brak lekcji w wybranym zakresie.";
-
-      return;
-
-    }
-
-
-    const ok=
-      confirm(
-        `Usunąć wszystkie wpisy frekwencji – ${bulkScopeLabel()}?`
-      );
-
-    if(!ok)return;
-
-
-    bulkMsg.textContent=
-      "Usuwanie...";
-
-
-    const results=
-      await Promise.all(tasks);
-
-
-    const failed=
-      results.find(r=>r.error);
-
-    if(failed)
-      throw failed.error;
-
-
-    await loadData();
-
-    bulkMsg.textContent=
-      `Wyczyszczono wpisy – ${bulkScopeLabel()}.`;
-
-
-  }catch(e){
-
-    bulkMsg.textContent=
-      "Błąd: "+e.message;
-
-  }
+  askBulkConfirm("clear",null);
 
 }
 
