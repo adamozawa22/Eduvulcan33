@@ -351,7 +351,7 @@ main{
 
 .wd.today .wd-name{color:var(--accent)}
 
-/* Start: nieobecności */
+/* Start: listy / karty */
 
 .issues{overflow:hidden}
 
@@ -1245,10 +1245,10 @@ Więcej
 <div class="week" id="start-week"></div>
 
 <div class="st-head">
-<h3>Ostatnie nieobecności i spóźnienia</h3>
+<h3>Ostatnie oceny</h3>
 </div>
 
-<div id="start-issues"></div>
+<div id="start-grades"></div>
 
 <div class="st-head">
 <h3>Frekwencja z przedmiotów</h3>
@@ -2352,70 +2352,51 @@ function renderStart(){
     }).join("");
 
 
-  /* --- ostatnie nieobecności i spóźnienia --- */
+  /* --- ostatnie oceny --- */
 
-  const issues=
-    attendanceData
-      .filter(x=>
-        (x.status==="absent" || x.status==="late") &&
-        parseISODate(x.lesson_date)
-      )
-      .sort((a,b)=>
-        String(b.lesson_date).localeCompare(String(a.lesson_date)) ||
-        Number(b.lesson_number)-Number(a.lesson_number)
-      )
-      .slice(0,4);
+  const recentGrades = (gradesData || [])
+    .slice()
+    .sort((a, b) =>
+      String(b.grade_date || "").localeCompare(String(a.grade_date || ""))
+    )
+    .slice(0, 4);
 
-  document.getElementById("start-issues")
-    .innerHTML=
-      issues.length
-        ? `<div class="st-card issues">`+
-          issues.map(x=>{
-
-            const d=parseISODate(x.lesson_date);
-            const lesson=lessonAt(x);
-            const n=Number(x.lesson_number);
-
-            const title=
-              lesson && lesson.subj
-                ? lesson.subj
-                : "Lekcja "+n;
-
-            const label=
-              x.status==="absent"
-                ? "Nieobecność"
-                : "Spóźnienie";
+  const startGradesBox = document.getElementById("start-grades");
+  if (startGradesBox) {
+    startGradesBox.innerHTML = recentGrades.length
+      ? `<div class="st-card issues">` +
+        recentGrades
+          .map(g => {
+            const d = parseISODate(g.grade_date);
+            const dayNum = d ? d.getDate() : "—";
+            const monthStr = d ? monthShort[d.getMonth()] : "";
 
             return `
 
               <div class="issue">
 
                 <div class="issue-date">
-                  <b>${d.getDate()}</b>
-                  <span>${monthShort[d.getMonth()]}</span>
+                  <b>${dayNum}</b>
+                  <span>${monthStr}</span>
                 </div>
 
                 <div class="issue-body">
-                  <b>${escapeHTML(title)}</b>
-                  <span>${dayNames[d.getDay()]}, lekcja ${n}</span>
+                  <b>${escapeHTML(g.subject)}</b>
+                  <span>${escapeHTML(g.category || "Ocena")}${g.description ? " · " + escapeHTML(g.description) : ""}</span>
                 </div>
 
-                <div class="status-pill ${x.status}">
-                  ${iconForStatus(x.status)}
-                  ${label}
+                <div class="status-pill present" style="font-size:16px;font-weight:800;padding:6px 14px">
+                  ${escapeHTML(g.value)}
                 </div>
 
               </div>
 
             `;
-
-          }).join("")+
-          `</div>`
-        : `<div class="st-card"><div class="st-empty">${
-            stats.total
-              ? "Brak nieobecności ani spóźnień."
-              : "Brak wpisów frekwencji."
-          }</div></div>`;
+          })
+          .join("") +
+        `</div>`
+      : `<div class="st-card"><div class="st-empty">Brak ostatnich ocen.</div></div>`;
+  }
 
 
   /* --- frekwencja z przedmiotów --- */
