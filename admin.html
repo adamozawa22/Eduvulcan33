@@ -593,6 +593,59 @@ button.secondary:hover{background:var(--card-hover)}
 .teacher-row .tr-actions{display:flex;justify-content:flex-start;gap:6px}
 .teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
 
+/* ---- oceny ---- */
+
+.grade-subject-block{margin-bottom:16px}
+
+.grade-subject-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 4px;
+}
+
+.grade-subject-head .gs-name{
+  font-weight:700;
+  font-size:14.5px;
+}
+
+.grade-subject-head .gs-avg{
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+.grade-subject-head .gs-avg b{color:var(--accent-dark)}
+
+.grade-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:8px;
+}
+
+.grade-badge{
+  min-width:38px;
+  height:38px;
+  border-radius:11px;
+  background:var(--accent-dim);
+  color:var(--accent-dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:15px;
+}
+
+.grade-row .gr-info{flex:1;min-width:0}
+.grade-row .gr-cat{font-weight:600;font-size:13px}
+.grade-row .gr-date{font-size:11.5px;color:var(--muted);margin-top:2px}
+.grade-row .gr-actions{display:flex;gap:6px}
+.grade-row .gr-actions button{padding:8px 12px;font-size:12px}
+
 @media(max-width:900px){
 
   .layout{grid-template-columns:1fr}
@@ -667,6 +720,10 @@ Plan lekcji
 
 <button class="tab" onclick="switchPanel('frekwencja',this)">
 Frekwencja
+</button>
+
+<button class="tab" onclick="switchPanel('oceny',this)">
+Oceny
 </button>
 
 <button class="tab" onclick="switchPanel('nauczyciele',this)">
@@ -767,6 +824,77 @@ Cały tydzień
 Najpierw wybierz zakres: cały dzień albo cały tydzień. Potem kliknij obecność lub nieobecność, żeby oznaczyć wszystkie lekcje z tego zakresu.
 Pojedynczą lekcję nadal można kliknąć i ustawić obecność, nieobecność albo spóźnienie. Każdy wpis jest zapisywany dla konkretnej daty.
 </div>
+
+</div>
+
+</section>
+
+
+<section id="panel-oceny" class="panel">
+
+<div class="card">
+
+<h2>Dodaj ocenę</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Przedmiot</label>
+<select id="gSubject"></select>
+</div>
+
+<div>
+<label>Ocena</label>
+<select id="gValue"></select>
+</div>
+
+<div>
+<label>Waga</label>
+<select id="gWeight">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+</select>
+</div>
+
+<div>
+<label>Kategoria</label>
+<select id="gCategory"></select>
+</div>
+
+<div>
+<label>Data</label>
+<input id="gDate" type="date">
+</div>
+
+<div>
+<label>Opis (opcjonalnie)</label>
+<input id="gDesc" placeholder="np. Dział: Ułamki">
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="primary" onclick="saveGrade()">
+Zapisz ocenę
+</button>
+
+<button class="secondary" id="cancelEditGrade" style="display:none" onclick="cancelGradeEdit()">
+Anuluj edycję
+</button>
+
+</div>
+
+<div class="status-msg" id="gradeMsg"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Wszystkie oceny</h2>
+
+<div id="gradesList"></div>
 
 </div>
 
@@ -1202,11 +1330,39 @@ let plan=[];
 let attendance=[];
 let subjectTeachers=[];
 let teacherChanges=[];
+let grades=[];
 
 let selectedDay=0;
 let selectedLesson=null;
 let selectedAtt=null;
 let editingTeacherId=null;
+let editingGradeId=null;
+
+
+/*
+  Gotowe listy do wyboru, żeby przy dodawaniu oceny
+  nic nie trzeba było wpisywać ręcznie - wystarczy
+  wybrać przedmiot, ocenę i kategorię z rozwijanych list.
+*/
+
+const GRADE_VALUES=[
+"6",
+"5+","5","5-",
+"4+","4","4-",
+"3+","3","3-",
+"2+","2","2-",
+"1+","1"
+];
+
+const GRADE_CATEGORIES=[
+"Sprawdzian",
+"Kartkówka",
+"Odpowiedź ustna",
+"Praca domowa",
+"Aktywność",
+"Projekt",
+"Inne"
+];
 
 /*
   Zakres masowego zaznaczania:
@@ -1448,9 +1604,31 @@ async function loadData(){
       tc.data||[];
 
 
+    const g=
+      await sb
+        .from("grades")
+        .select("*")
+        .order("grade_date",{ascending:false});
+
+
+    if(
+      g.error &&
+      g.error.code!=="42P01"
+    ){
+
+      throw g.error;
+
+    }
+
+
+    grades=
+      g.data||[];
+
+
     prepareSubjectOptions();
     prepareSubstituteOptions();
     prepareSubjectDatalist();
+    prepareGradeOptions();
 
     renderPlanDays();
     renderSchedule();
@@ -1459,6 +1637,7 @@ async function loadData(){
     renderAttendance();
 
     renderTeachers();
+    renderGrades();
 
 
   }catch(e){
@@ -1489,6 +1668,11 @@ const viewTitles={
   frekwencja:[
     "Frekwencja",
     "Obecności, nieobecności i spóźnienia"
+  ],
+
+  oceny:[
+    "Oceny",
+    "Zarządzanie ocenami uczniów"
   ],
 
   nauczyciele:[
@@ -1757,6 +1941,44 @@ function prepareSubjectDatalist(){
         `<option value="${esc(x)}">`
       )
       .join("");
+
+}
+
+
+function prepareGradeOptions(){
+
+  gSubject.innerHTML=
+    allKnownSubjects()
+      .map(x=>
+        `<option value="${esc(x)}">${esc(x)}</option>`
+      )
+      .join("");
+
+
+  gValue.innerHTML=
+    GRADE_VALUES
+      .map(x=>
+        `<option value="${esc(x)}">${esc(x)}</option>`
+      )
+      .join("");
+
+
+  gCategory.innerHTML=
+    GRADE_CATEGORIES
+      .map(x=>
+        `<option value="${esc(x)}">${esc(x)}</option>`
+      )
+      .join("");
+
+
+  if(!gDate.value){
+
+    gDate.value=
+      new Date()
+        .toISOString()
+        .slice(0,10);
+
+  }
 
 }
 
@@ -2992,6 +3214,371 @@ function markBulk(status){
 function clearBulk(){
 
   askBulkConfirm("clear",null);
+
+}
+
+
+/* =====================================================
+   OCENY
+===================================================== */
+
+function gradeToNumber(v){
+
+  const s=
+    String(v||"").trim();
+
+  const base=
+    parseFloat(s);
+
+  if(Number.isNaN(base))
+    return null;
+
+  if(s.endsWith("+"))
+    return base+0.5;
+
+  if(s.endsWith("-"))
+    return base-0.25;
+
+  return base;
+
+}
+
+
+function fmtGradeDate(d){
+
+  if(!d)
+    return "";
+
+  const m=
+    /^(\d{4})-(\d{2})-(\d{2})/.exec(
+      String(d)
+    );
+
+  if(!m)
+    return String(d);
+
+  return m[3]+"."+m[2]+"."+m[1];
+
+}
+
+
+function renderGrades(){
+
+  if(!grades.length){
+
+    gradesList.innerHTML=
+      "<div style='color:var(--muted);padding:10px 0'>Brak ocen. Dodaj pierwszą powyżej.</div>";
+
+    return;
+
+  }
+
+
+  const bySubject={};
+
+  grades.forEach(g=>{
+
+    const key=
+      g.subject||"Inne";
+
+    (bySubject[key]=
+      bySubject[key]||[]
+    ).push(g);
+
+  });
+
+
+  const subjects=
+    Object.keys(bySubject)
+      .sort(
+        (a,b)=>
+          a.localeCompare(b,"pl")
+      );
+
+
+  gradesList.innerHTML=
+    subjects.map(subj=>{
+
+      const rows=
+        bySubject[subj]
+          .slice()
+          .sort(
+            (a,b)=>
+              String(b.grade_date||"")
+                .localeCompare(
+                  String(a.grade_date||"")
+                )
+          );
+
+
+      let wsum=0;
+      let wtotal=0;
+
+      rows.forEach(r=>{
+
+        const n=
+          gradeToNumber(r.value);
+
+        const w=
+          Number(r.weight)||1;
+
+        if(n!==null){
+          wsum+=n*w;
+          wtotal+=w;
+        }
+
+      });
+
+
+      const avg=
+        wtotal
+          ? (wsum/wtotal).toFixed(2)
+          : "—";
+
+
+      return `
+
+      <div class="grade-subject-block">
+
+        <div class="grade-subject-head">
+
+          <div class="gs-name">
+            ${esc(subj)}
+          </div>
+
+          <div class="gs-avg">
+            Średnia: <b>${esc(avg)}</b>
+          </div>
+
+        </div>
+
+        ${rows.map(r=>`
+
+        <div class="grade-row">
+
+          <div class="grade-badge">
+            ${esc(r.value)}
+          </div>
+
+          <div class="gr-info">
+
+            <div class="gr-cat">
+              ${esc(r.category||"")}${
+                r.description
+                  ? " · "+esc(r.description)
+                  : ""
+              }
+            </div>
+
+            <div class="gr-date">
+              ${esc(fmtGradeDate(r.grade_date))} · waga ${esc(String(r.weight||1))}
+            </div>
+
+          </div>
+
+          <div class="gr-actions">
+
+            <button
+              class="secondary"
+              onclick="editGrade('${esc(String(r.id))}')"
+            >
+              Edytuj
+            </button>
+
+            <button
+              class="secondary"
+              onclick="removeGrade('${esc(String(r.id))}')"
+            >
+              Usuń
+            </button>
+
+          </div>
+
+        </div>
+
+        `).join("")}
+
+      </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function editGrade(id){
+
+  const row=
+    grades.find(
+      x=>String(x.id)===String(id)
+    );
+
+  if(!row)
+    return;
+
+
+  editingGradeId=id;
+
+  gSubject.value=
+    row.subject;
+
+  gValue.value=
+    row.value;
+
+  gWeight.value=
+    String(row.weight||1);
+
+  gCategory.value=
+    row.category||GRADE_CATEGORIES[0];
+
+  gDesc.value=
+    row.description||"";
+
+  gDate.value=
+    row.grade_date||"";
+
+  cancelEditGrade.style.display=
+    "inline-block";
+
+  gradeMsg.textContent="";
+
+  gSubject.focus();
+
+}
+
+
+function cancelGradeEdit(){
+
+  editingGradeId=null;
+
+  gDesc.value="";
+
+  cancelEditGrade.style.display=
+    "none";
+
+  gradeMsg.textContent="";
+
+}
+
+
+async function saveGrade(){
+
+  try{
+
+    db();
+
+
+    const subject=
+      gSubject.value;
+
+    const value=
+      gValue.value;
+
+    const weight=
+      Number(gWeight.value)||1;
+
+    const category=
+      gCategory.value;
+
+    const description=
+      gDesc.value.trim();
+
+    const grade_date=
+      gDate.value||
+      new Date().toISOString().slice(0,10);
+
+
+    if(!subject||!value){
+
+      throw new Error(
+        "Wybierz przedmiot i ocenę."
+      );
+
+    }
+
+
+    const payload={
+      subject,
+      value,
+      weight,
+      category,
+      description,
+      grade_date
+    };
+
+
+    const {error}=editingGradeId
+
+      ?
+
+      await sb
+        .from("grades")
+        .update(payload)
+        .eq(
+          "id",
+          editingGradeId
+        )
+
+      :
+
+      await sb
+        .from("grades")
+        .insert(payload);
+
+
+    if(error)
+      throw error;
+
+
+    cancelGradeEdit();
+
+    gradeMsg.textContent=
+      "Zapisano ocenę.";
+
+    await loadData();
+
+
+  }catch(e){
+
+    gradeMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+async function removeGrade(id){
+
+  try{
+
+    db();
+
+
+    const {error}=
+      await sb
+        .from("grades")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if(error)
+      throw error;
+
+
+    await loadData();
+
+
+  }catch(e){
+
+    gradeMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
 
 }
 
