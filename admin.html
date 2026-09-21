@@ -79,6 +79,7 @@ h2{
 
 .tabs{
   display:flex;
+  justify-content:flex-start;
   gap:8px;
   margin-bottom:18px;
   overflow:auto;
@@ -110,6 +111,7 @@ h2{
 
 .week-nav{
   display:flex;
+  justify-content:flex-start;
   align-items:center;
   gap:8px;
   flex-wrap:wrap;
@@ -131,10 +133,8 @@ h2{
 .week-nav button:hover{background:var(--card-hover)}
 
 .week-nav .week-info{
-  flex:1;
-  min-width:180px;
   margin:0;
-  text-align:center;
+  text-align:left;
   padding:9px 12px;
   border-radius:10px;
   background:var(--accent-dim);
@@ -145,6 +145,7 @@ h2{
 
 .day-tabs{
   display:flex;
+  justify-content:flex-start;
   gap:7px;
   overflow:auto;
   margin-bottom:16px;
@@ -253,8 +254,47 @@ h2{
   font-weight:700;
 }
 
+/* ---- pasek masowego zaznaczania ---- */
+
+.bulk-scope{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.bulk-scope .scope-label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+  margin-right:2px;
+}
+
+.scope-btn{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--card);
+  color:var(--muted);
+  font-family:inherit;
+}
+
+.scope-btn:hover{background:var(--card-hover)}
+
+.scope-btn.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+
 .bulk-bar{
   display:flex;
+  justify-content:flex-start;
   flex-wrap:wrap;
   gap:8px;
   margin-bottom:14px;
@@ -276,9 +316,6 @@ h2{
 
 .bulk-btn.absent{color:var(--danger);border-color:#f3c9c6}
 .bulk-btn.absent:hover{background:var(--danger-dim)}
-
-.bulk-btn.late{color:var(--late);border-color:#f0dca0}
-.bulk-btn.late:hover{background:var(--late-dim)}
 
 .bulk-btn.clear{color:var(--muted)}
 .bulk-btn.clear:hover{background:var(--card-hover)}
@@ -402,6 +439,7 @@ input:focus,select:focus{border-color:var(--accent)}
 
 .actions{
   display:flex;
+  justify-content:flex-start;
   gap:8px;
   margin-top:18px;
   flex-wrap:wrap;
@@ -505,7 +543,7 @@ button.secondary:hover{background:var(--card-hover)}
 
 .teacher-row .tr-subject{font-weight:700;flex:1}
 .teacher-row .tr-teacher{color:var(--muted);flex:1}
-.teacher-row .tr-actions{display:flex;gap:6px}
+.teacher-row .tr-actions{display:flex;justify-content:flex-start;gap:6px}
 .teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
 
 @media(max-width:800px){
@@ -584,9 +622,9 @@ Nauczyciele
 
 <div class="week-nav">
 <button onclick="changeWeek(-1)">‹ Poprzedni</button>
-<div class="week-info" id="planWeekInfo"></div>
 <button onclick="goToCurrentWeek()">Ten tydzień</button>
 <button onclick="changeWeek(1)">Następny ›</button>
+<div class="week-info" id="planWeekInfo"></div>
 </div>
 
 <div class="day-tabs" id="planDays"></div>
@@ -612,18 +650,31 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 <div class="week-nav">
 <button onclick="changeWeek(-1)">‹ Poprzedni</button>
-<div class="week-info" id="attWeekInfo"></div>
 <button onclick="goToCurrentWeek()">Ten tydzień</button>
 <button onclick="changeWeek(1)">Następny ›</button>
+<div class="week-info" id="attWeekInfo"></div>
 </div>
 
 <div class="day-tabs" id="attDays"></div>
 
+<div class="bulk-scope">
+
+<span class="scope-label">Zakres:</span>
+
+<button class="scope-btn active" id="scopeDay" onclick="setBulkScope('day',this)">
+Cały dzień
+</button>
+
+<button class="scope-btn" id="scopeWeek" onclick="setBulkScope('week',this)">
+Cały tydzień
+</button>
+
+</div>
+
 <div class="bulk-bar">
-<button class="bulk-btn present" onclick="markWholeDay('present')">✓ Cały dzień: obecność</button>
-<button class="bulk-btn absent" onclick="markWholeDay('absent')">✕ Cały dzień: nieobecność</button>
-<button class="bulk-btn late" onclick="markWholeDay('late')">⏱ Cały dzień: spóźnienie</button>
-<button class="bulk-btn clear" onclick="clearWholeDay()">Wyczyść dzień</button>
+<button class="bulk-btn present" onclick="markBulk('present')">✓ Obecność</button>
+<button class="bulk-btn absent" onclick="markBulk('absent')">✕ Nieobecność</button>
+<button class="bulk-btn clear" onclick="clearBulk()">Wyczyść</button>
 </div>
 
 <div class="status-msg" id="bulkMsg"></div>
@@ -633,8 +684,8 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 </div>
 
 <div class="status-msg">
-Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.
-Każdy wpis jest zapisywany dla konkretnej daty. Przyciski powyżej oznaczają jednym kliknięciem wszystkie lekcje wybranego dnia.
+Najpierw wybierz zakres: cały dzień albo cały tydzień. Potem kliknij obecność lub nieobecność, żeby oznaczyć wszystkie lekcje z tego zakresu.
+Pojedynczą lekcję nadal można kliknąć i ustawić obecność, nieobecność albo spóźnienie. Każdy wpis jest zapisywany dla konkretnej daty.
 </div>
 
 </div>
@@ -1072,6 +1123,13 @@ let selectedDay=0;
 let selectedLesson=null;
 let selectedAtt=null;
 let editingTeacherId=null;
+
+/*
+  Zakres masowego zaznaczania:
+  "day"  = tylko wybrany dzień
+  "week" = cały tydzień (pon–pt)
+*/
+let bulkScope="day";
 
 
 /* =====================================================
@@ -2492,45 +2550,159 @@ function statusLabel(status){
 
 
 /* =====================================================
-   MASOWE ZAZNACZANIE CAŁEGO DNIA
+   ZAKRES MASOWEGO ZAZNACZANIA
 ===================================================== */
 
-async function markWholeDay(status){
+function setBulkScope(scope,btn){
+
+  bulkScope=scope;
+
+
+  document
+    .querySelectorAll(".scope-btn")
+    .forEach(b=>
+      b.classList.remove("active")
+    );
+
+
+  if(btn)
+    btn.classList.add("active");
+
+
+  bulkMsg.textContent=
+    scope==="week"
+      ? "Zakres: cały tydzień ("+formatWeek(currentWeekMonday)+")."
+      : "Zakres: "+days[selectedDay]+" ("+formatFullDate(getWeekDate(selectedDay))+").";
+
+}
+
+
+/*
+  Dni objęte aktualnym zakresem.
+*/
+
+function bulkDays(){
+
+  return bulkScope==="week"
+    ? [0,1,2,3,4]
+    : [selectedDay];
+
+}
+
+
+function bulkScopeLabel(){
+
+  return bulkScope==="week"
+    ? `cały tydzień ${formatWeek(currentWeekMonday)}`
+    : `${days[selectedDay]} (${formatFullDate(getWeekDate(selectedDay))})`;
+
+}
+
+
+/* =====================================================
+   MASOWE ZAZNACZANIE (DZIEŃ LUB TYDZIEŃ)
+===================================================== */
+
+async function markBulk(status){
 
   try{
 
     db();
 
 
-    const rows=
-      plan
-        .filter(
+    const tasks=[];
+
+    let count=0;
+
+
+    bulkDays().forEach(d=>{
+
+      const rows=
+        plan.filter(
           x=>
-            Number(x.weekday)===
-            selectedDay
+            Number(x.weekday)===d
+        );
+
+      if(!rows.length)
+        return;
+
+
+      const date=
+        localDateISO(
+          getWeekDate(d)
         );
 
 
-    if(!rows.length){
+      rows.forEach(t=>{
+
+        count++;
+
+
+        const existing=
+          attendance.find(
+            x=>
+              Number(x.lesson_number)===
+                Number(t.lesson_number) &&
+              String(x.lesson_date||"")===
+                date
+          );
+
+
+        if(existing){
+
+          tasks.push(
+            sb
+              .from("attendance")
+              .update({
+                status,
+                weekday:d
+              })
+              .eq(
+                "id",
+                existing.id
+              )
+          );
+
+          return;
+
+        }
+
+
+        tasks.push(
+          sb
+            .from("attendance")
+            .insert({
+
+              weekday:d,
+
+              lesson_number:
+                Number(t.lesson_number),
+
+              status,
+
+              lesson_date:date
+
+            })
+        );
+
+      });
+
+    });
+
+
+    if(!count){
 
       bulkMsg.textContent=
-        "Brak lekcji tego dnia. Najpierw dodaj plan.";
+        "Brak lekcji w wybranym zakresie. Najpierw dodaj plan.";
 
       return;
 
     }
 
 
-    const selectedDate=
-      getWeekDate(selectedDay);
-
-    const date=
-      localDateISO(selectedDate);
-
-
     const ok=
       confirm(
-        `Oznaczyć wszystkie ${rows.length} lekcje dnia ${days[selectedDay]} (${formatFullDate(selectedDate)}) jako "${statusLabel(status)}"?`
+        `Oznaczyć wszystkie lekcje (${count}) – ${bulkScopeLabel()} – jako "${statusLabel(status)}"?`
       );
 
     if(!ok)return;
@@ -2540,59 +2712,8 @@ async function markWholeDay(status){
       "Zapisywanie...";
 
 
-    /*
-      Dla kazdej lekcji tego dnia szukamy
-      istniejacego wpisu (po numerze lekcji i dacie)
-      i albo go aktualizujemy, albo tworzymy nowy.
-    */
-
     const results=
-      await Promise.all(
-        rows.map(t=>{
-
-          const existing=
-            attendance.find(
-              x=>
-                Number(x.lesson_number)===
-                  Number(t.lesson_number) &&
-                String(x.lesson_date||"")===
-                  date
-            );
-
-
-          if(existing){
-
-            return sb
-              .from("attendance")
-              .update({
-                status,
-                weekday:selectedDay
-              })
-              .eq(
-                "id",
-                existing.id
-              );
-
-          }
-
-
-          return sb
-            .from("attendance")
-            .insert({
-
-              weekday:selectedDay,
-
-              lesson_number:
-                Number(t.lesson_number),
-
-              status,
-
-              lesson_date:date
-
-            });
-
-        })
-      );
+      await Promise.all(tasks);
 
 
     const failed=
@@ -2605,7 +2726,7 @@ async function markWholeDay(status){
     await loadData();
 
     bulkMsg.textContent=
-      `Zapisano: ${statusLabel(status).toLowerCase()} dla ${rows.length} lekcji.`;
+      `Zapisano: ${statusLabel(status).toLowerCase()} dla ${count} lekcji (${bulkScopeLabel()}).`;
 
 
   }catch(e){
@@ -2619,58 +2740,45 @@ async function markWholeDay(status){
 
 
 /* =====================================================
-   CZYSZCZENIE CAŁEGO DNIA
+   CZYSZCZENIE (DZIEŃ LUB TYDZIEŃ)
 ===================================================== */
 
-async function clearWholeDay(){
+async function clearBulk(){
 
   try{
 
     db();
 
 
-    const rows=
-      plan
-        .filter(
+    const tasks=[];
+
+    let count=0;
+
+
+    bulkDays().forEach(d=>{
+
+      const rows=
+        plan.filter(
           x=>
-            Number(x.weekday)===
-            selectedDay
+            Number(x.weekday)===d
+        );
+
+      if(!rows.length)
+        return;
+
+
+      const date=
+        localDateISO(
+          getWeekDate(d)
         );
 
 
-    if(!rows.length){
+      rows.forEach(t=>{
 
-      bulkMsg.textContent=
-        "Brak lekcji tego dnia.";
-
-      return;
-
-    }
+        count++;
 
 
-    const selectedDate=
-      getWeekDate(selectedDay);
-
-    const date=
-      localDateISO(selectedDate);
-
-
-    const ok=
-      confirm(
-        `Usunąć wszystkie wpisy frekwencji dla dnia ${days[selectedDay]} (${formatFullDate(selectedDate)})?`
-      );
-
-    if(!ok)return;
-
-
-    bulkMsg.textContent=
-      "Usuwanie...";
-
-
-    const results=
-      await Promise.all(
-        rows.map(t=>
-
+        tasks.push(
           sb
             .from("attendance")
             .delete()
@@ -2682,9 +2790,37 @@ async function clearWholeDay(){
               "lesson_date",
               date
             )
+        );
 
-        )
+      });
+
+    });
+
+
+    if(!count){
+
+      bulkMsg.textContent=
+        "Brak lekcji w wybranym zakresie.";
+
+      return;
+
+    }
+
+
+    const ok=
+      confirm(
+        `Usunąć wszystkie wpisy frekwencji – ${bulkScopeLabel()}?`
       );
+
+    if(!ok)return;
+
+
+    bulkMsg.textContent=
+      "Usuwanie...";
+
+
+    const results=
+      await Promise.all(tasks);
 
 
     const failed=
@@ -2697,7 +2833,7 @@ async function clearWholeDay(){
     await loadData();
 
     bulkMsg.textContent=
-      "Wyczyszczono wpisy dla tego dnia.";
+      `Wyczyszczono wpisy – ${bulkScopeLabel()}.`;
 
 
   }catch(e){
