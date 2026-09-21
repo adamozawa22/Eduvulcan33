@@ -19,6 +19,11 @@
   --danger:#d6413a;
   --danger-dim:#fbe9e8;
   --header-bg:#ffffff;
+  --ok:#1f8a3e;
+  --ok-dim:#e4f7ea;
+  --warn:#e0a100;
+  --warn-dim:#fff4d6;
+  --warn-ink:#a36d00;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -105,85 +110,6 @@ main{
 .view{display:none}
 .view.active{display:block}
 
-/* START */
-
-.hero{
-  background:linear-gradient(135deg,var(--accent),var(--accent-dark));
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:16px;
-  color:#fff;
-  box-shadow:0 8px 22px rgba(0,100,200,.25);
-}
-
-.hero .big{
-  font-size:42px;
-  font-weight:700;
-}
-
-.hero .label{
-  color:rgba(255,255,255,.85);
-  font-size:14px;
-  margin-top:4px;
-}
-
-.quick-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-bottom:16px;
-}
-
-.quick-card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:15px;
-  box-shadow:0 1px 3px rgba(20,30,50,.05);
-}
-
-.quick-card .n{
-  font-size:20px;
-  font-weight:700;
-  color:var(--accent);
-}
-
-.quick-card .t{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:2px;
-}
-
-.next-lesson{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  box-shadow:0 1px 3px rgba(20,30,50,.05);
-}
-
-.next-lesson .time{
-  font-size:15px;
-  color:var(--accent);
-  font-weight:700;
-  min-width:52px;
-}
-
-.next-lesson .info{flex:1}
-
-.next-lesson .info b{
-  font-size:15px;
-  display:block;
-}
-
-.next-lesson .info span{
-  font-size:13px;
-  color:var(--muted);
-}
-
 .section-title{
   font-size:13px;
   font-weight:600;
@@ -193,48 +119,369 @@ main{
   margin:20px 0 10px;
 }
 
-.mini-lesson{
+/* START */
+
+.st-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+
+.st-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  margin:28px 2px 12px;
+}
+
+.st-head h3{
+  font-size:16px;
+  font-weight:700;
+}
+
+.st-head span{
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+.st-empty{
+  padding:20px 16px;
+  font-size:14px;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* Start: podsumowanie */
+
+.sum{padding:20px}
+
+.sum-main{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
+.ring-wrap{
+  position:relative;
+  width:136px;
+  height:136px;
+  flex:none;
+}
+
+.ring{
+  display:block;
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg);
+}
+
+.ring circle{
+  fill:none;
+  stroke-width:14;
+}
+
+.ring-track{stroke:var(--line)}
+
+.ring-seg{
+  animation:ringIn .9s cubic-bezier(.22,.8,.3,1) both;
+}
+
+@keyframes ringIn{
+  from{stroke-dasharray:0 var(--circ)}
+}
+
+.ring-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.ring-center b{
+  font-size:36px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+
+.ring-center b small{
+  font-size:18px;
+  font-weight:700;
+  margin-left:1px;
+}
+
+.ring-center span{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.legend{
+  list-style:none;
+  flex:1;
+  min-width:150px;
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+}
+
+.legend li{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+}
+
+.legend i{
+  width:10px;
+  height:10px;
+  border-radius:3px;
+  flex:none;
+}
+
+.legend span{
+  flex:1;
+  color:var(--muted);
+}
+
+.legend b{
+  font-size:17px;
+  font-variant-numeric:tabular-nums;
+}
+
+.sum-foot{
+  display:flex;
+  gap:16px;
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+
+.sum-foot div{flex:1}
+
+.sum-foot b{
+  display:block;
+  font-size:17px;
+  font-variant-numeric:tabular-nums;
+}
+
+.sum-foot span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Start: tydzień */
+
+.week{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.wd{
+  font:inherit;
+  color:inherit;
   background:var(--card);
   border:1px solid var(--line);
   border-radius:14px;
-  padding:11px 14px;
-  margin-bottom:8px;
-  box-shadow:0 1px 2px rgba(20,30,50,.04);
+  padding:11px 4px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  cursor:pointer;
 }
 
-.mini-time{
-  min-width:42px;
+.wd:active{transform:scale(.96)}
+
+.wd:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+.wd-name{
   font-size:12px;
-  color:var(--muted);
-  line-height:1.45;
-}
-
-.mini-info{flex:1}
-
-.mini-info b{
-  font-size:14px;
-  display:block;
-}
-
-.mini-info span{
-  font-size:12px;
+  font-weight:600;
   color:var(--muted);
 }
 
-.mini-num{
-  font-size:13px;
+.wd-num{
+  font-size:19px;
   font-weight:700;
-  color:#fff;
-  background:var(--accent);
-  min-width:22px;
-  height:22px;
-  border-radius:7px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+
+.wd-mark{
+  width:28px;
+  height:28px;
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:#eef1f5;
+  color:#8d97a6;
+}
+
+.wd-mark svg{
+  width:14px;
+  height:14px;
+}
+
+.wd-detail{
+  font-size:11.5px;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+
+.wd.ok .wd-mark{background:var(--ok-dim);color:var(--ok)}
+.wd.warn .wd-mark{background:var(--warn-dim);color:var(--warn-ink)}
+.wd.bad .wd-mark{background:var(--danger-dim);color:var(--danger)}
+
+.wd.today{
+  border-color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent);
+}
+
+.wd.today .wd-name{color:var(--accent)}
+
+/* Start: nieobecności */
+
+.issues{overflow:hidden}
+
+.issue{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:12px 16px;
+}
+
+.issue + .issue{border-top:1px solid var(--line)}
+
+.issue-date{
+  width:36px;
+  flex:none;
+  text-align:center;
+}
+
+.issue-date b{
+  display:block;
+  font-size:20px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+
+.issue-date span{
+  display:block;
+  margin-top:3px;
+  font-size:11.5px;
+  color:var(--muted);
+}
+
+.issue-body{
+  flex:1;
+  min-width:0;
+}
+
+.issue-body b{
+  display:block;
+  font-size:14.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.issue-body span{
+  display:block;
+  margin-top:2px;
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+/* Start: przedmioty */
+
+.subjects{padding:2px 16px}
+
+.subj-row{padding:13px 0}
+
+.subj-row + .subj-row{border-top:1px solid var(--line)}
+
+.subj-top{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:9px;
+}
+
+.subj-name{
+  flex:1;
+  min-width:0;
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.subj-cnt{
+  font-size:12px;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+
+.subj-pct{
+  min-width:42px;
+  text-align:right;
+  font-size:14px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+.bar{
+  height:6px;
+  border-radius:999px;
+  background:var(--line);
+  overflow:hidden;
+}
+
+.bar i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:var(--ok);
+}
+
+.bar i.warn{background:var(--warn)}
+.bar i.bad{background:var(--danger)}
+
+.more-btn{
+  display:block;
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--accent);
+  font:inherit;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.more-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .ring-seg{animation:none}
 }
 
 /* DATA */
@@ -849,7 +1096,6 @@ nav.bottom button svg{
     margin:0 auto;
   }
 
-  .quick-grid{grid-template-columns:repeat(2,1fr)}
   .category-grid{grid-template-columns:repeat(3,1fr)}
 
   .modal{align-items:center}
@@ -914,40 +1160,27 @@ Więcej
 
 <section class="view active" id="view-start">
 
-<div class="hero">
-<div class="big" id="start-att-percent">—</div>
-<div class="label">frekwencja w tym semestrze</div>
+<div id="start-summary"></div>
+
+<div class="st-head">
+<h3>Ten tydzień</h3>
+<span id="start-week-range"></span>
 </div>
 
-<div class="section-title">Wybrany dzień</div>
+<div class="week" id="start-week"></div>
 
-<div class="day-nav">
-<button onclick="changeDay(-1)">‹</button>
-<div class="day-label" id="start-day-label"></div>
-<button onclick="changeDay(1)">›</button>
+<div class="st-head">
+<h3>Ostatnie nieobecności i spóźnienia</h3>
 </div>
 
-<div class="quick-grid">
+<div id="start-issues"></div>
 
-<div class="quick-card">
-<div class="n" id="start-lesson-count">0</div>
-<div class="t">lekcji</div>
+<div class="st-head">
+<h3>Frekwencja z przedmiotów</h3>
+<span>od najniższej</span>
 </div>
 
-<div class="quick-card">
-<div class="n" id="start-end-time">—</div>
-<div class="t">koniec zajęć</div>
-</div>
-
-</div>
-
-<div class="section-title">Najbliższa lekcja</div>
-
-<div class="next-lesson" id="start-next-lesson"></div>
-
-<div class="section-title">Mini plan lekcji</div>
-
-<div id="start-mini-plan"></div>
+<div id="start-subjects"></div>
 
 </section>
 
@@ -1183,11 +1416,6 @@ wysyłania wiadomości. Prosimy spróbować ponownie później.
 <div class="toggle on" onclick="this.classList.toggle('on')"></div>
 </div>
 
-<div class="setting-row">
-<span>Mini plan na starcie</span>
-<div class="toggle on" onclick="this.classList.toggle('on')"></div>
-</div>
-
 </div>
 </div>
 
@@ -1341,6 +1569,13 @@ const monthNames=[
 "Grudnia"
 ];
 
+const dayShort=["Nd","Pn","Wt","Śr","Cz","Pt","Sb"];
+
+const monthShort=[
+"sty","lut","mar","kwi","maj","cze",
+"lip","sie","wrz","paź","lis","gru"
+];
+
 
 /* =====================================================
    DATA -> YYYY-MM-DD
@@ -1353,6 +1588,25 @@ function formatISODate(date){
   const d=String(date.getDate()).padStart(2,"0");
 
   return `${y}-${m}-${d}`;
+
+}
+
+
+/* =====================================================
+   YYYY-MM-DD -> DATA (czas lokalny)
+===================================================== */
+
+function parseISODate(value){
+
+  const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(value||""));
+
+  if(!m)return null;
+
+  return new Date(
+    Number(m[1]),
+    Number(m[2])-1,
+    Number(m[3])
+  );
 
 }
 
@@ -1509,65 +1763,6 @@ function noteLine(l){
           : "Nauczyciel nieobecny");
 
   return `<div class="sub-note">! ${escapeHTML(text)}</div>`;
-
-}
-
-
-/* =====================================================
-   GODZINA -> MINUTY
-===================================================== */
-
-function toMinutes(time){
-
-  const parts=String(time||"").split(":");
-
-  const h=Number(parts[0]);
-  const m=Number(parts[1]);
-
-  if(Number.isNaN(h)||Number.isNaN(m))return null;
-
-  return h*60+m;
-
-}
-
-
-function isToday(date){
-
-  const today=new Date();
-  today.setHours(0,0,0,0);
-
-  return date.getTime()===today.getTime();
-
-}
-
-
-/* =====================================================
-   NAJBLIŻSZA LEKCJA
-===================================================== */
-
-function getNextLesson(lessons,date){
-
-  if(!lessons.length)return null;
-
-  if(!isToday(date))return lessons[0];
-
-  const now=new Date();
-
-  const minutes=
-    now.getHours()*60+now.getMinutes();
-
-  /*
-    Pierwsza lekcja, która jeszcze się nie skończyła.
-    Jeżeli wszystkie się skończyły, zwracamy null.
-  */
-
-  return lessons.find(l=>{
-
-    const end=toMinutes(l.end);
-
-    return end===null || end>minutes;
-
-  })||null;
 
 }
 
@@ -1774,157 +1969,491 @@ function calculateAttendance(){
    START
 ===================================================== */
 
-function renderStart(){
-
-  const lessons=getLessons(currentDate);
-
-  document.getElementById("start-day-label")
-    .textContent=formatDate(currentDate);
-
-  document.getElementById("start-lesson-count")
-    .textContent=lessons.length;
-
-  document.getElementById("start-end-time")
-    .textContent=
-      lessons.length
-        ? lessons[lessons.length-1].end
-        : "—";
+let showAllSubjects=false;
+let startSummarySig="";
 
 
-  const stats=calculateAttendance();
+/* pierścień z trzema kolorami: obecność / spóźnienie / nieobecność */
 
-  document.getElementById("start-att-percent")
-    .textContent=
-      stats.percent===null
-        ? "—"
-        : stats.percent+"%";
+function buildSummary(stats,days){
 
+  const R=52;
+  const C=2*Math.PI*R;
 
-  const nextBox=
-    document.getElementById("start-next-lesson");
+  const parts=[
+    {v:stats.present,color:"var(--ok)"},
+    {v:stats.late,color:"var(--warn)"},
+    {v:stats.absent,color:"var(--danger)"}
+  ].filter(p=>p.v>0);
 
+  const gap=parts.length>1?3:0;
 
-  const next=getNextLesson(lessons,currentDate);
+  let offset=0;
 
+  const segments=
+    stats.total
+      ? parts.map(p=>{
 
-  if(next){
+          const len=(p.v/stats.total)*C;
+          const draw=Math.max(len-gap,0.5);
 
-    nextBox.innerHTML=`
+          const svg=
+            `<circle class="ring-seg" cx="70" cy="70" r="${R}"`+
+            ` style="stroke:${p.color};--circ:${C.toFixed(2)}"`+
+            ` stroke-dasharray="${draw.toFixed(2)} ${(C-draw).toFixed(2)}"`+
+            ` stroke-dashoffset="${(-offset).toFixed(2)}"/>`;
 
-      <div class="time">
-        ${escapeHTML(next.start)}
-      </div>
+          offset+=len;
 
-      <div class="info">
+          return svg;
 
-        <b>
-          ${escapeHTML(next.subj)}
-        </b>
+        }).join("")
+      : "";
 
-        <span>
-          Sala ${escapeHTML(next.room)}
-          ·
-          ${teacherLine(next)}
-        </span>
+  const big=
+    stats.percent===null
+      ? `<b>—</b>`
+      : `<b>${stats.percent}<small>%</small></b>`;
 
-      </div>
+  const caption=
+    stats.percent===null
+      ? "brak wpisów"
+      : "frekwencja";
 
-    `;
+  const aria=
+    stats.percent===null
+      ? "Brak wpisów frekwencji"
+      : "Frekwencja "+stats.percent+" procent";
 
-  }else if(lessons.length){
+  return `
 
-    nextBox.innerHTML=`
+    <div class="st-card sum">
 
-      <div class="time">—</div>
+      <div class="sum-main">
 
-      <div class="info">
+        <div class="ring-wrap">
 
-        <b>Koniec lekcji</b>
+          <svg class="ring" viewBox="0 0 140 140"
+            role="img" aria-label="${aria}">
+            <circle class="ring-track" cx="70" cy="70" r="${R}"/>
+            ${segments}
+          </svg>
 
-        <span>
-          Zajęcia na dziś już się skończyły
-        </span>
+          <div class="ring-center">
+            ${big}
+            <span>${caption}</span>
+          </div>
 
-      </div>
-
-    `;
-
-  }else{
-
-    nextBox.innerHTML=`
-
-      <div class="time">—</div>
-
-      <div class="info">
-
-        <b>Brak zajęć</b>
-
-        <span>
-          Dzień wolny od lekcji
-        </span>
-
-      </div>
-
-    `;
-
-  }
-
-
-  const mini=
-    document.getElementById("start-mini-plan");
-
-
-  if(!lessons.length){
-
-    mini.innerHTML=`
-
-      <div class="empty-state">
-
-        <div class="ico">💤</div>
-
-        <div>
-          Brak lekcji tego dnia
         </div>
 
+        <ul class="legend">
+
+          <li>
+            <i style="background:var(--ok)"></i>
+            <span>Obecności</span>
+            <b>${stats.present}</b>
+          </li>
+
+          <li>
+            <i style="background:var(--warn)"></i>
+            <span>Spóźnienia</span>
+            <b>${stats.late}</b>
+          </li>
+
+          <li>
+            <i style="background:var(--danger)"></i>
+            <span>Nieobecności</span>
+            <b>${stats.absent}</b>
+          </li>
+
+        </ul>
+
       </div>
 
-    `;
+      <div class="sum-foot">
 
-    return;
+        <div>
+          <b>${stats.total}</b>
+          <span>wpisane lekcje</span>
+        </div>
 
-  }
-
-
-  mini.innerHTML=lessons.map(l=>`
-
-    <div class="mini-lesson">
-
-      <div class="mini-num">
-        ${l.n}
-      </div>
-
-      <div class="mini-time">
-        ${escapeHTML(l.start)}<br>
-        ${escapeHTML(l.end)}
-      </div>
-
-      <div class="mini-info">
-
-        <b>
-          ${escapeHTML(l.subj)}
-        </b>
-
-        <span>
-          Sala ${escapeHTML(l.room)}
-          ·
-          ${teacherLine(l)}
-        </span>
+        <div>
+          <b>${days}</b>
+          <span>dni z frekwencją</span>
+        </div>
 
       </div>
 
     </div>
 
-  `).join("");
+  `;
+
+}
+
+
+/* poniedziałek–piątek tygodnia, w którym jest dzisiaj */
+
+function getWeekDays(){
+
+  const base=new Date();
+  base.setHours(0,0,0,0);
+
+  const dow=base.getDay();
+
+  base.setDate(
+    base.getDate()+(dow===0?-6:1-dow)
+  );
+
+  return [0,1,2,3,4].map(i=>{
+
+    const d=new Date(base);
+    d.setDate(base.getDate()+i);
+
+    return d;
+
+  });
+
+}
+
+
+function weekRangeLabel(days){
+
+  const a=days[0];
+  const b=days[4];
+
+  const ma=monthNames[a.getMonth()].toLowerCase();
+  const mb=monthNames[b.getMonth()].toLowerCase();
+
+  if(a.getMonth()===b.getMonth()){
+
+    return `${a.getDate()}–${b.getDate()} ${mb}`;
+
+  }
+
+  return `${a.getDate()} ${ma} – ${b.getDate()} ${mb}`;
+
+}
+
+
+function renderStart(){
+
+  const stats=calculateAttendance();
+
+  const byDate={};
+  const lessonCache={};
+
+  /* lekcja z planu, do której należy wpis frekwencji */
+
+  function lessonAt(rec){
+
+    const key=String(rec.lesson_date||"");
+
+    if(!(key in lessonCache)){
+
+      const d=parseISODate(key);
+
+      lessonCache[key]=d?getLessons(d):[];
+
+    }
+
+    return lessonCache[key]
+      .find(l=>l.n===Number(rec.lesson_number))||null;
+
+  }
+
+  attendanceData.forEach(x=>{
+
+    const key=String(x.lesson_date||"");
+
+    if(!key)return;
+
+    const s=
+      byDate[key]||
+      (byDate[key]={present:0,late:0,absent:0,total:0});
+
+    if(x.status==="present"){s.present++;s.total++;}
+    else if(x.status==="late"){s.late++;s.total++;}
+    else if(x.status==="absent"){s.absent++;s.total++;}
+
+  });
+
+  const daysWithData=
+    Object.values(byDate)
+      .filter(s=>s.total>0)
+      .length;
+
+
+  /* --- podsumowanie (pierścień animuje się tylko przy zmianie danych) --- */
+
+  const sig=
+    [stats.present,stats.late,stats.absent,daysWithData].join("|");
+
+  if(sig!==startSummarySig){
+
+    startSummarySig=sig;
+
+    document.getElementById("start-summary")
+      .innerHTML=buildSummary(stats,daysWithData);
+
+  }
+
+
+  /* --- ten tydzień --- */
+
+  const week=getWeekDays();
+
+  document.getElementById("start-week-range")
+    .textContent=weekRangeLabel(week);
+
+  const todayISO=formatISODate(new Date());
+
+  const stateIcon={
+    ok:"present",
+    warn:"late",
+    bad:"absent",
+    none:"none"
+  };
+
+  const stateText={
+    ok:"obecność",
+    warn:"spóźnienie",
+    bad:"nieobecność",
+    none:"brak wpisów"
+  };
+
+  document.getElementById("start-week")
+    .innerHTML=week.map(d=>{
+
+      const iso=formatISODate(d);
+      const s=byDate[iso];
+
+      let state="none";
+
+      if(s && s.total){
+
+        if(s.absent)state="bad";
+        else if(s.late)state="warn";
+        else state="ok";
+
+      }
+
+      const detail=
+        state==="none"
+          ? "—"
+          : (s.present+s.late)+"/"+s.total;
+
+      const label=
+        dayNames[d.getDay()]+" "+d.getDate()+": "+stateText[state];
+
+      return `
+
+        <button class="wd ${state} ${iso===todayISO?"today":""}"
+          onclick="openDay('${iso}')"
+          aria-label="${escapeHTML(label)}">
+
+          <span class="wd-name">${dayShort[d.getDay()]}</span>
+
+          <span class="wd-num">${d.getDate()}</span>
+
+          <span class="wd-mark">${iconForStatus(stateIcon[state])}</span>
+
+          <span class="wd-detail">${detail}</span>
+
+        </button>
+
+      `;
+
+    }).join("");
+
+
+  /* --- ostatnie nieobecności i spóźnienia --- */
+
+  const issues=
+    attendanceData
+      .filter(x=>
+        (x.status==="absent" || x.status==="late") &&
+        parseISODate(x.lesson_date)
+      )
+      .sort((a,b)=>
+        String(b.lesson_date).localeCompare(String(a.lesson_date)) ||
+        Number(b.lesson_number)-Number(a.lesson_number)
+      )
+      .slice(0,4);
+
+  document.getElementById("start-issues")
+    .innerHTML=
+      issues.length
+        ? `<div class="st-card issues">`+
+          issues.map(x=>{
+
+            const d=parseISODate(x.lesson_date);
+            const lesson=lessonAt(x);
+            const n=Number(x.lesson_number);
+
+            const title=
+              lesson && lesson.subj
+                ? lesson.subj
+                : "Lekcja "+n;
+
+            const label=
+              x.status==="absent"
+                ? "Nieobecność"
+                : "Spóźnienie";
+
+            return `
+
+              <div class="issue">
+
+                <div class="issue-date">
+                  <b>${d.getDate()}</b>
+                  <span>${monthShort[d.getMonth()]}</span>
+                </div>
+
+                <div class="issue-body">
+                  <b>${escapeHTML(title)}</b>
+                  <span>${dayNames[d.getDay()]}, lekcja ${n}</span>
+                </div>
+
+                <div class="status-pill ${x.status}">
+                  ${iconForStatus(x.status)}
+                  ${label}
+                </div>
+
+              </div>
+
+            `;
+
+          }).join("")+
+          `</div>`
+        : `<div class="st-card"><div class="st-empty">${
+            stats.total
+              ? "Brak nieobecności ani spóźnień."
+              : "Brak wpisów frekwencji."
+          }</div></div>`;
+
+
+  /* --- frekwencja z przedmiotów --- */
+
+  const subjMap={};
+
+  attendanceData.forEach(x=>{
+
+    if(
+      x.status!=="present" &&
+      x.status!=="late" &&
+      x.status!=="absent"
+    )return;
+
+    const lesson=lessonAt(x);
+
+    if(!lesson || !lesson.subj)return;
+
+    const s=
+      subjMap[lesson.subj]||
+      (subjMap[lesson.subj]={subj:lesson.subj,total:0,ok:0});
+
+    s.total++;
+
+    if(x.status!=="absent")s.ok++;
+
+  });
+
+  const subjects=
+    Object.values(subjMap)
+      .map(s=>({
+        ...s,
+        percent:Math.round((s.ok/s.total)*100)
+      }))
+      .sort((a,b)=>
+        a.percent-b.percent ||
+        b.total-a.total ||
+        a.subj.localeCompare(b.subj,"pl")
+      );
+
+  const box=document.getElementById("start-subjects");
+
+  if(!subjects.length){
+
+    box.innerHTML=
+      `<div class="st-card"><div class="st-empty">Brak wpisów frekwencji.</div></div>`;
+
+    return;
+
+  }
+
+  const visible=
+    showAllSubjects
+      ? subjects
+      : subjects.slice(0,5);
+
+  box.innerHTML=
+
+    `<div class="st-card subjects">`+
+
+    visible.map(s=>{
+
+      const tone=
+        s.percent>=85
+          ? ""
+          : (s.percent>=70 ? "warn" : "bad");
+
+      return `
+
+        <div class="subj-row">
+
+          <div class="subj-top">
+            <span class="subj-name">${escapeHTML(s.subj)}</span>
+            <span class="subj-cnt">${s.ok}/${s.total}</span>
+            <span class="subj-pct">${s.percent}%</span>
+          </div>
+
+          <div class="bar">
+            <i class="${tone}" style="width:${s.percent}%"></i>
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("")+
+
+    `</div>`+
+
+    (
+      subjects.length>5
+        ? `<button class="more-btn" onclick="toggleSubjects()">${
+            showAllSubjects
+              ? "Pokaż mniej"
+              : "Pokaż wszystkie ("+subjects.length+")"
+          }</button>`
+        : ""
+    );
+
+}
+
+
+function toggleSubjects(){
+
+  showAllSubjects=!showAllSubjects;
+
+  renderStart();
+
+}
+
+
+/* kliknięcie dnia w tygodniu -> frekwencja z tego dnia */
+
+function openDay(iso){
+
+  const d=parseISODate(iso);
+
+  if(!d)return;
+
+  currentDate=d;
+
+  renderAll();
+
+  showView("frekwencja");
 
 }
 
