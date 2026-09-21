@@ -752,9 +752,9 @@ Cały tydzień
 </div>
 
 <div class="bulk-bar">
-<button class="bulk-btn present" onclick="markBulk('present')">✓ Obecność</button>
-<button class="bulk-btn absent" onclick="markBulk('absent')">✕ Nieobecność</button>
-<button class="bulk-btn clear" onclick="clearBulk()">Wyczyść</button>
+<button class="bulk-btn present" id="btnBulkPresent" onclick="markBulk('present')">✓ Obecność – cały dzień</button>
+<button class="bulk-btn absent" id="btnBulkAbsent" onclick="markBulk('absent')">✕ Nieobecność – cały dzień</button>
+<button class="bulk-btn clear" id="btnBulkClear" onclick="clearBulk()">Wyczyść – cały dzień</button>
 </div>
 
 <div class="status-msg" id="bulkMsg"></div>
@@ -2311,6 +2311,9 @@ function renderAttDays(){
     "Aktualny tydzień: "+
     formatWeek(currentWeekMonday);
 
+
+  updateBulkLabels();
+
 }
 
 
@@ -2682,14 +2685,63 @@ function setBulkScope(scope,btn){
     );
 
 
-  if(btn)
+  if(btn){
+
     btn.classList.add("active");
 
+  }else{
 
-  bulkMsg.textContent=
-    scope==="week"
-      ? "Zakres: cały tydzień ("+formatWeek(currentWeekMonday)+")."
-      : "Zakres: "+days[selectedDay]+" ("+formatFullDate(getWeekDate(selectedDay))+").";
+    const active=
+      document.getElementById(
+        scope==="week"
+          ? "scopeWeek"
+          : "scopeDay"
+      );
+
+    if(active)
+      active.classList.add("active");
+
+  }
+
+
+  updateBulkLabels();
+
+}
+
+
+/*
+  Przyciski pokazują, czego dotyczą,
+  żeby było widać, że zakres się przełączył.
+*/
+
+function updateBulkLabels(){
+
+  const short=
+    bulkScope==="week"
+      ? "cały tydzień"
+      : "cały dzień";
+
+
+  if(window.btnBulkPresent)
+    btnBulkPresent.textContent=
+      "✓ Obecność – "+short;
+
+
+  if(window.btnBulkAbsent)
+    btnBulkAbsent.textContent=
+      "✕ Nieobecność – "+short;
+
+
+  if(window.btnBulkClear)
+    btnBulkClear.textContent=
+      "Wyczyść – "+short;
+
+
+  if(window.bulkMsg)
+    bulkMsg.textContent=
+      "Wybrany zakres: "+
+      bulkScopeLabel()+
+      ". Teraz kliknij obecność, nieobecność albo wyczyść.";
 
 }
 
