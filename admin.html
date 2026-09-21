@@ -752,9 +752,9 @@ Cały tydzień
 </div>
 
 <div class="bulk-bar">
-<button class="bulk-btn present" id="btnBulkPresent" onclick="markBulk('present')">✓ Obecność – cały dzień</button>
-<button class="bulk-btn absent" id="btnBulkAbsent" onclick="markBulk('absent')">✕ Nieobecność – cały dzień</button>
-<button class="bulk-btn clear" id="btnBulkClear" onclick="clearBulk()">Wyczyść – cały dzień</button>
+<button class="bulk-btn present" id="btnBulkPresent" onclick="markBulk('present')">✓ Obecność</button>
+<button class="bulk-btn absent" id="btnBulkAbsent" onclick="markBulk('absent')">✕ Nieobecność</button>
+<button class="bulk-btn clear" id="btnBulkClear" onclick="clearBulk()">Wyczyść</button>
 </div>
 
 <div class="status-msg" id="bulkMsg"></div>
@@ -2716,32 +2716,23 @@ function setBulkScope(scope,btn){
 
 function updateBulkLabels(){
 
-  const short=
-    bulkScope==="week"
-      ? "cały tydzień"
-      : "cały dzień";
-
-
   if(window.btnBulkPresent)
     btnBulkPresent.textContent=
-      "✓ Obecność – "+short;
+      "✓ Obecność";
 
 
   if(window.btnBulkAbsent)
     btnBulkAbsent.textContent=
-      "✕ Nieobecność – "+short;
+      "✕ Nieobecność";
 
 
   if(window.btnBulkClear)
     btnBulkClear.textContent=
-      "Wyczyść – "+short;
+      "Wyczyść";
 
 
   if(window.bulkMsg)
-    bulkMsg.textContent=
-      "Wybrany zakres: "+
-      bulkScopeLabel()+
-      ". Teraz kliknij obecność, nieobecność albo wyczyść.";
+    bulkMsg.textContent="";
 
 }
 
