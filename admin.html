@@ -4,569 +4,2717 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel administracyjny – Dziennik</title>
+
 <style>
-:root{--bg:#0a1330;--card:#12224a;--line:#3a5a99;--text:#eaf2ff;--muted:#9fb6da;--accent:#3aa0ff;--danger:#ff6b6b}
+:root{
+--bg:#0a1330;
+--card:#12224a;
+--line:#3a5a99;
+--text:#eaf2ff;
+--muted:#9fb6da;
+--accent:#3aa0ff;
+--danger:#ff6b6b
+}
+
 *{box-sizing:border-box}
+
 body{
-  margin:0;color:var(--text);
-  font-family:"Trebuchet MS","Segoe UI",Tahoma,Geneva,sans-serif;
-  background:
-    radial-gradient(ellipse at 50% -10%, rgba(255,255,255,.35), rgba(255,255,255,0) 45%),
-    linear-gradient(180deg,#0d1f4d 0%,#0a1633 45%,#050c1f 100%);
-  background-attachment:fixed;
+margin:0;
+color:var(--text);
+font-family:"Trebuchet MS","Segoe UI",Tahoma,Geneva,sans-serif;
+background:
+radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.35),rgba(255,255,255,0) 45%),
+linear-gradient(180deg,#0d1f4d 0%,#0a1633 45%,#050c1f 100%);
+background-attachment:fixed
 }
-.wrap{max-width:1200px;margin:auto;padding:28px}
+
+.wrap{
+max-width:1200px;
+margin:auto;
+padding:28px
+}
+
 .top{
-  display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;
-  background:linear-gradient(180deg,rgba(90,150,230,.35),rgba(20,50,110,.35));
-  border:1px solid #5a8fd6;border-radius:16px;padding:14px 20px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 4px 10px rgba(0,0,10,.4);
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:24px;
+background:linear-gradient(180deg,rgba(90,150,230,.35),rgba(20,50,110,.35));
+border:1px solid #5a8fd6;
+border-radius:16px;
+padding:14px 20px;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 10px rgba(0,0,10,.4)
 }
-.top h1{margin:0;font-size:26px;text-shadow:0 1px 0 rgba(0,0,0,.5), 0 0 12px rgba(120,180,255,.5);letter-spacing:.5px}
+
+.top h1{
+margin:0;
+font-size:26px;
+text-shadow:0 1px 0 rgba(0,0,0,.5),0 0 12px rgba(120,180,255,.5);
+letter-spacing:.5px
+}
+
 .top span{color:var(--muted)}
+
 .card{
-  background:linear-gradient(180deg,#1a3468 0%,#0f2350 60%,#0a1c40 100%);
-  border:1px solid #4a76c2;border-radius:18px;padding:20px;margin-bottom:18px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -12px 24px rgba(0,0,0,.25), 0 6px 16px rgba(0,0,20,.5);
-  position:relative;
+background:linear-gradient(180deg,#1a3468 0%,#0f2350 60%,#0a1c40 100%);
+border:1px solid #4a76c2;
+border-radius:18px;
+padding:20px;
+margin-bottom:18px;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.25),
+inset 0 -12px 24px rgba(0,0,0,.25),
+0 6px 16px rgba(0,0,20,.5);
+position:relative
 }
+
 .card::before{
-  content:"";position:absolute;top:0;left:10px;right:10px;height:40%;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0));
-  border-radius:16px 16px 40px 40px;pointer-events:none;
+content:"";
+position:absolute;
+top:0;
+left:10px;
+right:10px;
+height:40%;
+background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0));
+border-radius:16px 16px 40px 40px;
+pointer-events:none
 }
-h2{font-size:18px;margin:0 0 16px;text-shadow:0 1px 1px rgba(0,0,0,.6)}
-.tabs{display:flex;gap:8px;margin-bottom:18px;overflow:auto;padding:4px}
+
+h2{
+font-size:18px;
+margin:0 0 16px;
+text-shadow:0 1px 1px rgba(0,0,0,.6)
+}
+
+.tabs{
+display:flex;
+gap:8px;
+margin-bottom:18px;
+overflow:auto;
+padding:4px
+}
+
 .tab{
-  background:linear-gradient(180deg,#4a80d6 0%,#1e3f7f 55%,#152c5c 100%);
-  color:#dce8ff;border:1px solid #6fa3e8;padding:10px 18px;border-radius:9px;
-  cursor:pointer;white-space:nowrap;font-weight:bold;text-shadow:0 1px 1px rgba(0,0,0,.5);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -6px 10px rgba(0,0,0,.25), 0 2px 4px rgba(0,0,0,.4);
+background:linear-gradient(180deg,#4a80d6 0%,#1e3f7f 55%,#152c5c 100%);
+color:#dce8ff;
+border:1px solid #6fa3e8;
+padding:10px 18px;
+border-radius:9px;
+cursor:pointer;
+white-space:nowrap;
+font-weight:bold;
+text-shadow:0 1px 1px rgba(0,0,0,.5);
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.5),
+inset 0 -6px 10px rgba(0,0,0,.25),
+0 2px 4px rgba(0,0,0,.4)
 }
-.tab:hover{background:linear-gradient(180deg,#5b90e6 0%,#2a4d94 55%,#1c366e 100%)}
+
+.tab:hover{
+background:linear-gradient(180deg,#5b90e6 0%,#2a4d94 55%,#1c366e 100%)
+}
+
 .tab.active{
-  background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
-  color:#04162f;border-color:#bfe3ff;text-shadow:0 1px 0 rgba(255,255,255,.5);
+background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
+color:#04162f;
+border-color:#bfe3ff;
+text-shadow:0 1px 0 rgba(255,255,255,.5)
 }
-.panel{display:none}.panel.active{display:block}
-.day-tabs{display:flex;gap:7px;overflow:auto;margin-bottom:18px;padding:2px}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.day-tabs{
+display:flex;
+gap:7px;
+overflow:auto;
+margin-bottom:18px;
+padding:2px
+}
+
 .day-tab{
-  flex:1;min-width:110px;padding:11px;border:1px solid #4a76c2;border-radius:8px;
-  background:linear-gradient(180deg,#1c3a70,#0e1f45);color:var(--muted);cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);font-weight:bold;
+flex:1;
+min-width:125px;
+padding:10px 11px;
+border:1px solid #4a76c2;
+border-radius:8px;
+background:linear-gradient(180deg,#1c3a70,#0e1f45);
+color:var(--muted);
+cursor:pointer;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+font-weight:bold;
+line-height:1.3
 }
+
+.day-tab small{
+font-size:11px;
+font-weight:normal;
+opacity:.85
+}
+
 .day-tab.active{
-  background:linear-gradient(180deg,#5aa8ff,#1c4c92);color:#04162f;border-color:#9fd0ff;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 0 10px rgba(90,168,255,.6);
+background:linear-gradient(180deg,#5aa8ff,#1c4c92);
+color:#04162f;
+border-color:#9fd0ff;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.6),
+0 0 10px rgba(90,168,255,.6)
 }
-.schedule{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
-.schedule-head{font-size:12px;color:var(--muted);padding:8px;text-align:center}
+
+.week-info{
+margin:-6px 0 15px;
+padding:9px 12px;
+border-radius:9px;
+background:rgba(58,160,255,.10);
+border:1px solid rgba(90,160,255,.25);
+color:var(--muted);
+font-size:12px
+}
+
+.schedule{
+display:grid;
+grid-template-columns:90px repeat(5,minmax(130px,1fr));
+gap:8px
+}
+
+.schedule-head{
+font-size:12px;
+color:var(--muted);
+padding:8px;
+text-align:center
+}
+
 .lesson{
-  min-height:92px;background:linear-gradient(180deg,#173465,#0b1c3e);
-  border:1px solid #3f679f;border-radius:10px;padding:10px;cursor:pointer;transition:.15s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+min-height:92px;
+background:linear-gradient(180deg,#173465,#0b1c3e);
+border:1px solid #3f679f;
+border-radius:10px;
+padding:10px;
+cursor:pointer;
+transition:.15s;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
 }
-.lesson:hover{border-color:#7fb3ff;transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 10px rgba(90,160,255,.35)}
-.lesson .num{font-size:12px;color:var(--muted)}.lesson .subject{font-weight:700;margin-top:7px;text-shadow:0 1px 1px rgba(0,0,0,.5)}.lesson .meta{font-size:11px;color:var(--muted);margin-top:5px}.lesson .meta b{color:#bfe0ff;font-weight:600}
+
+.lesson:hover{
+border-color:#7fb3ff;
+transform:translateY(-1px);
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.3),
+0 0 10px rgba(90,160,255,.35)
+}
+
+.lesson .num{
+font-size:12px;
+color:var(--muted)
+}
+
+.lesson .subject{
+font-weight:700;
+margin-top:7px;
+text-shadow:0 1px 1px rgba(0,0,0,.5)
+}
+
+.lesson .meta{
+font-size:11px;
+color:var(--muted);
+margin-top:5px
+}
+
+.lesson .meta b{
+color:#bfe0ff;
+font-weight:600
+}
+
 .timecell{
-  display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;
-  border:1px solid #3f679f;border-radius:10px;
-  background:linear-gradient(180deg,#0e2247,#081736);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+display:flex;
+align-items:center;
+justify-content:center;
+color:var(--muted);
+font-size:12px;
+border:1px solid #3f679f;
+border-radius:10px;
+background:linear-gradient(180deg,#0e2247,#081736);
+box-shadow:inset 0 1px 0 rgba(255,255,255,.1)
 }
-.att-grid{display:grid;grid-template-columns:90px repeat(5,minmax(130px,1fr));gap:8px}
+
+.att-grid{
+display:grid;
+grid-template-columns:90px repeat(5,minmax(130px,1fr));
+gap:8px
+}
+
 .att-cell{
-  min-height:82px;background:linear-gradient(180deg,#173465,#0b1c3e);
-  border:1px solid #3f679f;border-radius:10px;padding:10px;cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+min-height:82px;
+background:linear-gradient(180deg,#173465,#0b1c3e);
+border:1px solid #3f679f;
+border-radius:10px;
+padding:10px;
+cursor:pointer;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
 }
-.att-cell.present{border-color:#3fae6e;box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 0 8px rgba(63,174,110,.35)}
-.att-cell.absent{border-color:#d9534f;box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 0 8px rgba(217,83,79,.35)}
-.att-cell.late{border-color:#e0b23a;box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 0 8px rgba(224,178,58,.35)}
-.att-cell .status{font-weight:700;font-size:13px;text-shadow:0 1px 1px rgba(0,0,0,.6)}.present .status{color:#5be08a}.absent .status{color:#ff8b87}.late .status{color:#f6cf6a}
-.att-cell .sub{font-size:11px;color:var(--muted);margin-top:5px}
-.modal{position:fixed;inset:0;background:rgba(2,8,24,.75);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+
+.att-cell.present{
+border-color:#3fae6e;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.15),
+0 0 8px rgba(63,174,110,.35)
+}
+
+.att-cell.absent{
+border-color:#d9534f;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.15),
+0 0 8px rgba(217,83,79,.35)
+}
+
+.att-cell.late{
+border-color:#e0b23a;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.15),
+0 0 8px rgba(224,178,58,.35)
+}
+
+.att-cell.none{
+border-color:#3f679f
+}
+
+.att-cell .status{
+font-weight:700;
+font-size:13px;
+text-shadow:0 1px 1px rgba(0,0,0,.6)
+}
+
+.present .status{color:#5be08a}
+.absent .status{color:#ff8b87}
+.late .status{color:#f6cf6a}
+.none .status{color:#9fb6da}
+
+.att-cell .sub{
+font-size:11px;
+color:var(--muted);
+margin-top:5px
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(2,8,24,.75);
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:20
+}
+
 .modal.show{display:flex}
+
 .modal-box{
-  width:min(520px,100%);
-  background:linear-gradient(180deg,#1c3a70 0%,#0e2144 60%,#081633 100%);
-  border:1px solid #5a8fd6;border-radius:16px;padding:22px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 30px rgba(0,0,10,.6);
+width:min(520px,100%);
+background:linear-gradient(180deg,#1c3a70 0%,#0e2144 60%,#081633 100%);
+border:1px solid #5a8fd6;
+border-radius:16px;
+padding:22px;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.3),
+0 10px 30px rgba(0,0,10,.6)
 }
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0;text-shadow:0 1px 1px rgba(0,0,0,.6)}
+
+.modal-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px
+}
+
+.modal-head h3{
+margin:0;
+text-shadow:0 1px 1px rgba(0,0,0,.6)
+}
+
 .close{
-  width:32px;height:32px;border:1px solid #7fa8e0;border-radius:50%;
-  background:linear-gradient(180deg,#5a90d6,#20406f);color:white;font-size:18px;cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+width:32px;
+height:32px;
+border:1px solid #7fa8e0;
+border-radius:50%;
+background:linear-gradient(180deg,#5a90d6,#20406f);
+color:white;
+font-size:18px;
+cursor:pointer;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.5)
 }
-label{display:block;font-size:12px;color:var(--muted);margin:11px 0 6px;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+
+label{
+display:block;
+font-size:12px;
+color:var(--muted);
+margin:11px 0 6px;
+text-shadow:0 1px 0 rgba(0,0,0,.4)
+}
+
 input,select{
-  width:100%;background:linear-gradient(180deg,#0e2247,#081736);color:var(--text);
-  border:1px solid #3f679f;border-radius:8px;padding:11px;outline:none;
-  box-shadow:inset 0 2px 4px rgba(0,0,10,.5);
+width:100%;
+background:linear-gradient(180deg,#0e2247,#081736);
+color:var(--text);
+border:1px solid #3f679f;
+border-radius:8px;
+padding:11px;
+outline:none;
+box-shadow:inset 0 2px 4px rgba(0,0,10,.5)
 }
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.actions{display:flex;gap:8px;margin-top:18px}
+
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.actions{
+display:flex;
+gap:8px;
+margin-top:18px
+}
+
 button.primary{
-  border:1px solid #9fd0ff;border-radius:9px;padding:11px 16px;
-  background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
-  color:#04162f;font-weight:700;cursor:pointer;text-shadow:0 1px 0 rgba(255,255,255,.5);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 2px 6px rgba(0,0,0,.4);
+border:1px solid #9fd0ff;
+border-radius:9px;
+padding:11px 16px;
+background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
+color:#04162f;
+font-weight:700;
+cursor:pointer;
+text-shadow:0 1px 0 rgba(255,255,255,.5);
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.6),
+0 2px 6px rgba(0,0,0,.4)
 }
-button.primary:hover{background:linear-gradient(180deg,#a7ddff 0%,#3f8fe6 55%,#1c589f 100%)}
-button.primary:active{box-shadow:inset 0 2px 6px rgba(0,0,0,.4)}
+
+button.primary:hover{
+background:linear-gradient(180deg,#a7ddff 0%,#3f8fe6 55%,#1c589f 100%)
+}
+
 button.secondary{
-  border:1px solid #4a76c2;border-radius:9px;padding:11px 16px;
-  background:linear-gradient(180deg,#2c4d84,#132a55);color:var(--text);font-weight:600;cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 2px 4px rgba(0,0,0,.4);
+border:1px solid #4a76c2;
+border-radius:9px;
+padding:11px 16px;
+background:linear-gradient(180deg,#2c4d84,#132a55);
+color:var(--text);
+font-weight:600;
+cursor:pointer;
+box-shadow:
+inset 0 1px 0 rgba(255,255,255,.25),
+0 2px 4px rgba(0,0,0,.4)
 }
-button.secondary:hover{background:linear-gradient(180deg,#375c96,#1a3564)}
-.status-msg{min-height:20px;color:var(--muted);font-size:13px;margin-top:10px}
-.hint{font-size:11px;color:var(--muted);margin-top:5px}
+
+button.secondary:hover{
+background:linear-gradient(180deg,#375c96,#1a3564)
+}
+
+.status-msg{
+min-height:20px;
+color:var(--muted);
+font-size:13px;
+margin-top:10px
+}
+
+.hint{
+font-size:11px;
+color:var(--muted);
+margin-top:5px
+}
+
 .teacher-box{
-  margin-top:14px;padding:14px;background:linear-gradient(180deg,#0e2247,#081736);
-  border:1px solid #3f679f;border-radius:10px;box-shadow:inset 0 2px 6px rgba(0,0,10,.4);
+margin-top:14px;
+padding:14px;
+background:linear-gradient(180deg,#0e2247,#081736);
+border:1px solid #3f679f;
+border-radius:10px;
+box-shadow:inset 0 2px 6px rgba(0,0,10,.4)
 }
-.teacher-box h4{margin:0 0 10px;font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.5)}
-.check-row{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;color:var(--text)}.check-row input{width:auto}
-.sub-wrap{display:none;margin-top:10px}.sub-wrap.show{display:block}
-.login{max-width:430px;margin:70px auto}.login h1{margin-top:0;text-shadow:0 1px 1px rgba(0,0,0,.6), 0 0 16px rgba(120,180,255,.4)}
-.auto-hint{font-size:11px;margin-top:5px}.auto-hint.ok{color:#5be08a}.auto-hint.warn{color:#f6cf6a}
+
+.teacher-box h4{
+margin:0 0 10px;
+font-size:13px;
+text-shadow:0 1px 0 rgba(0,0,0,.5)
+}
+
+.check-row{
+display:flex;
+align-items:center;
+gap:9px;
+margin-top:12px;
+font-size:13px;
+color:var(--text)
+}
+
+.check-row input{width:auto}
+
+.sub-wrap{
+display:none;
+margin-top:10px
+}
+
+.sub-wrap.show{display:block}
+
+.login{
+max-width:430px;
+margin:70px auto
+}
+
+.login h1{
+margin-top:0;
+text-shadow:
+0 1px 1px rgba(0,0,0,.6),
+0 0 16px rgba(120,180,255,.4)
+}
+
+.auto-hint{
+font-size:11px;
+margin-top:5px
+}
+
+.auto-hint.ok{color:#5be08a}
+.auto-hint.warn{color:#f6cf6a}
+
 .teacher-row{
-  display:flex;align-items:center;gap:12px;padding:12px;
-  background:linear-gradient(180deg,#173465,#0b1c3e);border:1px solid #3f679f;border-radius:10px;margin-bottom:8px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px;
+background:linear-gradient(180deg,#173465,#0b1c3e);
+border:1px solid #3f679f;
+border-radius:10px;
+margin-bottom:8px;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
 }
-.teacher-row .tr-subject{font-weight:700;flex:1;text-shadow:0 1px 1px rgba(0,0,0,.4)}
-.teacher-row .tr-teacher{color:var(--muted);flex:1}
-.teacher-row .tr-actions{display:flex;gap:6px}
-.teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
+
+.teacher-row .tr-subject{
+font-weight:700;
+flex:1;
+text-shadow:0 1px 1px rgba(0,0,0,.4)
+}
+
+.teacher-row .tr-teacher{
+color:var(--muted);
+flex:1
+}
+
+.teacher-row .tr-actions{
+display:flex;
+gap:6px
+}
+
+.teacher-row .tr-actions button{
+padding:8px 12px;
+font-size:12px
+}
+
 @media(max-width:800px){
- .wrap{padding:15px}.schedule,.att-grid{grid-template-columns:62px repeat(5,minmax(115px,1fr));overflow-x:auto}
- .schedule{min-width:650px}.att-grid{min-width:650px}.card{overflow:hidden}
- .form-grid{grid-template-columns:1fr}
- .teacher-row{flex-wrap:wrap}
+
+.wrap{padding:15px}
+
+.schedule,
+.att-grid{
+grid-template-columns:62px repeat(5,minmax(115px,1fr));
+overflow-x:auto
+}
+
+.schedule{min-width:650px}
+.att-grid{min-width:650px}
+
+.card{overflow:hidden}
+
+.form-grid{
+grid-template-columns:1fr
+}
+
+.teacher-row{
+flex-wrap:wrap
+}
+
 }
 </style>
 </head>
+
 <body>
+
 <div id="loginScreen" class="login card">
-  <h1>Panel administracyjny</h1>
-  <p style="color:var(--muted)">Zaloguj się, żeby edytować plan i frekwencję.</p>
-  <label>E-mail</label><input id="loginEmail" type="email">
-  <label>Hasło</label><input id="loginPassword" type="password">
-  <div class="actions"><button class="primary" onclick="login()">Zaloguj</button></div>
-  <div class="status-msg" id="loginStatus"></div>
+
+<h1>Panel administracyjny</h1>
+
+<p style="color:var(--muted)">
+Zaloguj się, żeby edytować plan i frekwencję.
+</p>
+
+<label>E-mail</label>
+<input id="loginEmail" type="email">
+
+<label>Hasło</label>
+<input id="loginPassword" type="password">
+
+<div class="actions">
+<button class="primary" onclick="login()">Zaloguj</button>
 </div>
+
+<div class="status-msg" id="loginStatus"></div>
+
+</div>
+
 
 <div id="app" class="wrap" style="display:none">
-  <div class="top">
-    <div><h1>Panel administracyjny</h1><span>Plan lekcji i frekwencja</span></div>
-    <button class="secondary" onclick="logout()">Wyloguj</button>
-  </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchPanel('plan',this)">Plan lekcji</button>
-    <button class="tab" onclick="switchPanel('frekwencja',this)">Frekwencja</button>
-    <button class="tab" onclick="switchPanel('nauczyciele',this)">Nauczyciele</button>
-  </div>
+<div class="top">
 
-  <section id="panel-plan" class="panel active">
-    <div class="card">
-      <h2>Plan lekcji</h2>
-      <div class="day-tabs" id="planDays"></div>
-      <div style="overflow:auto"><div class="schedule" id="schedule"></div></div>
-      <div class="status-msg">Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia. Nauczyciel uzupełnia się automatycznie na podstawie przypisań w zakładce „Nauczyciele”.</div>
-    </div>
-  </section>
-
-  <section id="panel-frekwencja" class="panel">
-    <div class="card">
-      <h2>Frekwencja</h2>
-      <div class="day-tabs" id="attDays"></div>
-      <div style="overflow:auto"><div class="att-grid" id="attGrid"></div></div>
-      <div class="status-msg">Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.</div>
-    </div>
-  </section>
-
-  <section id="panel-nauczyciele" class="panel">
-    <div class="card">
-      <h2>Nauczyciele przedmiotów</h2>
-      <div class="status-msg" style="margin-top:0;margin-bottom:14px">Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w planie lekcji, nauczyciel uzupełni się sam.</div>
-      <div class="form-grid">
-        <div><label>Przedmiot</label><input id="tSubject" list="subjectDatalist" placeholder="np. Matematyka"></div>
-        <div><label>Nauczyciel</label><input id="tTeacher" placeholder="np. Anna Kowalska"></div>
-      </div>
-      <datalist id="subjectDatalist"></datalist>
-      <div class="actions">
-        <button class="primary" onclick="saveTeacherMapping()">Zapisz przypisanie</button>
-        <button class="secondary" id="cancelEditTeacher" style="display:none" onclick="cancelTeacherEdit()">Anuluj edycję</button>
-      </div>
-      <div class="status-msg" id="teacherMsg"></div>
-      <div id="teacherList" style="margin-top:18px"></div>
-    </div>
-  </section>
+<div>
+<h1>Panel administracyjny</h1>
+<span>Plan lekcji i frekwencja</span>
 </div>
+
+<button class="secondary" onclick="logout()">Wyloguj</button>
+
+</div>
+
+
+<div class="tabs">
+
+<button class="tab active" onclick="switchPanel('plan',this)">
+Plan lekcji
+</button>
+
+<button class="tab" onclick="switchPanel('frekwencja',this)">
+Frekwencja
+</button>
+
+<button class="tab" onclick="switchPanel('nauczyciele',this)">
+Nauczyciele
+</button>
+
+</div>
+
+
+<section id="panel-plan" class="panel active">
+
+<div class="card">
+
+<h2>Plan lekcji</h2>
+
+<div class="week-info" id="planWeekInfo"></div>
+
+<div class="day-tabs" id="planDays"></div>
+
+<div style="overflow:auto">
+<div class="schedule" id="schedule"></div>
+</div>
+
+<div class="status-msg">
+Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia.
+</div>
+
+</div>
+
+</section>
+
+
+<section id="panel-frekwencja" class="panel">
+
+<div class="card">
+
+<h2>Frekwencja</h2>
+
+<div class="week-info" id="attWeekInfo"></div>
+
+<div class="day-tabs" id="attDays"></div>
+
+<div style="overflow:auto">
+<div class="att-grid" id="attGrid"></div>
+</div>
+
+<div class="status-msg">
+Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.
+Każdy wpis jest zapisywany dla konkretnej daty.
+</div>
+
+</div>
+
+</section>
+
+
+<section id="panel-nauczyciele" class="panel">
+
+<div class="card">
+
+<h2>Nauczyciele przedmiotów</h2>
+
+<div class="status-msg" style="margin-top:0;margin-bottom:14px">
+Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w planie lekcji, nauczyciel uzupełni się sam.
+</div>
+
+<div class="form-grid">
+
+<div>
+<label>Przedmiot</label>
+<input id="tSubject" list="subjectDatalist" placeholder="np. Matematyka">
+</div>
+
+<div>
+<label>Nauczyciel</label>
+<input id="tTeacher" placeholder="np. Anna Kowalska">
+</div>
+
+</div>
+
+<datalist id="subjectDatalist"></datalist>
+
+<div class="actions">
+
+<button class="primary" onclick="saveTeacherMapping()">
+Zapisz przypisanie
+</button>
+
+<button class="secondary" id="cancelEditTeacher" style="display:none" onclick="cancelTeacherEdit()">
+Anuluj edycję
+</button>
+
+</div>
+
+<div class="status-msg" id="teacherMsg"></div>
+
+<div id="teacherList" style="margin-top:18px"></div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- LEKCJA -->
 
 <div class="modal" id="lessonModal">
- <div class="modal-box">
-  <div class="modal-head"><h3 id="lessonModalTitle">Lekcja</h3><button class="close" onclick="closeModal('lessonModal')">×</button></div>
-  <div class="form-grid">
-   <div><label>Numer lekcji</label><input id="mNum" type="number" min="1"></div>
-   <div><label>Przedmiot</label><select id="mSubject" onchange="subjectChanged()"></select></div>
-   <div><div><label>Od</label><input id="mStart" type="time"></div></div>
-   <div><div><label>Do</label><input id="mEnd" type="time"></div></div>
-   <div><label>Sala</label><input id="mRoom"></div>
-   <div>
-    <label>Nauczyciel</label>
-    <input id="mTeacher" readonly>
-    <div class="auto-hint" id="teacherHint"></div>
-   </div>
-  </div>
-  <div class="teacher-box">
-   <h4>Nieobecność nauczyciela i zastępstwo</h4>
-   <label class="check-row"><input id="mTeacherAbsent" type="checkbox" onchange="toggleSubstitute()"> Nauczyciel jest nieobecny</label>
-   <div class="sub-wrap" id="subWrap">
-    <label>Data nieobecności / zastępstwa</label><input id="mChangeDate" type="date">
-    <label>Zastępstwo</label><select id="mSubstitute"></select>
-    <label>Informacja dla ucznia</label><input id="mSubNote" placeholder="np. zastępstwo za nauczyciela">
-   </div>
-  </div>
-  <div class="actions"><button class="primary" onclick="saveLesson()">Zapisz</button><button class="secondary" onclick="deleteLesson()">Usuń lekcję</button></div>
-  <div class="status-msg" id="lessonMsg"></div>
- </div>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h3 id="lessonModalTitle">
+Lekcja
+</h3>
+
+<button class="close" onclick="closeModal('lessonModal')">
+×
+</button>
+
 </div>
+
+<div class="form-grid">
+
+<div>
+<label>Numer lekcji</label>
+<input id="mNum" type="number" min="1">
+</div>
+
+<div>
+<label>Przedmiot</label>
+<select id="mSubject" onchange="subjectChanged()"></select>
+</div>
+
+<div>
+<label>Od</label>
+<input id="mStart" type="time">
+</div>
+
+<div>
+<label>Do</label>
+<input id="mEnd" type="time">
+</div>
+
+<div>
+<label>Sala</label>
+<input id="mRoom">
+</div>
+
+<div>
+<label>Nauczyciel</label>
+<input id="mTeacher" readonly>
+<div class="auto-hint" id="teacherHint"></div>
+</div>
+
+</div>
+
+
+<div class="teacher-box">
+
+<h4>
+Nieobecność nauczyciela i zastępstwo
+</h4>
+
+<label class="check-row">
+
+<input
+id="mTeacherAbsent"
+type="checkbox"
+onchange="toggleSubstitute()">
+
+Nauczyciel jest nieobecny
+
+</label>
+
+<div class="sub-wrap" id="subWrap">
+
+<label>
+Data nieobecności / zastępstwa
+</label>
+
+<input id="mChangeDate" type="date">
+
+<label>
+Zastępstwo
+</label>
+
+<select id="mSubstitute"></select>
+
+<label>
+Informacja dla ucznia
+</label>
+
+<input
+id="mSubNote"
+placeholder="np. zastępstwo za nauczyciela">
+
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button class="primary" onclick="saveLesson()">
+Zapisz
+</button>
+
+<button class="secondary" onclick="deleteLesson()">
+Usuń lekcję
+</button>
+
+</div>
+
+<div class="status-msg" id="lessonMsg"></div>
+
+</div>
+</div>
+
+
+<!-- FREKWENCJA -->
 
 <div class="modal" id="attModal">
- <div class="modal-box">
-  <div class="modal-head"><h3 id="attModalTitle">Frekwencja</h3><button class="close" onclick="closeModal('attModal')">×</button></div>
-  <label>Status</label>
-  <select id="mAttStatus"><option value="present">Obecność</option><option value="absent">Nieobecność</option><option value="late">Spóźnienie</option></select>
-  <label>Data</label><input id="mAttDate" type="date">
-  <div class="actions"><button class="primary" onclick="saveAttendance()">Zapisz</button><button class="secondary" onclick="deleteAttendance()">Wyczyść</button></div>
-  <div class="status-msg" id="attMsg"></div>
- </div>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h3 id="attModalTitle">
+Frekwencja
+</h3>
+
+<button class="close" onclick="closeModal('attModal')">
+×
+</button>
+
 </div>
 
+<label>Status</label>
+
+<select id="mAttStatus">
+
+<option value="present">
+Obecność
+</option>
+
+<option value="absent">
+Nieobecność
+</option>
+
+<option value="late">
+Spóźnienie
+</option>
+
+</select>
+
+<label>Data</label>
+
+<input id="mAttDate" type="date">
+
+<div class="actions">
+
+<button class="primary" onclick="saveAttendance()">
+Zapisz
+</button>
+
+<button class="secondary" onclick="deleteAttendance()">
+Wyczyść
+</button>
+
+</div>
+
+<div class="status-msg" id="attMsg"></div>
+
+</div>
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
-const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
+/* =====================================================
+   SUPABASE
+===================================================== */
 
-let currentWeekMonday = getMonday(new Date());
+const SUPABASE_URL=
+"https://hozpikyxilmedzsyquct.supabase.co";
+
+const SUPABASE_ANON_KEY=
+"sb_publishable_OMnC90EdPVNwLJXAx8jipA_rV0lZfdD";
+
+const sb=
+(SUPABASE_URL.startsWith("UZUPELNIJ_") ||
+ SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))
+?null
+:window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
+/* =====================================================
+   DNI
+===================================================== */
+
+const days=[
+"Poniedziałek",
+"Wtorek",
+"Środa",
+"Czwartek",
+"Piątek"
+];
+
+
+/* =====================================================
+   AKTUALNY TYDZIEŃ
+===================================================== */
+
+let currentWeekMonday=
+getMonday(new Date());
+
 
 function getMonday(date){
-  const d = new Date(date);
+
+  const d=new Date(date);
+
   d.setHours(0,0,0,0);
 
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
+  const day=d.getDay();
 
-  d.setDate(d.getDate() + diff);
+  const diff=
+    day===0
+      ? -6
+      : 1-day;
+
+  d.setDate(
+    d.getDate()+diff
+  );
+
   return d;
+
 }
+
 
 function getWeekDate(index){
-  const d = new Date(currentWeekMonday);
-  d.setDate(d.getDate() + index);
+
+  const d=
+    new Date(currentWeekMonday);
+
+  d.setDate(
+    d.getDate()+index
+  );
+
   return d;
+
 }
 
-function dateISO(date){
-  return date.toISOString().slice(0,10);
+
+function localDateISO(date){
+
+  const y=
+    date.getFullYear();
+
+  const m=
+    String(date.getMonth()+1)
+      .padStart(2,"0");
+
+  const d=
+    String(date.getDate())
+      .padStart(2,"0");
+
+  return `${y}-${m}-${d}`;
+
 }
+
 
 function formatShortDate(date){
-  return `${String(date.getDate()).padStart(2,"0")}.${String(date.getMonth()+1).padStart(2,"0")}`;
-}
-const defaultTimes=[
- ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
- ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
-];
-let plan=[], attendance=[], subjectTeachers=[], teacherChanges=[];
-let selectedDay=0, selectedLesson=null, selectedAtt=null, editingTeacherId=null;
 
-const fallbackSubjects=["Język polski","Matematyka","Język angielski","Język niemiecki","Fizyka","Chemia","Biologia","Geografia","Historia","WOS","Informatyka","Wychowanie fizyczne","Edukacja dla bezpieczeństwa","Edukacja zdrowotna","Zajęcia z wychowawcą","MAK","POK"];
+  return `${String(date.getDate()).padStart(2,"0")}.${String(date.getMonth()+1).padStart(2,"0")}`;
+
+}
+
+
+function formatFullDate(date){
+
+  return `${String(date.getDate()).padStart(2,"0")}.${String(date.getMonth()+1).padStart(2,"0")}.${date.getFullYear()}`;
+
+}
+
+
+function formatWeek(date){
+
+  const monday=
+    getMonday(date);
+
+  const friday=
+    getWeekDateFrom(monday,4);
+
+  return `${formatFullDate(monday)} – ${formatFullDate(friday)}`;
+
+}
+
+
+function getWeekDateFrom(monday,index){
+
+  const d=
+    new Date(monday);
+
+  d.setDate(
+    d.getDate()+index
+  );
+
+  return d;
+
+}
+
+
+/* =====================================================
+   ZMIENNE
+===================================================== */
+
+const defaultTimes=[
+["08:00","08:45"],
+["08:50","09:35"],
+["09:45","10:30"],
+["10:40","11:25"],
+["11:45","12:30"],
+["12:50","13:35"],
+["13:45","14:30"],
+["14:35","15:20"]
+];
+
+let plan=[];
+let attendance=[];
+let subjectTeachers=[];
+let teacherChanges=[];
+
+let selectedDay=0;
+let selectedLesson=null;
+let selectedAtt=null;
+let editingTeacherId=null;
+
+
+/* =====================================================
+   PRZEDMIOTY
+===================================================== */
+
+const fallbackSubjects=[
+"Język polski",
+"Matematyka",
+"Język angielski",
+"Język niemiecki",
+"Fizyka",
+"Chemia",
+"Biologia",
+"Geografia",
+"Historia",
+"WOS",
+"Informatyka",
+"Wychowanie fizyczne",
+"Edukacja dla bezpieczeństwa",
+"Edukacja zdrowotna",
+"Zajęcia z wychowawcą",
+"MAK",
+"POK"
+];
+
 
 const DEFAULT_SUBJECT_TEACHERS=[
- {subject:"Geografia",teacher:"Joanna Sosińska"},
- {subject:"Wychowanie fizyczne",teacher:"Agnieszka Hojniak"},
- {subject:"Fizyka",teacher:"Edyta Gaworek"},
- {subject:"Język polski",teacher:"Joanna Ołdak"},
- {subject:"Biologia",teacher:"Justyna Kubiak"},
- {subject:"Wiedza o społeczeństwie",teacher:"Marta Kwiatkowska"},
- {subject:"Edukacja zdrowotna",teacher:"Agnieszka Hojniak"},
- {subject:"Język angielski",teacher:"Agata Lewandowska"},
- {subject:"Historia",teacher:"Marta Kwiatkowska"},
- {subject:"Język niemiecki",teacher:"Marta Kamińska"},
- {subject:"MAK",teacher:"Małgorzata Jankowska"},
- {subject:"Matematyka",teacher:"Małgorzata Jankowska"},
- {subject:"POK",teacher:"Joanna Ołdak"},
- {subject:"Chemia",teacher:"Małgorzata Witosławska"},
- {subject:"Informatyka",teacher:"Piotr Antoniuk"},
- {subject:"Edukacja dla bezpieczeństwa",teacher:"Anna Kula"},
- {subject:"Zajęcia z wychowawcą",teacher:"Małgorzata Jankowska"},
+{subject:"Geografia",teacher:"Joanna Sosińska"},
+{subject:"Wychowanie fizyczne",teacher:"Agnieszka Hojniak"},
+{subject:"Fizyka",teacher:"Edyta Gaworek"},
+{subject:"Język polski",teacher:"Joanna Ołdak"},
+{subject:"Biologia",teacher:"Justyna Kubiak"},
+{subject:"Wiedza o społeczeństwie",teacher:"Marta Kwiatkowska"},
+{subject:"Edukacja zdrowotna",teacher:"Agnieszka Hojniak"},
+{subject:"Język angielski",teacher:"Agata Lewandowska"},
+{subject:"Historia",teacher:"Marta Kwiatkowska"},
+{subject:"Język niemiecki",teacher:"Marta Kamińska"},
+{subject:"MAK",teacher:"Małgorzata Jankowska"},
+{subject:"Matematyka",teacher:"Małgorzata Jankowska"},
+{subject:"POK",teacher:"Joanna Ołdak"},
+{subject:"Chemia",teacher:"Małgorzata Witosławska"},
+{subject:"Informatyka",teacher:"Piotr Antoniuk"},
+{subject:"Edukacja dla bezpieczeństwa",teacher:"Anna Kula"},
+{subject:"Zajęcia z wychowawcą",teacher:"Małgorzata Jankowska"}
 ];
 
-function db(){if(!sb)throw new Error("Najpierw wpisz dane Supabase w admin.html.");}
+
+/* =====================================================
+   BAZA
+===================================================== */
+
+function db(){
+
+  if(!sb){
+
+    throw new Error(
+      "Brak konfiguracji Supabase."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LOGOWANIE
+===================================================== */
+
 async function login(){
- try{
-  db();
-  const {error}=await sb.auth.signInWithPassword({email:loginEmail.value,password:loginPassword.value});
-  if(error)throw error;
-  showApp();
- }catch(e){loginStatus.textContent=e.message}
+
+  try{
+
+    db();
+
+    const {error}=
+      await sb.auth.signInWithPassword({
+
+        email:loginEmail.value,
+
+        password:loginPassword.value
+
+      });
+
+    if(error)
+      throw error;
+
+    await showApp();
+
+  }catch(e){
+
+    loginStatus.textContent=
+      e.message;
+
+  }
+
 }
-async function logout(){if(sb)await sb.auth.signOut();location.reload()}
+
+
+async function logout(){
+
+  if(sb)
+    await sb.auth.signOut();
+
+  location.reload();
+
+}
+
+
 async function showApp(){
- const {data}=await sb.auth.getSession();
- if(!data.session)return;
- loginScreen.style.display="none";app.style.display="block";await loadData();
+
+  const {data}=
+    await sb.auth.getSession();
+
+  if(!data.session)
+    return;
+
+  loginScreen.style.display="none";
+
+  app.style.display="block";
+
+  await loadData();
+
 }
+
+
+/* =====================================================
+   DANE
+===================================================== */
+
 async function loadData(){
- try{
-  db();
-  const p=await sb.from("lesson_plan").select("*").order("weekday").order("lesson_number");
-  if(p.error)throw p.error; plan=p.data||[];
-  const a=await sb.from("attendance").select("*").order("weekday").order("lesson_number");
-  if(a.error)throw a.error; attendance=a.data||[];
-  const st=await sb.from("subject_teachers").select("*").order("subject");
-  if(st.error && st.error.code !== "42P01") throw st.error;
-  subjectTeachers=st.data||[];
-  if(!subjectTeachers.length && st.error?.code !== "42P01"){
-   const seed=await sb.from("subject_teachers").insert(DEFAULT_SUBJECT_TEACHERS);
-   if(!seed.error){
-    const st2=await sb.from("subject_teachers").select("*").order("subject");
-    subjectTeachers=st2.data||[];
-   }
+
+  try{
+
+    db();
+
+
+    const p=
+      await sb
+        .from("lesson_plan")
+        .select("*")
+        .order("weekday")
+        .order("lesson_number");
+
+    if(p.error)
+      throw p.error;
+
+    plan=p.data||[];
+
+
+    const a=
+      await sb
+        .from("attendance")
+        .select("*")
+        .order("lesson_date")
+        .order("weekday")
+        .order("lesson_number");
+
+    if(a.error)
+      throw a.error;
+
+    attendance=a.data||[];
+
+
+    const st=
+      await sb
+        .from("subject_teachers")
+        .select("*")
+        .order("subject");
+
+
+    if(
+      st.error &&
+      st.error.code!=="42P01"
+    ){
+
+      throw st.error;
+
+    }
+
+
+    subjectTeachers=
+      st.data||[];
+
+
+    if(
+      !subjectTeachers.length &&
+      !st.error
+    ){
+
+      const seed=
+        await sb
+          .from("subject_teachers")
+          .insert(
+            DEFAULT_SUBJECT_TEACHERS
+          );
+
+      if(!seed.error){
+
+        const st2=
+          await sb
+            .from("subject_teachers")
+            .select("*")
+            .order("subject");
+
+        subjectTeachers=
+          st2.data||[];
+
+      }
+
+    }
+
+
+    const tc=
+      await sb
+        .from("teacher_changes")
+        .select("*")
+        .order("lesson_date");
+
+
+    if(
+      tc.error &&
+      tc.error.code!=="42P01"
+    ){
+
+      throw tc.error;
+
+    }
+
+
+    teacherChanges=
+      tc.data||[];
+
+
+    prepareSubjectOptions();
+    prepareSubstituteOptions();
+    prepareSubjectDatalist();
+
+    renderPlanDays();
+    renderSchedule();
+
+    renderAttDays();
+    renderAttendance();
+
+    renderTeachers();
+
+
+  }catch(e){
+
+    document
+      .querySelectorAll(".status-msg")
+      .forEach(x=>{
+        x.textContent=
+          "Błąd: "+e.message;
+      });
+
   }
-  const tc=await sb.from("teacher_changes").select("*").order("lesson_date");
-  if(tc.error && tc.error.code !== "42P01") throw tc.error;
-  teacherChanges=tc.data||[];
-  prepareSubjectOptions();prepareSubstituteOptions();prepareSubjectDatalist();
-  renderPlanDays();renderSchedule();renderAttDays();renderAttendance();renderTeachers();
- }catch(e){document.querySelectorAll(".status-msg").forEach(x=>x.textContent="Błąd: "+e.message)}
+
 }
+
+
+/* =====================================================
+   PANELE
+===================================================== */
+
 function switchPanel(name,btn){
- document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
- document.getElementById("panel-"+name).classList.add("active");
- document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(x=>
+      x.classList.remove("active")
+    );
+
+  document
+    .getElementById("panel-"+name)
+    .classList.add("active");
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(x=>
+      x.classList.remove("active")
+    );
+
+  btn.classList.add("active");
+
 }
+
+
+/* =====================================================
+   DNI PLANU
+===================================================== */
+
 function renderPlanDays(){
- planDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderPlanDays();renderSchedule()">${d}</button>`).join("");
+
+  planDays.innerHTML=
+    days.map((d,i)=>{
+
+      const date=
+        getWeekDate(i);
+
+      return `
+
+      <button
+        class="day-tab ${i===selectedDay?"active":""}"
+        onclick="
+          selectedDay=${i};
+          renderPlanDays();
+          renderSchedule();
+        "
+      >
+
+        ${d}
+
+        <br>
+
+        <small>
+          ${formatShortDate(date)}
+        </small>
+
+      </button>
+
+      `;
+
+    }).join("");
+
+
+  planWeekInfo.textContent=
+    "Aktualny tydzień: "+
+    formatWeek(currentWeekMonday);
+
 }
+
+
+/* =====================================================
+   PLAN
+===================================================== */
+
 function renderSchedule(){
- let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
- let max=Math.max(8,...rows.map(x=>Number(x.lesson_number)));
- let out="";
- for(let n=1;n<=max;n++){
-   const t=rows.find(x=>Number(x.lesson_number)===n);
-   const st=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
-   const en=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
-   out+=`<div class="timecell">${st}<br>${en}</div>`;
-   out+=`<div class="lesson" onclick="openLesson(${t? t.id:'null'},${n})">
-     <div class="num">${n}. lekcja</div>
-     <div class="subject">${t?esc(t.subject):'<span style="color:#555">Wolna godzina</span>'}</div>
-     <div class="meta">${t?(esc(t.room||'')+' · <b>'+esc(t.teacher||'—')+'</b>'):''}</div>
-   </div>`;
-   out+=`<div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>
-   <div class="lesson" style="opacity:.28"><div class="num">${n}. lekcja</div></div>`;
- }
- schedule.innerHTML=out;
-}
-function allKnownSubjects(){
- return [...new Set([...(subjectTeachers||[]).map(x=>x.subject),...fallbackSubjects,...plan.map(x=>x.subject).filter(Boolean)])].sort((a,b)=>a.localeCompare(b,"pl"));
-}
-function prepareSubjectOptions(){
- mSubject.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
-}
-function prepareSubjectDatalist(){
- subjectDatalist.innerHTML=allKnownSubjects().map(x=>`<option value="${esc(x)}">`).join("");
-}
-function prepareSubstituteOptions(){
- const teachers=[...new Set((subjectTeachers||[]).map(x=>x.teacher).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pl"));
- mSubstitute.innerHTML=`<option value="">Wybierz nauczyciela zastępującego</option>`+teachers.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
-}
-function getTeacherForSubject(subject){
- const row=(subjectTeachers||[]).find(x=>String(x.subject).toLowerCase()===String(subject||"").toLowerCase());
- return row?.teacher||"";
-}
-function subjectChanged(){
- const t=getTeacherForSubject(mSubject.value);
- mTeacher.value=t;
- updateTeacherHint(t);
-}
-function updateTeacherHint(t){
- if(t){
-  teacherHint.textContent="Uzupełniono automatycznie na podstawie przypisania przedmiotu.";
-  teacherHint.className="auto-hint ok";
- }else{
-  teacherHint.textContent="Brak przypisanego nauczyciela dla tego przedmiotu — dodaj go w zakładce „Nauczyciele”.";
-  teacherHint.className="auto-hint warn";
- }
-}
-function toggleSubstitute(){
- subWrap.classList.toggle("show",mTeacherAbsent.checked);
-}
-function getTeacherChange(lessonId){
- const today=new Date().toISOString().slice(0,10);
- return teacherChanges.find(x=>Number(x.lesson_plan_id)===Number(lessonId)&&x.lesson_date===today);
-}
-function openLesson(id,n){
- selectedLesson={id,n,weekday:selectedDay};
- const t=plan.find(x=>x.id===id);
- lessonModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
- prepareSubjectOptions();prepareSubstituteOptions();
- mNum.value=t?.lesson_number||n;
- mSubject.value=t?.subject||fallbackSubjects[0];
- mStart.value=fmtTime(t?.start_time)||defaultTimes[n-1]?.[0]||"";
- mEnd.value=fmtTime(t?.end_time)||defaultTimes[n-1]?.[1]||"";
- mRoom.value=t?.room||"";
- const autoTeacher=getTeacherForSubject(mSubject.value);
- mTeacher.value=autoTeacher||t?.teacher||"";
- updateTeacherHint(autoTeacher);
- const change=t?.id?getTeacherChange(t.id):null;
- mTeacherAbsent.checked=!!change?.teacher_absent;
- mChangeDate.value=change?.lesson_date||new Date().toISOString().slice(0,10);
- mSubstitute.value=change?.substitute_teacher||"";
- mSubNote.value=change?.note||"";
- toggleSubstitute();lessonMsg.textContent="";
- lessonModal.classList.add("show");
-}
-async function saveLesson(){
- try{
-  db();
-  const autoTeacher=getTeacherForSubject(mSubject.value);
-  const p={weekday:selectedLesson.weekday,lesson_number:+mNum.value,start_time:mStart.value,end_time:mEnd.value,subject:mSubject.value.trim(),room:mRoom.value.trim(),teacher:autoTeacher||mTeacher.value.trim()};
-  if(!p.subject||!p.start_time||!p.end_time)throw new Error("Uzupełnij przedmiot i godziny.");
-  let r=selectedLesson.id?await sb.from("lesson_plan").update(p).eq("id",selectedLesson.id):await sb.from("lesson_plan").insert(p).select().single();
-  if(r.error)throw r.error;
-  const lessonId=selectedLesson.id||r.data.id;
-  const date=mChangeDate.value||new Date().toISOString().slice(0,10);
-  if(mTeacherAbsent.checked){
-    const ch={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:true,substitute_teacher:mSubstitute.value||null,note:mSubNote.value.trim()};
-    const cr=await sb.from("teacher_changes").upsert(ch,{onConflict:"lesson_plan_id,lesson_date"});
-    if(cr.error)throw cr.error;
-  }else if(lessonId){
-    const cr=await sb.from("teacher_changes").delete().eq("lesson_plan_id",lessonId).eq("lesson_date",date);
-    if(cr.error)throw cr.error;
-  }
-  closeModal("lessonModal");await loadData();
- }catch(e){lessonMsg.textContent="Błąd: "+e.message}
-}
-async function deleteLesson(){
- if(!selectedLesson?.id){closeModal("lessonModal");return}
- try{db();const {error}=await sb.from("lesson_plan").delete().eq("id",selectedLesson.id);if(error)throw error;closeModal("lessonModal");await loadData()}catch(e){lessonMsg.textContent=e.message}
-}
-function renderAttDays(){
- attDays.innerHTML=days.map((d,i)=>`<button class="day-tab ${i===selectedDay?'active':''}" onclick="selectedDay=${i};renderAttDays();renderAttendance()">${d}</button>`).join("");
-}
-function renderAttendance(){
- let rows=plan.filter(x=>Number(x.weekday)===selectedDay);
- if(!rows.length){attGrid.innerHTML="<div style='color:var(--muted);padding:20px'>Brak lekcji. Najpierw dodaj plan.</div>";return}
- let out="";
- rows.forEach(t=>{
-  let a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===Number(t.lesson_number));
-  let cls=a?.status||"present";
-  let label=cls==="absent"?"Nieobecność":cls==="late"?"Spóźnienie":"Obecność";
-  out+=`<div class="att-cell ${cls}" onclick="openAtt(${t.lesson_number})">
-    <div class="status">${label}</div>
-    <div class="sub">${t.lesson_number}. ${esc(t.subject)}<br>${fmtTime(t.start_time)}–${fmtTime(t.end_time)}<br><b>${esc(t.teacher||'—')}</b></div>
-  </div>`;
- });
- attGrid.innerHTML=out;
-}
-function openAtt(n){
- selectedAtt={weekday:selectedDay,lesson_number:n};
- const a=attendance.find(x=>Number(x.weekday)===selectedDay&&Number(x.lesson_number)===n);
- attModalTitle.textContent=`${days[selectedDay]} · ${n}. lekcja`;
- mAttStatus.value=a?.status||"present";mAttDate.value=a?.lesson_date||new Date().toISOString().slice(0,10);attMsg.textContent="";
- attModal.classList.add("show");
-}
-async function saveAttendance(){
- try{
-  db();
-  const p={weekday:selectedAtt.weekday,lesson_number:selectedAtt.lesson_number,status:mAttStatus.value,lesson_date:mAttDate.value||null};
-  const {error}=await sb.from("attendance").upsert(p,{onConflict:"weekday,lesson_number,lesson_date"});if(error)throw error;
-  closeModal("attModal");await loadData();
- }catch(e){attMsg.textContent="Błąd: "+e.message}
-}
-async function deleteAttendance(){
- try{
-  db();
-  const q=sb.from("attendance").delete().eq("weekday",selectedAtt.weekday).eq("lesson_number",selectedAtt.lesson_number);
-  const {error}=await q;if(error)throw error;closeModal("attModal");await loadData();
- }catch(e){attMsg.textContent=e.message}
-}
 
-/* ---- NAUCZYCIELE (mapowanie przedmiot -> nauczyciel) ---- */
-function renderTeachers(){
- teacherList.innerHTML=(subjectTeachers||[]).length
-  ? subjectTeachers.map(x=>`
-    <div class="teacher-row">
-      <div class="tr-subject">${esc(x.subject)}</div>
-      <div class="tr-teacher">${esc(x.teacher)}</div>
-      <div class="tr-actions">
-        <button class="secondary" onclick="editTeacher(${x.id})">Edytuj</button>
-        <button class="secondary" onclick="removeTeacher(${x.id})">Usuń</button>
+  const rows=
+    plan.filter(
+      x=>
+        Number(x.weekday)===
+        selectedDay
+    );
+
+
+  let max=Math.max(
+    8,
+    ...rows.map(
+      x=>Number(x.lesson_number)
+    )
+  );
+
+
+  let out="";
+
+
+  for(
+    let n=1;
+    n<=max;
+    n++
+  ){
+
+    const t=
+      rows.find(
+        x=>
+          Number(x.lesson_number)===n
+      );
+
+
+    const st=
+      fmtTime(t?.start_time) ||
+      defaultTimes[n-1]?.[0] ||
+      "";
+
+
+    const en=
+      fmtTime(t?.end_time) ||
+      defaultTimes[n-1]?.[1] ||
+      "";
+
+
+    out+=`
+
+      <div class="timecell">
+        ${st}<br>${en}
       </div>
-    </div>`).join("")
-  : "<div style='color:var(--muted);padding:10px 0'>Brak przypisań. Dodaj pierwsze powyżej.</div>";
-}
-function editTeacher(id){
- const row=subjectTeachers.find(x=>x.id===id);
- if(!row)return;
- editingTeacherId=id;
- tSubject.value=row.subject;
- tTeacher.value=row.teacher;
- cancelEditTeacher.style.display="inline-block";
- teacherMsg.textContent="";
- tSubject.focus();
-}
-function cancelTeacherEdit(){
- editingTeacherId=null;
- tSubject.value="";tTeacher.value="";
- cancelEditTeacher.style.display="none";
- teacherMsg.textContent="";
-}
-async function saveTeacherMapping(){
- try{
-  db();
-  const subject=tSubject.value.trim();
-  const teacher=tTeacher.value.trim();
-  if(!subject||!teacher)throw new Error("Podaj przedmiot i nauczyciela.");
-  let id=editingTeacherId;
-  if(!id){
-   const existing=subjectTeachers.find(x=>x.subject.toLowerCase()===subject.toLowerCase());
-   if(existing)id=existing.id;
+
+    `;
+
+
+    out+=`
+
+      <div
+        class="lesson"
+        onclick="openLesson(${t?t.id:"null"},${n})"
+      >
+
+        <div class="num">
+          ${n}. lekcja
+        </div>
+
+        <div class="subject">
+
+          ${
+            t
+              ? esc(t.subject)
+              : '<span style="color:#777">Wolna godzina</span>'
+          }
+
+        </div>
+
+        <div class="meta">
+
+          ${
+            t
+              ? esc(t.room||"")+" · <b>"+
+                esc(t.teacher||"—")+
+                "</b>"
+              : ""
+          }
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    /*
+      Zachowujemy wygląd starej siatki.
+    */
+
+    out+=`
+
+      <div
+        class="lesson"
+        style="opacity:.28"
+      >
+        <div class="num">
+          ${n}. lekcja
+        </div>
+      </div>
+
+      <div
+        class="lesson"
+        style="opacity:.28"
+      >
+        <div class="num">
+          ${n}. lekcja
+        </div>
+      </div>
+
+      <div
+        class="lesson"
+        style="opacity:.28"
+      >
+        <div class="num">
+          ${n}. lekcja
+        </div>
+      </div>
+
+      <div
+        class="lesson"
+        style="opacity:.28"
+      >
+        <div class="num">
+          ${n}. lekcja
+        </div>
+      </div>
+
+    `;
+
   }
-  const {error}=id
-   ? await sb.from("subject_teachers").update({subject,teacher}).eq("id",id)
-   : await sb.from("subject_teachers").insert({subject,teacher});
-  if(error)throw error;
-  cancelTeacherEdit();
-  teacherMsg.textContent="Zapisano. Przedmiot zostanie teraz automatycznie łączony z tym nauczycielem.";
-  await loadData();
- }catch(e){teacherMsg.textContent="Błąd: "+e.message}
-}
-async function removeTeacher(id){
- try{
-  db();
-  const {error}=await sb.from("subject_teachers").delete().eq("id",id);
-  if(error)throw error;
-  await loadData();
- }catch(e){teacherMsg.textContent="Błąd: "+e.message}
+
+
+  schedule.innerHTML=out;
+
 }
 
-function closeModal(id){document.getElementById(id).classList.remove("show")}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function fmtTime(t){return t?String(t).slice(0,5):""}
-if(sb)sb.auth.getSession().then(showApp);
+
+/* =====================================================
+   PRZEDMIOTY
+===================================================== */
+
+function allKnownSubjects(){
+
+  return [
+    ...new Set([
+      ...(subjectTeachers||[])
+        .map(x=>x.subject),
+
+      ...fallbackSubjects,
+
+      ...plan
+        .map(x=>x.subject)
+        .filter(Boolean)
+
+    ])
+  ].sort(
+    (a,b)=>
+      a.localeCompare(b,"pl")
+  );
+
+}
+
+
+function prepareSubjectOptions(){
+
+  mSubject.innerHTML=
+    allKnownSubjects()
+      .map(x=>
+        `<option value="${esc(x)}">${esc(x)}</option>`
+      )
+      .join("");
+
+}
+
+
+function prepareSubjectDatalist(){
+
+  subjectDatalist.innerHTML=
+    allKnownSubjects()
+      .map(x=>
+        `<option value="${esc(x)}">`
+      )
+      .join("");
+
+}
+
+
+function prepareSubstituteOptions(){
+
+  const teachers=[
+    ...new Set(
+      (subjectTeachers||[])
+        .map(x=>x.teacher)
+        .filter(Boolean)
+    )
+  ].sort(
+    (a,b)=>
+      a.localeCompare(b,"pl")
+  );
+
+
+  mSubstitute.innerHTML=
+    `<option value="">
+      Wybierz nauczyciela zastępującego
+    </option>`+
+    teachers.map(x=>
+      `<option value="${esc(x)}">
+        ${esc(x)}
+      </option>`
+    ).join("");
+
+}
+
+
+function getTeacherForSubject(subject){
+
+  const row=
+    (subjectTeachers||[])
+      .find(
+        x=>
+          String(x.subject)
+            .toLowerCase()===
+          String(subject||"")
+            .toLowerCase()
+      );
+
+  return row?.teacher||"";
+
+}
+
+
+function subjectChanged(){
+
+  const t=
+    getTeacherForSubject(
+      mSubject.value
+    );
+
+  mTeacher.value=t;
+
+  updateTeacherHint(t);
+
+}
+
+
+function updateTeacherHint(t){
+
+  if(t){
+
+    teacherHint.textContent=
+      "Uzupełniono automatycznie na podstawie przypisania przedmiotu.";
+
+    teacherHint.className=
+      "auto-hint ok";
+
+  }else{
+
+    teacherHint.textContent=
+      "Brak przypisanego nauczyciela dla tego przedmiotu.";
+
+    teacherHint.className=
+      "auto-hint warn";
+
+  }
+
+}
+
+
+/* =====================================================
+   ZASTĘPSTWO
+===================================================== */
+
+function toggleSubstitute(){
+
+  subWrap.classList.toggle(
+    "show",
+    mTeacherAbsent.checked
+  );
+
+}
+
+
+/* =====================================================
+   ZASTĘPSTWO DLA KONKRETNEJ DATY
+===================================================== */
+
+function getTeacherChange(
+  lessonId,
+  date
+){
+
+  const dateISO=
+    localDateISO(date);
+
+  return teacherChanges.find(
+    x=>
+      Number(x.lesson_plan_id)===
+        Number(lessonId) &&
+      String(x.lesson_date)===
+        dateISO
+  );
+
+}
+
+
+/* =====================================================
+   EDYCJA LEKCJI
+===================================================== */
+
+function openLesson(id,n){
+
+  selectedLesson={
+    id,
+    n,
+    weekday:selectedDay
+  };
+
+
+  const t=
+    plan.find(
+      x=>x.id===id
+    );
+
+
+  const selectedDate=
+    getWeekDate(selectedDay);
+
+
+  lessonModalTitle.textContent=
+    `${days[selectedDay]} · ${formatFullDate(selectedDate)} · ${n}. lekcja`;
+
+
+  prepareSubjectOptions();
+  prepareSubstituteOptions();
+
+
+  mNum.value=
+    t?.lesson_number||n;
+
+
+  mSubject.value=
+    t?.subject||
+    fallbackSubjects[0];
+
+
+  mStart.value=
+    fmtTime(t?.start_time)||
+    defaultTimes[n-1]?.[0]||
+    "";
+
+
+  mEnd.value=
+    fmtTime(t?.end_time)||
+    defaultTimes[n-1]?.[1]||
+    "";
+
+
+  mRoom.value=
+    t?.room||"";
+
+
+  const autoTeacher=
+    getTeacherForSubject(
+      mSubject.value
+    );
+
+
+  mTeacher.value=
+    autoTeacher||
+    t?.teacher||
+    "";
+
+
+  updateTeacherHint(
+    autoTeacher
+  );
+
+
+  const change=
+    t?.id
+      ? getTeacherChange(
+          t.id,
+          selectedDate
+        )
+      : null;
+
+
+  mTeacherAbsent.checked=
+    !!change?.teacher_absent;
+
+
+  mChangeDate.value=
+    change?.lesson_date||
+    localDateISO(selectedDate);
+
+
+  mSubstitute.value=
+    change?.substitute_teacher||
+    "";
+
+
+  mSubNote.value=
+    change?.note||
+    "";
+
+
+  toggleSubstitute();
+
+  lessonMsg.textContent="";
+
+  lessonModal.classList.add("show");
+
+}
+
+
+/* =====================================================
+   ZAPIS LEKCJI
+===================================================== */
+
+async function saveLesson(){
+
+  try{
+
+    db();
+
+
+    const autoTeacher=
+      getTeacherForSubject(
+        mSubject.value
+      );
+
+
+    const p={
+
+      weekday:
+        selectedLesson.weekday,
+
+      lesson_number:
+        Number(mNum.value),
+
+      start_time:
+        mStart.value,
+
+      end_time:
+        mEnd.value,
+
+      subject:
+        mSubject.value.trim(),
+
+      room:
+        mRoom.value.trim(),
+
+      teacher:
+        autoTeacher||
+        mTeacher.value.trim()
+
+    };
+
+
+    if(
+      !p.subject||
+      !p.start_time||
+      !p.end_time
+    ){
+
+      throw new Error(
+        "Uzupełnij przedmiot i godziny."
+      );
+
+    }
+
+
+    let r;
+
+
+    if(selectedLesson.id){
+
+      r=
+        await sb
+          .from("lesson_plan")
+          .update(p)
+          .eq(
+            "id",
+            selectedLesson.id
+          );
+
+    }else{
+
+      r=
+        await sb
+          .from("lesson_plan")
+          .insert(p)
+          .select()
+          .single();
+
+    }
+
+
+    if(r.error)
+      throw r.error;
+
+
+    const lessonId=
+      selectedLesson.id||
+      r.data.id;
+
+
+    const date=
+      mChangeDate.value||
+      localDateISO(
+        getWeekDate(selectedDay)
+      );
+
+
+    if(mTeacherAbsent.checked){
+
+      const ch={
+
+        lesson_plan_id:
+          lessonId,
+
+        lesson_date:
+          date,
+
+        teacher_absent:
+          true,
+
+        substitute_teacher:
+          mSubstitute.value||
+          null,
+
+        note:
+          mSubNote.value.trim()
+
+      };
+
+
+      /*
+        Nie używamy tutaj upsert,
+        żeby nie wymagać konkretnego
+        constraintu w tabeli.
+      */
+
+      const existing=
+        await sb
+          .from("teacher_changes")
+          .select("id")
+          .eq(
+            "lesson_plan_id",
+            lessonId
+          )
+          .eq(
+            "lesson_date",
+            date
+          )
+          .maybeSingle();
+
+
+      if(existing.error)
+        throw existing.error;
+
+
+      let cr;
+
+
+      if(existing.data){
+
+        cr=
+          await sb
+            .from("teacher_changes")
+            .update(ch)
+            .eq(
+              "id",
+              existing.data.id
+            );
+
+      }else{
+
+        cr=
+          await sb
+            .from("teacher_changes")
+            .insert(ch);
+
+      }
+
+
+      if(cr.error)
+        throw cr.error;
+
+
+    }else{
+
+      const cr=
+        await sb
+          .from("teacher_changes")
+          .delete()
+          .eq(
+            "lesson_plan_id",
+            lessonId
+          )
+          .eq(
+            "lesson_date",
+            date
+          );
+
+
+      if(cr.error)
+        throw cr.error;
+
+    }
+
+
+    closeModal("lessonModal");
+
+    await loadData();
+
+
+  }catch(e){
+
+    lessonMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   USUWANIE LEKCJI
+===================================================== */
+
+async function deleteLesson(){
+
+  if(!selectedLesson?.id){
+
+    closeModal("lessonModal");
+
+    return;
+
+  }
+
+
+  try{
+
+    db();
+
+
+    const {error}=
+      await sb
+        .from("lesson_plan")
+        .delete()
+        .eq(
+          "id",
+          selectedLesson.id
+        );
+
+
+    if(error)
+      throw error;
+
+
+    /*
+      Usuwamy również zastępstwa
+      powiązane z tą lekcją.
+    */
+
+    await sb
+      .from("teacher_changes")
+      .delete()
+      .eq(
+        "lesson_plan_id",
+        selectedLesson.id
+      );
+
+
+    closeModal("lessonModal");
+
+    await loadData();
+
+
+  }catch(e){
+
+    lessonMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   DNI FREKWENCJI
+===================================================== */
+
+function renderAttDays(){
+
+  attDays.innerHTML=
+    days.map((d,i)=>{
+
+      const date=
+        getWeekDate(i);
+
+
+      return `
+
+      <button
+        class="day-tab ${i===selectedDay?"active":""}"
+        onclick="
+          selectedDay=${i};
+          renderAttDays();
+          renderAttendance();
+        "
+      >
+
+        ${d}
+
+        <br>
+
+        <small>
+          ${formatShortDate(date)}
+        </small>
+
+      </button>
+
+      `;
+
+    }).join("");
+
+
+  attWeekInfo.textContent=
+    "Aktualny tydzień: "+
+    formatWeek(currentWeekMonday);
+
+}
+
+
+/* =====================================================
+   FREKWENCJA
+===================================================== */
+
+function renderAttendance(){
+
+  const rows=
+    plan.filter(
+      x=>
+        Number(x.weekday)===
+        selectedDay
+    );
+
+
+  const selectedDate=
+    getWeekDate(selectedDay);
+
+
+  if(!rows.length){
+
+    attGrid.innerHTML=
+      "<div style='color:var(--muted);padding:20px'>Brak lekcji. Najpierw dodaj plan.</div>";
+
+    return;
+
+  }
+
+
+  let out="";
+
+
+  rows.forEach(t=>{
+
+    const a=
+      attendance.find(
+        x=>
+          Number(x.weekday)===
+            selectedDay &&
+          Number(x.lesson_number)===
+            Number(t.lesson_number) &&
+          String(x.lesson_date||"")===
+            localDateISO(selectedDate)
+      );
+
+
+    const cls=
+      a?.status||
+      "none";
+
+
+    let label=
+      "Brak wpisu";
+
+
+    if(cls==="present")
+      label="Obecność";
+
+
+    if(cls==="absent")
+      label="Nieobecność";
+
+
+    if(cls==="late")
+      label="Spóźnienie";
+
+
+    out+=`
+
+      <div
+        class="att-cell ${cls}"
+        onclick="
+          openAtt(${t.lesson_number})
+        "
+      >
+
+        <div class="status">
+          ${label}
+        </div>
+
+        <div class="sub">
+
+          ${t.lesson_number}.
+          ${esc(t.subject)}
+
+          <br>
+
+          ${fmtTime(t.start_time)}
+          –
+          ${fmtTime(t.end_time)}
+
+          <br>
+
+          <b>
+            ${esc(t.teacher||"—")}
+          </b>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+
+  attGrid.innerHTML=out;
+
+}
+
+
+/* =====================================================
+   OTWARCIE FREKWENCJI
+===================================================== */
+
+function openAtt(n){
+
+  const selectedDate=
+    getWeekDate(selectedDay);
+
+
+  const date=
+    localDateISO(
+      selectedDate
+    );
+
+
+  selectedAtt={
+
+    weekday:
+      selectedDay,
+
+    lesson_number:
+      Number(n),
+
+    lesson_date:
+      date
+
+  };
+
+
+  const a=
+    attendance.find(
+      x=>
+        Number(x.weekday)===
+          selectedDay &&
+        Number(x.lesson_number)===
+          Number(n) &&
+        String(x.lesson_date||"")===
+          date
+    );
+
+
+  attModalTitle.textContent=
+    `${days[selectedDay]} · ${formatFullDate(selectedDate)} · ${n}. lekcja`;
+
+
+  mAttStatus.value=
+    a?.status||
+    "present";
+
+
+  mAttDate.value=
+    a?.lesson_date||
+    date;
+
+
+  attMsg.textContent="";
+
+  attModal.classList.add("show");
+
+}
+
+
+/* =====================================================
+   ZAPIS FREKWENCJI
+===================================================== */
+
+async function saveAttendance(){
+
+  try{
+
+    db();
+
+
+    const date=
+      mAttDate.value||
+      selectedAtt.lesson_date;
+
+
+    const p={
+
+      weekday:
+        selectedAtt.weekday,
+
+      lesson_number:
+        Number(selectedAtt.lesson_number),
+
+      status:
+        mAttStatus.value,
+
+      lesson_date:
+        date
+
+    };
+
+
+    /*
+      Najpierw szukamy istniejącego wpisu.
+      Dzięki temu nie potrzebujemy
+      UNIQUE(weekday,lesson_number,lesson_date).
+    */
+
+    const existing=
+      await sb
+        .from("attendance")
+        .select("id")
+        .eq(
+          "weekday",
+          p.weekday
+        )
+        .eq(
+          "lesson_number",
+          p.lesson_number
+        )
+        .eq(
+          "lesson_date",
+          p.lesson_date
+        )
+        .maybeSingle();
+
+
+    if(existing.error)
+      throw existing.error;
+
+
+    let result;
+
+
+    if(existing.data){
+
+      result=
+        await sb
+          .from("attendance")
+          .update({
+            status:p.status
+          })
+          .eq(
+            "id",
+            existing.data.id
+          );
+
+    }else{
+
+      result=
+        await sb
+          .from("attendance")
+          .insert(p);
+
+    }
+
+
+    if(result.error)
+      throw result.error;
+
+
+    closeModal("attModal");
+
+    await loadData();
+
+
+  }catch(e){
+
+    attMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   USUWANIE FREKWENCJI
+===================================================== */
+
+async function deleteAttendance(){
+
+  try{
+
+    db();
+
+
+    const date=
+      mAttDate.value||
+      selectedAtt.lesson_date;
+
+
+    const {error}=
+      await sb
+        .from("attendance")
+        .delete()
+        .eq(
+          "weekday",
+          selectedAtt.weekday
+        )
+        .eq(
+          "lesson_number",
+          selectedAtt.lesson_number
+        )
+        .eq(
+          "lesson_date",
+          date
+        );
+
+
+    if(error)
+      throw error;
+
+
+    closeModal("attModal");
+
+    await loadData();
+
+
+  }catch(e){
+
+    attMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   NAUCZYCIELE
+===================================================== */
+
+function renderTeachers(){
+
+  teacherList.innerHTML=
+    (subjectTeachers||[]).length
+
+      ?
+
+      subjectTeachers
+        .map(x=>`
+
+        <div class="teacher-row">
+
+          <div class="tr-subject">
+            ${esc(x.subject)}
+          </div>
+
+          <div class="tr-teacher">
+            ${esc(x.teacher)}
+          </div>
+
+          <div class="tr-actions">
+
+            <button
+              class="secondary"
+              onclick="editTeacher(${x.id})"
+            >
+              Edytuj
+            </button>
+
+            <button
+              class="secondary"
+              onclick="removeTeacher(${x.id})"
+            >
+              Usuń
+            </button>
+
+          </div>
+
+        </div>
+
+        `)
+        .join("")
+
+      :
+
+      "<div style='color:var(--muted);padding:10px 0'>Brak przypisań. Dodaj pierwsze powyżej.</div>";
+
+}
+
+
+function editTeacher(id){
+
+  const row=
+    subjectTeachers.find(
+      x=>x.id===id
+    );
+
+  if(!row)
+    return;
+
+
+  editingTeacherId=id;
+
+  tSubject.value=
+    row.subject;
+
+  tTeacher.value=
+    row.teacher;
+
+  cancelEditTeacher.style.display=
+    "inline-block";
+
+  teacherMsg.textContent="";
+
+  tSubject.focus();
+
+}
+
+
+function cancelTeacherEdit(){
+
+  editingTeacherId=null;
+
+  tSubject.value="";
+
+  tTeacher.value="";
+
+  cancelEditTeacher.style.display=
+    "none";
+
+  teacherMsg.textContent="";
+
+}
+
+
+async function saveTeacherMapping(){
+
+  try{
+
+    db();
+
+
+    const subject=
+      tSubject.value.trim();
+
+    const teacher=
+      tTeacher.value.trim();
+
+
+    if(!subject||!teacher){
+
+      throw new Error(
+        "Podaj przedmiot i nauczyciela."
+      );
+
+    }
+
+
+    let id=
+      editingTeacherId;
+
+
+    if(!id){
+
+      const existing=
+        subjectTeachers.find(
+          x=>
+            x.subject.toLowerCase()===
+            subject.toLowerCase()
+        );
+
+      if(existing)
+        id=existing.id;
+
+    }
+
+
+    const {error}=id
+
+      ?
+
+      await sb
+        .from("subject_teachers")
+        .update({
+          subject,
+          teacher
+        })
+        .eq(
+          "id",
+          id
+        )
+
+      :
+
+      await sb
+        .from("subject_teachers")
+        .insert({
+          subject,
+          teacher
+        });
+
+
+    if(error)
+      throw error;
+
+
+    cancelTeacherEdit();
+
+    teacherMsg.textContent=
+      "Zapisano. Przedmiot zostanie teraz automatycznie łączony z tym nauczycielem.";
+
+    await loadData();
+
+
+  }catch(e){
+
+    teacherMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+async function removeTeacher(id){
+
+  try{
+
+    db();
+
+
+    const {error}=
+      await sb
+        .from("subject_teachers")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if(error)
+      throw error;
+
+
+    await loadData();
+
+
+  }catch(e){
+
+    teacherMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   POMOCNICZE
+===================================================== */
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("show");
+
+}
+
+
+function esc(s){
+
+  return String(s??"")
+    .replace(
+      /[&<>"']/g,
+      m=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[m])
+    );
+
+}
+
+
+function fmtTime(t){
+
+  return t
+    ? String(t).slice(0,5)
+    : "";
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+if(sb){
+
+  sb.auth
+    .getSession()
+    .then(showApp);
+
+}
+
 </script>
+
 </body>
 </html>
