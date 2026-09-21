@@ -161,6 +161,36 @@ inset 0 1px 0 rgba(255,255,255,.6),
 0 0 10px rgba(90,168,255,.6)
 }
 
+.week-nav{
+display:flex;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
+margin:-6px 0 15px
+}
+
+.week-nav button{
+border:1px solid #4a76c2;
+border-radius:8px;
+background:linear-gradient(180deg,#2c4d84,#132a55);
+color:var(--text);
+font-weight:700;
+padding:8px 13px;
+cursor:pointer;
+box-shadow:inset 0 1px 0 rgba(255,255,255,.25)
+}
+
+.week-nav button:hover{
+background:linear-gradient(180deg,#375c96,#1a3564)
+}
+
+.week-nav .week-info{
+flex:1;
+min-width:200px;
+margin:0;
+text-align:center
+}
+
 .week-info{
 margin:-6px 0 15px;
 padding:9px 12px;
@@ -173,7 +203,7 @@ font-size:12px
 
 .schedule{
 display:grid;
-grid-template-columns:90px repeat(5,minmax(130px,1fr));
+grid-template-columns:90px 1fr;
 gap:8px
 }
 
@@ -239,7 +269,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.1)
 
 .att-grid{
 display:grid;
-grid-template-columns:90px repeat(5,minmax(130px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
 gap:8px
 }
 
@@ -512,14 +542,13 @@ font-size:12px
 
 .wrap{padding:15px}
 
-.schedule,
-.att-grid{
-grid-template-columns:62px repeat(5,minmax(115px,1fr));
-overflow-x:auto
+.schedule{
+grid-template-columns:62px 1fr
 }
 
-.schedule{min-width:650px}
-.att-grid{min-width:650px}
+.att-grid{
+grid-template-columns:1fr
+}
 
 .card{overflow:hidden}
 
@@ -597,7 +626,12 @@ Nauczyciele
 
 <h2>Plan lekcji</h2>
 
+<div class="week-nav">
+<button onclick="changeWeek(-1)">‹ Poprzedni</button>
 <div class="week-info" id="planWeekInfo"></div>
+<button onclick="goToCurrentWeek()">Ten tydzień</button>
+<button onclick="changeWeek(1)">Następny ›</button>
+</div>
 
 <div class="day-tabs" id="planDays"></div>
 
@@ -620,7 +654,12 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 <h2>Frekwencja</h2>
 
+<div class="week-nav">
+<button onclick="changeWeek(-1)">‹ Poprzedni</button>
 <div class="week-info" id="attWeekInfo"></div>
+<button onclick="goToCurrentWeek()">Ten tydzień</button>
+<button onclick="changeWeek(1)">Następny ›</button>
+</div>
 
 <div class="day-tabs" id="attDays"></div>
 
@@ -734,7 +773,7 @@ Lekcja
 
 <div>
 <label>Nauczyciel</label>
-<input id="mTeacher" readonly>
+<input id="mTeacher" placeholder="Uzupełni się automatycznie">
 <div class="auto-hint" id="teacherHint"></div>
 </div>
 
@@ -877,8 +916,12 @@ const SUPABASE_ANON_KEY=
 "sb_publishable_OMnC90EdPVNwLJXAx8jipA_rV0lZfdD";
 
 const sb=
-(SUPABASE_URL.startsWith("UZUPELNIJ_") ||
- SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))
+(
+  SUPABASE_URL.startsWith("UZUPELNIJ_") ||
+  SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_") ||
+  !window.supabase ||
+  !window.supabase.createClient
+)
 ?null
 :window.supabase.createClient(
   SUPABASE_URL,
@@ -925,6 +968,38 @@ function getMonday(date){
   );
 
   return d;
+
+}
+
+
+function changeWeek(delta){
+
+  currentWeekMonday.setDate(
+    currentWeekMonday.getDate()+delta*7
+  );
+
+  refreshWeekViews();
+
+}
+
+
+function goToCurrentWeek(){
+
+  currentWeekMonday=
+    getMonday(new Date());
+
+  refreshWeekViews();
+
+}
+
+
+function refreshWeekViews(){
+
+  renderPlanDays();
+  renderSchedule();
+
+  renderAttDays();
+  renderAttendance();
 
 }
 
@@ -1083,7 +1158,7 @@ function db(){
   if(!sb){
 
     throw new Error(
-      "Brak konfiguracji Supabase."
+      "Brak połączenia z Supabase. Sprawdź internet i konfigurację."
     );
 
   }
@@ -1367,11 +1442,17 @@ function renderPlanDays(){
 function renderSchedule(){
 
   const rows=
-    plan.filter(
-      x=>
-        Number(x.weekday)===
-        selectedDay
-    );
+    plan
+      .filter(
+        x=>
+          Number(x.weekday)===
+          selectedDay
+      )
+      .sort(
+        (a,b)=>
+          Number(a.lesson_number)-
+          Number(b.lesson_number)
+      );
 
 
   let max=Math.max(
@@ -1456,50 +1537,6 @@ function renderSchedule(){
 
     `;
 
-
-    /*
-      Zachowujemy wygląd starej siatki.
-    */
-
-    out+=`
-
-      <div
-        class="lesson"
-        style="opacity:.28"
-      >
-        <div class="num">
-          ${n}. lekcja
-        </div>
-      </div>
-
-      <div
-        class="lesson"
-        style="opacity:.28"
-      >
-        <div class="num">
-          ${n}. lekcja
-        </div>
-      </div>
-
-      <div
-        class="lesson"
-        style="opacity:.28"
-      >
-        <div class="num">
-          ${n}. lekcja
-        </div>
-      </div>
-
-      <div
-        class="lesson"
-        style="opacity:.28"
-      >
-        <div class="num">
-          ${n}. lekcja
-        </div>
-      </div>
-
-    `;
 
   }
 
@@ -1692,7 +1729,7 @@ function openLesson(id,n){
 
   const t=
     plan.find(
-      x=>x.id===id
+      x=>String(x.id)===String(id)
     );
 
 
@@ -1740,8 +1777,8 @@ function openLesson(id,n){
 
 
   mTeacher.value=
-    autoTeacher||
     t?.teacher||
+    autoTeacher||
     "";
 
 
@@ -1825,8 +1862,8 @@ async function saveLesson(){
         mRoom.value.trim(),
 
       teacher:
-        autoTeacher||
-        mTeacher.value.trim()
+        mTeacher.value.trim()||
+        autoTeacher
 
     };
 
@@ -1927,17 +1964,21 @@ async function saveLesson(){
             "lesson_date",
             date
           )
-          .maybeSingle();
+          .limit(1);
 
 
       if(existing.error)
         throw existing.error;
 
 
+      const existingChange=
+        (existing.data||[])[0];
+
+
       let cr;
 
 
-      if(existing.data){
+      if(existingChange){
 
         cr=
           await sb
@@ -1945,7 +1986,7 @@ async function saveLesson(){
             .update(ch)
             .eq(
               "id",
-              existing.data.id
+              existingChange.id
             );
 
       }else{
@@ -2115,11 +2156,17 @@ function renderAttDays(){
 function renderAttendance(){
 
   const rows=
-    plan.filter(
-      x=>
-        Number(x.weekday)===
-        selectedDay
-    );
+    plan
+      .filter(
+        x=>
+          Number(x.weekday)===
+          selectedDay
+      )
+      .sort(
+        (a,b)=>
+          Number(a.lesson_number)-
+          Number(b.lesson_number)
+      );
 
 
   const selectedDate=
@@ -2141,11 +2188,14 @@ function renderAttendance(){
 
   rows.forEach(t=>{
 
+    /*
+      Wpis rozpoznajemy po dacie i numerze lekcji.
+      Kolumna weekday bywa pusta w starszych wpisach.
+    */
+
     const a=
       attendance.find(
         x=>
-          Number(x.weekday)===
-            selectedDay &&
           Number(x.lesson_number)===
             Number(t.lesson_number) &&
           String(x.lesson_date||"")===
@@ -2251,8 +2301,6 @@ function openAtt(n){
   const a=
     attendance.find(
       x=>
-        Number(x.weekday)===
-          selectedDay &&
         Number(x.lesson_number)===
           Number(n) &&
         String(x.lesson_date||"")===
@@ -2325,10 +2373,6 @@ async function saveAttendance(){
         .from("attendance")
         .select("id")
         .eq(
-          "weekday",
-          p.weekday
-        )
-        .eq(
           "lesson_number",
           p.lesson_number
         )
@@ -2336,27 +2380,32 @@ async function saveAttendance(){
           "lesson_date",
           p.lesson_date
         )
-        .maybeSingle();
+        .limit(1);
 
 
     if(existing.error)
       throw existing.error;
 
 
+    const existingRow=
+      (existing.data||[])[0];
+
+
     let result;
 
 
-    if(existing.data){
+    if(existingRow){
 
       result=
         await sb
           .from("attendance")
           .update({
+            weekday:p.weekday,
             status:p.status
           })
           .eq(
             "id",
-            existing.data.id
+            existingRow.id
           );
 
     }else{
@@ -2408,10 +2457,6 @@ async function deleteAttendance(){
       await sb
         .from("attendance")
         .delete()
-        .eq(
-          "weekday",
-          selectedAtt.weekday
-        )
         .eq(
           "lesson_number",
           selectedAtt.lesson_number
@@ -2469,14 +2514,14 @@ function renderTeachers(){
 
             <button
               class="secondary"
-              onclick="editTeacher(${x.id})"
+              onclick="editTeacher('${esc(String(x.id))}')"
             >
               Edytuj
             </button>
 
             <button
               class="secondary"
-              onclick="removeTeacher(${x.id})"
+              onclick="removeTeacher('${esc(String(x.id))}')"
             >
               Usuń
             </button>
@@ -2499,7 +2544,7 @@ function editTeacher(id){
 
   const row=
     subjectTeachers.find(
-      x=>x.id===id
+      x=>String(x.id)===String(id)
     );
 
   if(!row)
@@ -2711,6 +2756,26 @@ if(sb){
   sb.auth
     .getSession()
     .then(showApp);
+
+  /*
+    Enter w polu hasła też loguje.
+  */
+
+  [loginEmail,loginPassword].forEach(el=>{
+
+    el.addEventListener("keydown",e=>{
+
+      if(e.key==="Enter")
+        login();
+
+    });
+
+  });
+
+}else{
+
+  loginStatus.textContent=
+    "Nie udało się załadować biblioteki Supabase. Sprawdź połączenie z internetem i odśwież stronę.";
 
 }
 
