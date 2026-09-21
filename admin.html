@@ -7,558 +7,514 @@
 
 <style>
 :root{
---bg:#0a1330;
---card:#12224a;
---line:#3a5a99;
---text:#eaf2ff;
---muted:#9fb6da;
---accent:#3aa0ff;
---danger:#ff6b6b
+  --bg:#f2f4f8;
+  --card:#ffffff;
+  --card-hover:#f7f9fc;
+  --text:#1c2733;
+  --muted:#6b7686;
+  --accent:#0064c8;
+  --accent-dark:#004c99;
+  --accent-dim:#e6f0fb;
+  --line:#e2e6ee;
+  --danger:#d6413a;
+  --danger-dim:#fbe9e8;
+  --ok:#1f8a3e;
+  --ok-dim:#e4f7ea;
+  --late:#a36d00;
+  --late-dim:#fff4d6;
 }
 
 *{box-sizing:border-box}
 
 body{
-margin:0;
-color:var(--text);
-font-family:"Trebuchet MS","Segoe UI",Tahoma,Geneva,sans-serif;
-background:
-radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.35),rgba(255,255,255,0) 45%),
-linear-gradient(180deg,#0d1f4d 0%,#0a1633 45%,#050c1f 100%);
-background-attachment:fixed
+  margin:0;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg);
 }
 
 .wrap{
-max-width:1200px;
-margin:auto;
-padding:28px
+  max-width:1200px;
+  margin:auto;
+  padding:28px;
 }
 
 .top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:24px;
-background:linear-gradient(180deg,rgba(90,150,230,.35),rgba(20,50,110,.35));
-border:1px solid #5a8fd6;
-border-radius:16px;
-padding:14px 20px;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 10px rgba(0,0,10,.4)
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px 22px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .top h1{
-margin:0;
-font-size:26px;
-text-shadow:0 1px 0 rgba(0,0,0,.5),0 0 12px rgba(120,180,255,.5);
-letter-spacing:.5px
+  margin:0;
+  font-size:22px;
+  font-weight:700;
 }
 
-.top span{color:var(--muted)}
+.top span{
+  color:var(--muted);
+  font-size:13px;
+}
 
 .card{
-background:linear-gradient(180deg,#1a3468 0%,#0f2350 60%,#0a1c40 100%);
-border:1px solid #4a76c2;
-border-radius:18px;
-padding:20px;
-margin-bottom:18px;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.25),
-inset 0 -12px 24px rgba(0,0,0,.25),
-0 6px 16px rgba(0,0,20,.5);
-position:relative
-}
-
-.card::before{
-content:"";
-position:absolute;
-top:0;
-left:10px;
-right:10px;
-height:40%;
-background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0));
-border-radius:16px 16px 40px 40px;
-pointer-events:none
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 h2{
-font-size:18px;
-margin:0 0 16px;
-text-shadow:0 1px 1px rgba(0,0,0,.6)
+  font-size:17px;
+  margin:0 0 16px;
+  font-weight:700;
 }
 
 .tabs{
-display:flex;
-gap:8px;
-margin-bottom:18px;
-overflow:auto;
-padding:4px
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+  overflow:auto;
+  padding:2px;
 }
 
 .tab{
-background:linear-gradient(180deg,#4a80d6 0%,#1e3f7f 55%,#152c5c 100%);
-color:#dce8ff;
-border:1px solid #6fa3e8;
-padding:10px 18px;
-border-radius:9px;
-cursor:pointer;
-white-space:nowrap;
-font-weight:bold;
-text-shadow:0 1px 1px rgba(0,0,0,.5);
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.5),
-inset 0 -6px 10px rgba(0,0,0,.25),
-0 2px 4px rgba(0,0,0,.4)
+  background:var(--accent-dim);
+  color:var(--accent);
+  border:none;
+  padding:10px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  white-space:nowrap;
+  font-weight:600;
+  font-size:14px;
+  font-family:inherit;
 }
 
-.tab:hover{
-background:linear-gradient(180deg,#5b90e6 0%,#2a4d94 55%,#1c366e 100%)
-}
+.tab:hover{background:#d6e8fa}
 
 .tab.active{
-background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
-color:#04162f;
-border-color:#bfe3ff;
-text-shadow:0 1px 0 rgba(255,255,255,.5)
+  background:var(--accent);
+  color:#fff;
 }
 
 .panel{display:none}
 .panel.active{display:block}
 
-.day-tabs{
-display:flex;
-gap:7px;
-overflow:auto;
-margin-bottom:18px;
-padding:2px
-}
-
-.day-tab{
-flex:1;
-min-width:125px;
-padding:10px 11px;
-border:1px solid #4a76c2;
-border-radius:8px;
-background:linear-gradient(180deg,#1c3a70,#0e1f45);
-color:var(--muted);
-cursor:pointer;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
-font-weight:bold;
-line-height:1.3
-}
-
-.day-tab small{
-font-size:11px;
-font-weight:normal;
-opacity:.85
-}
-
-.day-tab.active{
-background:linear-gradient(180deg,#5aa8ff,#1c4c92);
-color:#04162f;
-border-color:#9fd0ff;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.6),
-0 0 10px rgba(90,168,255,.6)
-}
-
 .week-nav{
-display:flex;
-align-items:center;
-gap:8px;
-flex-wrap:wrap;
-margin:-6px 0 15px
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:0 0 15px;
 }
 
 .week-nav button{
-border:1px solid #4a76c2;
-border-radius:8px;
-background:linear-gradient(180deg,#2c4d84,#132a55);
-color:var(--text);
-font-weight:700;
-padding:8px 13px;
-cursor:pointer;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.25)
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--card);
+  color:var(--text);
+  font-weight:600;
+  padding:9px 14px;
+  cursor:pointer;
+  font-size:13px;
+  font-family:inherit;
 }
 
-.week-nav button:hover{
-background:linear-gradient(180deg,#375c96,#1a3564)
-}
+.week-nav button:hover{background:var(--card-hover)}
 
 .week-nav .week-info{
-flex:1;
-min-width:200px;
-margin:0;
-text-align:center
+  flex:1;
+  min-width:180px;
+  margin:0;
+  text-align:center;
+  padding:9px 12px;
+  border-radius:10px;
+  background:var(--accent-dim);
+  color:var(--accent-dark);
+  font-size:12.5px;
+  font-weight:600;
 }
 
-.week-info{
-margin:-6px 0 15px;
-padding:9px 12px;
-border-radius:9px;
-background:rgba(58,160,255,.10);
-border:1px solid rgba(90,160,255,.25);
-color:var(--muted);
-font-size:12px
+.day-tabs{
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  margin-bottom:16px;
+  padding:2px;
+}
+
+.day-tab{
+  flex:1;
+  min-width:110px;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--muted);
+  cursor:pointer;
+  font-weight:600;
+  line-height:1.3;
+  font-size:13px;
+  font-family:inherit;
+}
+
+.day-tab:hover{background:var(--card-hover)}
+
+.day-tab small{
+  font-size:11px;
+  font-weight:normal;
+  opacity:.8;
+}
+
+.day-tab.active{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
 }
 
 .schedule{
-display:grid;
-grid-template-columns:90px 1fr;
-gap:8px
-}
-
-.schedule-head{
-font-size:12px;
-color:var(--muted);
-padding:8px;
-text-align:center
-}
-
-.lesson{
-min-height:92px;
-background:linear-gradient(180deg,#173465,#0b1c3e);
-border:1px solid #3f679f;
-border-radius:10px;
-padding:10px;
-cursor:pointer;
-transition:.15s;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
-}
-
-.lesson:hover{
-border-color:#7fb3ff;
-transform:translateY(-1px);
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.3),
-0 0 10px rgba(90,160,255,.35)
-}
-
-.lesson .num{
-font-size:12px;
-color:var(--muted)
-}
-
-.lesson .subject{
-font-weight:700;
-margin-top:7px;
-text-shadow:0 1px 1px rgba(0,0,0,.5)
-}
-
-.lesson .meta{
-font-size:11px;
-color:var(--muted);
-margin-top:5px
-}
-
-.lesson .meta b{
-color:#bfe0ff;
-font-weight:600
+  display:grid;
+  grid-template-columns:80px 1fr;
+  gap:8px;
 }
 
 .timecell{
-display:flex;
-align-items:center;
-justify-content:center;
-color:var(--muted);
-font-size:12px;
-border:1px solid #3f679f;
-border-radius:10px;
-background:linear-gradient(180deg,#0e2247,#081736);
-box-shadow:inset 0 1px 0 rgba(255,255,255,.1)
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  font-size:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--bg);
 }
 
+.lesson{
+  min-height:80px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  cursor:pointer;
+  box-shadow:0 1px 2px rgba(20,30,50,.04);
+  transition:.12s;
+}
+
+.lesson:hover{
+  border-color:var(--accent);
+  box-shadow:0 2px 8px rgba(0,100,200,.12);
+}
+
+.lesson .num{
+  font-size:11.5px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.lesson .subject{
+  font-weight:700;
+  margin-top:5px;
+  font-size:14.5px;
+}
+
+.lesson .meta{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.lesson .meta b{
+  color:var(--text);
+  font-weight:600;
+}
+
+.lesson .meta s{
+  color:#a9b2c0;
+}
+
+.lesson .flag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:6px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:var(--late-dim);
+  color:var(--late);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.bulk-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.bulk-btn{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--card);
+  font-family:inherit;
+}
+
+.bulk-btn.present{color:var(--ok);border-color:#bfe3c9}
+.bulk-btn.present:hover{background:var(--ok-dim)}
+
+.bulk-btn.absent{color:var(--danger);border-color:#f3c9c6}
+.bulk-btn.absent:hover{background:var(--danger-dim)}
+
+.bulk-btn.late{color:var(--late);border-color:#f0dca0}
+.bulk-btn.late:hover{background:var(--late-dim)}
+
+.bulk-btn.clear{color:var(--muted)}
+.bulk-btn.clear:hover{background:var(--card-hover)}
+
 .att-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-gap:8px
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:10px;
 }
 
 .att-cell{
-min-height:82px;
-background:linear-gradient(180deg,#173465,#0b1c3e);
-border:1px solid #3f679f;
-border-radius:10px;
-padding:10px;
-cursor:pointer;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
+  min-height:78px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  cursor:pointer;
+  box-shadow:0 1px 2px rgba(20,30,50,.04);
+  transition:.12s;
 }
 
-.att-cell.present{
-border-color:#3fae6e;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.15),
-0 0 8px rgba(63,174,110,.35)
-}
+.att-cell:hover{box-shadow:0 2px 8px rgba(20,30,50,.08)}
 
-.att-cell.absent{
-border-color:#d9534f;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.15),
-0 0 8px rgba(217,83,79,.35)
-}
-
-.att-cell.late{
-border-color:#e0b23a;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.15),
-0 0 8px rgba(224,178,58,.35)
-}
-
-.att-cell.none{
-border-color:#3f679f
-}
+.att-cell.present{border-color:#bfe3c9}
+.att-cell.absent{border-color:#f3c9c6}
+.att-cell.late{border-color:#f0dca0}
+.att-cell.none{border-color:var(--line)}
 
 .att-cell .status{
-font-weight:700;
-font-size:13px;
-text-shadow:0 1px 1px rgba(0,0,0,.6)
+  font-weight:700;
+  font-size:13px;
 }
 
-.present .status{color:#5be08a}
-.absent .status{color:#ff8b87}
-.late .status{color:#f6cf6a}
-.none .status{color:#9fb6da}
+.present .status{color:var(--ok)}
+.absent .status{color:var(--danger)}
+.late .status{color:var(--late)}
+.none .status{color:var(--muted)}
 
 .att-cell .sub{
-font-size:11px;
-color:var(--muted);
-margin-top:5px
+  font-size:11.5px;
+  color:var(--muted);
+  margin-top:5px;
+  line-height:1.5;
 }
 
+.att-cell .sub b{color:var(--text)}
+
 .modal{
-position:fixed;
-inset:0;
-background:rgba(2,8,24,.75);
-display:none;
-align-items:center;
-justify-content:center;
-padding:20px;
-z-index:20
+  position:fixed;
+  inset:0;
+  background:rgba(15,25,40,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:20;
 }
 
 .modal.show{display:flex}
 
 .modal-box{
-width:min(520px,100%);
-background:linear-gradient(180deg,#1c3a70 0%,#0e2144 60%,#081633 100%);
-border:1px solid #5a8fd6;
-border-radius:16px;
-padding:22px;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.3),
-0 10px 30px rgba(0,0,10,.6)
+  width:min(520px,100%);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 24px 60px rgba(20,30,50,.25);
+  max-height:90vh;
+  overflow:auto;
 }
 
 .modal-head{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:18px
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
 }
 
 .modal-head h3{
-margin:0;
-text-shadow:0 1px 1px rgba(0,0,0,.6)
+  margin:0;
+  font-size:18px;
 }
 
 .close{
-width:32px;
-height:32px;
-border:1px solid #7fa8e0;
-border-radius:50%;
-background:linear-gradient(180deg,#5a90d6,#20406f);
-color:white;
-font-size:18px;
-cursor:pointer;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.5)
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:50%;
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-size:18px;
+  cursor:pointer;
 }
 
 label{
-display:block;
-font-size:12px;
-color:var(--muted);
-margin:11px 0 6px;
-text-shadow:0 1px 0 rgba(0,0,0,.4)
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin:11px 0 6px;
+  font-weight:600;
 }
 
 input,select{
-width:100%;
-background:linear-gradient(180deg,#0e2247,#081736);
-color:var(--text);
-border:1px solid #3f679f;
-border-radius:8px;
-padding:11px;
-outline:none;
-box-shadow:inset 0 2px 4px rgba(0,0,10,.5)
+  width:100%;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px;
+  outline:none;
+  font:inherit;
 }
 
+input:focus,select:focus{border-color:var(--accent)}
+
 .form-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
 .actions{
-display:flex;
-gap:8px;
-margin-top:18px
+  display:flex;
+  gap:8px;
+  margin-top:18px;
+  flex-wrap:wrap;
 }
 
 button.primary{
-border:1px solid #9fd0ff;
-border-radius:9px;
-padding:11px 16px;
-background:linear-gradient(180deg,#8fd0ff 0%,#2e7fdb 55%,#134a91 100%);
-color:#04162f;
-font-weight:700;
-cursor:pointer;
-text-shadow:0 1px 0 rgba(255,255,255,.5);
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.6),
-0 2px 6px rgba(0,0,0,.4)
+  border:none;
+  border-radius:12px;
+  padding:12px 18px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
 }
 
-button.primary:hover{
-background:linear-gradient(180deg,#a7ddff 0%,#3f8fe6 55%,#1c589f 100%)
-}
+button.primary:hover{background:var(--accent-dark)}
 
 button.secondary{
-border:1px solid #4a76c2;
-border-radius:9px;
-padding:11px 16px;
-background:linear-gradient(180deg,#2c4d84,#132a55);
-color:var(--text);
-font-weight:600;
-cursor:pointer;
-box-shadow:
-inset 0 1px 0 rgba(255,255,255,.25),
-0 2px 4px rgba(0,0,0,.4)
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 18px;
+  background:var(--card);
+  color:var(--text);
+  font-weight:600;
+  cursor:pointer;
+  font-family:inherit;
 }
 
-button.secondary:hover{
-background:linear-gradient(180deg,#375c96,#1a3564)
-}
+button.secondary:hover{background:var(--card-hover)}
 
 .status-msg{
-min-height:20px;
-color:var(--muted);
-font-size:13px;
-margin-top:10px
+  min-height:20px;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:10px;
 }
 
 .hint{
-font-size:11px;
-color:var(--muted);
-margin-top:5px
+  font-size:11px;
+  color:var(--muted);
+  margin-top:5px;
 }
 
 .teacher-box{
-margin-top:14px;
-padding:14px;
-background:linear-gradient(180deg,#0e2247,#081736);
-border:1px solid #3f679f;
-border-radius:10px;
-box-shadow:inset 0 2px 6px rgba(0,0,10,.4)
+  margin-top:14px;
+  padding:16px;
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:14px;
 }
 
 .teacher-box h4{
-margin:0 0 10px;
-font-size:13px;
-text-shadow:0 1px 0 rgba(0,0,0,.5)
+  margin:0 0 10px;
+  font-size:13px;
+  font-weight:700;
 }
 
 .check-row{
-display:flex;
-align-items:center;
-gap:9px;
-margin-top:12px;
-font-size:13px;
-color:var(--text)
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:12px;
+  font-size:13px;
 }
 
 .check-row input{width:auto}
 
-.sub-wrap{
-display:none;
-margin-top:10px
-}
-
+.sub-wrap{display:none;margin-top:10px}
 .sub-wrap.show{display:block}
 
 .login{
-max-width:430px;
-margin:70px auto
+  max-width:430px;
+  margin:70px auto;
 }
 
 .login h1{
-margin-top:0;
-text-shadow:
-0 1px 1px rgba(0,0,0,.6),
-0 0 16px rgba(120,180,255,.4)
+  margin-top:0;
+  font-size:24px;
 }
 
 .auto-hint{
-font-size:11px;
-margin-top:5px
+  font-size:11px;
+  margin-top:5px;
+  font-weight:600;
 }
 
-.auto-hint.ok{color:#5be08a}
-.auto-hint.warn{color:#f6cf6a}
+.auto-hint.ok{color:var(--ok)}
+.auto-hint.warn{color:var(--late)}
 
 .teacher-row{
-display:flex;
-align-items:center;
-gap:12px;
-padding:12px;
-background:linear-gradient(180deg,#173465,#0b1c3e);
-border:1px solid #3f679f;
-border-radius:10px;
-margin-bottom:8px;
-box-shadow:inset 0 1px 0 rgba(255,255,255,.15)
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:8px;
 }
 
-.teacher-row .tr-subject{
-font-weight:700;
-flex:1;
-text-shadow:0 1px 1px rgba(0,0,0,.4)
-}
-
-.teacher-row .tr-teacher{
-color:var(--muted);
-flex:1
-}
-
-.teacher-row .tr-actions{
-display:flex;
-gap:6px
-}
-
-.teacher-row .tr-actions button{
-padding:8px 12px;
-font-size:12px
-}
+.teacher-row .tr-subject{font-weight:700;flex:1}
+.teacher-row .tr-teacher{color:var(--muted);flex:1}
+.teacher-row .tr-actions{display:flex;gap:6px}
+.teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
 
 @media(max-width:800px){
 
-.wrap{padding:15px}
+  .wrap{padding:16px}
 
-.schedule{
-grid-template-columns:62px 1fr
-}
+  .form-grid{grid-template-columns:1fr}
 
-.att-grid{
-grid-template-columns:1fr
-}
-
-.card{overflow:hidden}
-
-.form-grid{
-grid-template-columns:1fr
-}
-
-.teacher-row{
-flex-wrap:wrap
-}
+  .teacher-row{flex-wrap:wrap}
 
 }
 </style>
@@ -663,13 +619,22 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 <div class="day-tabs" id="attDays"></div>
 
+<div class="bulk-bar">
+<button class="bulk-btn present" onclick="markWholeDay('present')">✓ Cały dzień: obecność</button>
+<button class="bulk-btn absent" onclick="markWholeDay('absent')">✕ Cały dzień: nieobecność</button>
+<button class="bulk-btn late" onclick="markWholeDay('late')">⏱ Cały dzień: spóźnienie</button>
+<button class="bulk-btn clear" onclick="clearWholeDay()">Wyczyść dzień</button>
+</div>
+
+<div class="status-msg" id="bulkMsg"></div>
+
 <div style="overflow:auto">
 <div class="att-grid" id="attGrid"></div>
 </div>
 
 <div class="status-msg">
 Kliknij lekcję i wybierz: obecność, nieobecność albo spóźnienie.
-Każdy wpis jest zapisywany dla konkretnej daty.
+Każdy wpis jest zapisywany dla konkretnej daty. Przyciski powyżej oznaczają jednym kliknięciem wszystkie lekcje wybranego dnia.
 </div>
 
 </div>
@@ -1497,6 +1462,15 @@ function renderSchedule(){
       "";
 
 
+    const change=
+      t
+        ? getTeacherChange(
+            t.id,
+            getWeekDate(selectedDay)
+          )
+        : null;
+
+
     out+=`
 
       <div class="timecell">
@@ -1510,7 +1484,7 @@ function renderSchedule(){
 
       <div
         class="lesson"
-        onclick="openLesson(${t?t.id:"null"},${n})"
+        onclick="openLesson(${t?`'${esc(String(t.id))}'`:"null"},${n})"
       >
 
         <div class="num">
@@ -1531,13 +1505,23 @@ function renderSchedule(){
 
           ${
             t
-              ? esc(t.room||"")+" · <b>"+
-                esc(t.teacher||"—")+
-                "</b>"
+              ? esc(t.room||"")+" · "+
+                (
+                  change?.teacher_absent
+                    ? "<s>"+esc(t.teacher||"—")+"</s> "+
+                      esc(change.substitute_teacher||"zastępstwo")
+                    : "<b>"+esc(t.teacher||"—")+"</b>"
+                )
               : ""
           }
 
         </div>
+
+        ${
+          change?.teacher_absent
+            ? '<div class="flag">⚠ zastępstwo</div>'
+            : ""
+        }
 
       </div>
 
@@ -2485,6 +2469,240 @@ async function deleteAttendance(){
   }catch(e){
 
     attMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   NAZWA STATUSU (do komunikatów)
+===================================================== */
+
+function statusLabel(status){
+
+  if(status==="present")return "Obecność";
+  if(status==="absent")return "Nieobecność";
+  if(status==="late")return "Spóźnienie";
+
+  return status;
+
+}
+
+
+/* =====================================================
+   MASOWE ZAZNACZANIE CAŁEGO DNIA
+===================================================== */
+
+async function markWholeDay(status){
+
+  try{
+
+    db();
+
+
+    const rows=
+      plan
+        .filter(
+          x=>
+            Number(x.weekday)===
+            selectedDay
+        );
+
+
+    if(!rows.length){
+
+      bulkMsg.textContent=
+        "Brak lekcji tego dnia. Najpierw dodaj plan.";
+
+      return;
+
+    }
+
+
+    const selectedDate=
+      getWeekDate(selectedDay);
+
+    const date=
+      localDateISO(selectedDate);
+
+
+    const ok=
+      confirm(
+        `Oznaczyć wszystkie ${rows.length} lekcje dnia ${days[selectedDay]} (${formatFullDate(selectedDate)}) jako "${statusLabel(status)}"?`
+      );
+
+    if(!ok)return;
+
+
+    bulkMsg.textContent=
+      "Zapisywanie...";
+
+
+    /*
+      Dla kazdej lekcji tego dnia szukamy
+      istniejacego wpisu (po numerze lekcji i dacie)
+      i albo go aktualizujemy, albo tworzymy nowy.
+    */
+
+    const results=
+      await Promise.all(
+        rows.map(t=>{
+
+          const existing=
+            attendance.find(
+              x=>
+                Number(x.lesson_number)===
+                  Number(t.lesson_number) &&
+                String(x.lesson_date||"")===
+                  date
+            );
+
+
+          if(existing){
+
+            return sb
+              .from("attendance")
+              .update({
+                status,
+                weekday:selectedDay
+              })
+              .eq(
+                "id",
+                existing.id
+              );
+
+          }
+
+
+          return sb
+            .from("attendance")
+            .insert({
+
+              weekday:selectedDay,
+
+              lesson_number:
+                Number(t.lesson_number),
+
+              status,
+
+              lesson_date:date
+
+            });
+
+        })
+      );
+
+
+    const failed=
+      results.find(r=>r.error);
+
+    if(failed)
+      throw failed.error;
+
+
+    await loadData();
+
+    bulkMsg.textContent=
+      `Zapisano: ${statusLabel(status).toLowerCase()} dla ${rows.length} lekcji.`;
+
+
+  }catch(e){
+
+    bulkMsg.textContent=
+      "Błąd: "+e.message;
+
+  }
+
+}
+
+
+/* =====================================================
+   CZYSZCZENIE CAŁEGO DNIA
+===================================================== */
+
+async function clearWholeDay(){
+
+  try{
+
+    db();
+
+
+    const rows=
+      plan
+        .filter(
+          x=>
+            Number(x.weekday)===
+            selectedDay
+        );
+
+
+    if(!rows.length){
+
+      bulkMsg.textContent=
+        "Brak lekcji tego dnia.";
+
+      return;
+
+    }
+
+
+    const selectedDate=
+      getWeekDate(selectedDay);
+
+    const date=
+      localDateISO(selectedDate);
+
+
+    const ok=
+      confirm(
+        `Usunąć wszystkie wpisy frekwencji dla dnia ${days[selectedDay]} (${formatFullDate(selectedDate)})?`
+      );
+
+    if(!ok)return;
+
+
+    bulkMsg.textContent=
+      "Usuwanie...";
+
+
+    const results=
+      await Promise.all(
+        rows.map(t=>
+
+          sb
+            .from("attendance")
+            .delete()
+            .eq(
+              "lesson_number",
+              Number(t.lesson_number)
+            )
+            .eq(
+              "lesson_date",
+              date
+            )
+
+        )
+      );
+
+
+    const failed=
+      results.find(r=>r.error);
+
+    if(failed)
+      throw failed.error;
+
+
+    await loadData();
+
+    bulkMsg.textContent=
+      "Wyczyszczono wpisy dla tego dnia.";
+
+
+  }catch(e){
+
+    bulkMsg.textContent=
       "Błąd: "+e.message;
 
   }
