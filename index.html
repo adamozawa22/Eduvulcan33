@@ -7,14 +7,18 @@
 
 <style>
 :root{
-  --bg:#070c18;
-  --card:#111b30;
-  --card-hover:#16233d;
-  --text:#eef4ff;
-  --muted:#8ea3c9;
-  --accent:#3aa0ff;
-  --accent-dim:#132e52;
-  --line:#1c2c48;
+  --bg:#f2f4f8;
+  --card:#ffffff;
+  --card-hover:#f7f9fc;
+  --text:#1c2733;
+  --muted:#6b7686;
+  --accent:#0064c8;
+  --accent-dark:#004c99;
+  --accent-dim:#e6f0fb;
+  --line:#e2e6ee;
+  --danger:#d6413a;
+  --danger-dim:#fbe9e8;
+  --header-bg:#ffffff;
 }
 
 *{
@@ -55,29 +59,33 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:28px 22px 18px;
+  padding:22px 22px 16px;
+  background:var(--header-bg);
+  border-bottom:1px solid var(--line);
 }
 
 header h1{
-  font-size:28px;
-  font-weight:600;
+  font-size:22px;
+  font-weight:700;
+  color:var(--text);
 }
 
 .avatar{
-  width:42px;
-  height:42px;
+  width:40px;
+  height:40px;
   border-radius:50%;
-  background:#2a2a2e;
+  background:var(--accent);
+  color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:14px;
-  font-weight:600;
+  font-size:13px;
+  font-weight:700;
 }
 
 main{
   flex:1;
-  padding:0 22px 24px;
+  padding:18px 22px 24px;
   overflow-y:auto;
 }
 
@@ -92,21 +100,21 @@ main{
 /* START */
 
 .hero{
-  background:linear-gradient(135deg,#132a52,#0a1526);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:24px;
-  margin-bottom:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:16px;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(0,100,200,.25);
 }
 
 .hero .big{
-  font-size:46px;
+  font-size:42px;
   font-weight:700;
-  color:var(--accent);
 }
 
 .hero .label{
-  color:var(--muted);
+  color:rgba(255,255,255,.85);
   font-size:14px;
   margin-top:4px;
 }
@@ -115,19 +123,21 @@ main{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
-  margin-bottom:18px;
+  margin-bottom:16px;
 }
 
 .quick-card{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px;
+  border-radius:16px;
+  padding:15px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .quick-card .n{
-  font-size:22px;
+  font-size:20px;
   font-weight:700;
+  color:var(--accent);
 }
 
 .quick-card .t{
@@ -139,17 +149,18 @@ main{
 .next-lesson{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px;
+  border-radius:16px;
+  padding:16px;
   display:flex;
   align-items:center;
   gap:14px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .next-lesson .time{
   font-size:15px;
   color:var(--accent);
-  font-weight:600;
+  font-weight:700;
   min-width:52px;
 }
 
@@ -158,7 +169,7 @@ main{
 }
 
 .next-lesson .info b{
-  font-size:16px;
+  font-size:15px;
   display:block;
 }
 
@@ -168,9 +179,12 @@ main{
 }
 
 .section-title{
-  font-size:14px;
+  font-size:13px;
+  font-weight:600;
   color:var(--muted);
-  margin:22px 0 10px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  margin:20px 0 10px;
 }
 
 .mini-lesson{
@@ -179,9 +193,10 @@ main{
   gap:12px;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px 14px;
+  border-radius:14px;
+  padding:11px 14px;
   margin-bottom:8px;
+  box-shadow:0 1px 2px rgba(20,30,50,.04);
 }
 
 .mini-time{
@@ -208,8 +223,14 @@ main{
 .mini-num{
   font-size:13px;
   font-weight:700;
-  color:var(--accent);
-  min-width:18px;
+  color:#fff;
+  background:var(--accent);
+  min-width:22px;
+  height:22px;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 /* DATA */
@@ -219,26 +240,27 @@ main{
   align-items:center;
   justify-content:space-between;
   background:var(--card);
-  border-radius:16px;
-  padding:12px 8px;
-  margin-bottom:18px;
+  border-radius:14px;
+  padding:10px 8px;
+  margin-bottom:16px;
   border:1px solid var(--line);
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .day-nav button{
-  width:40px;
-  height:40px;
+  width:36px;
+  height:36px;
   border-radius:50%;
   border:none;
-  background:#232327;
-  color:var(--text);
-  font-size:25px;
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-size:22px;
   cursor:pointer;
   transition:.15s;
 }
 
 .day-nav button:hover{
-  background:#303039;
+  background:#d6e8fa;
 }
 
 .day-nav button:active{
@@ -247,7 +269,7 @@ main{
 
 .day-label{
   font-weight:600;
-  font-size:15px;
+  font-size:14.5px;
   text-align:center;
   padding:0 10px;
 }
@@ -256,27 +278,35 @@ main{
 
 .lesson-card{
   display:flex;
-  gap:16px;
+  gap:14px;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px 18px;
-  margin-bottom:12px;
+  border-radius:16px;
+  padding:14px 16px;
+  margin-bottom:10px;
   align-items:flex-start;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .lesson-num{
-  font-size:26px;
+  font-size:15px;
   font-weight:700;
-  color:var(--muted);
+  color:#fff;
+  background:var(--accent);
   min-width:26px;
+  height:26px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .lesson-time{
-  font-size:13px;
+  font-size:12.5px;
   color:var(--muted);
   min-width:48px;
   line-height:1.6;
+  padding-top:2px;
 }
 
 .lesson-body{
@@ -284,7 +314,7 @@ main{
 }
 
 .lesson-body .subj{
-  font-size:16px;
+  font-size:15px;
   font-weight:600;
 }
 
@@ -297,22 +327,22 @@ main{
 /* FREKWENCJA */
 
 .att-summary{
-  background:linear-gradient(135deg,#132a52,#0a1526);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:24px;
-  margin-bottom:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:16px;
   text-align:center;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(0,100,200,.25);
 }
 
 .att-summary .pct{
-  font-size:54px;
+  font-size:48px;
   font-weight:700;
-  color:var(--accent);
 }
 
 .att-summary .sub{
-  color:var(--muted);
+  color:rgba(255,255,255,.85);
   font-size:14px;
   margin-top:4px;
 }
@@ -323,7 +353,7 @@ main{
   gap:24px;
   margin-top:16px;
   padding-top:16px;
-  border-top:1px solid var(--line);
+  border-top:1px solid rgba(255,255,255,.25);
 }
 
 .breakdown .num{
@@ -333,22 +363,23 @@ main{
 
 .breakdown .lbl{
   font-size:12px;
-  color:var(--muted);
+  color:rgba(255,255,255,.8);
 }
 
 .att-lesson{
   display:flex;
-  gap:16px;
+  gap:14px;
   align-items:center;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:14px 18px;
+  border-radius:16px;
+  padding:13px 16px;
   margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .att-lesson .lesson-num{
-  font-size:22px;
+  font-size:14px;
 }
 
 .att-lesson .lesson-time{
@@ -359,10 +390,10 @@ main{
   display:flex;
   align-items:center;
   gap:6px;
-  background:var(--accent-dim);
-  color:var(--accent);
+  background:#e4f7ea;
+  color:#1f8a3e;
   font-size:12px;
-  font-weight:600;
+  font-weight:700;
   padding:6px 12px;
   border-radius:999px;
   white-space:nowrap;
@@ -379,15 +410,16 @@ main{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
-  margin-bottom:18px;
+  margin-bottom:16px;
 }
 
 .category-card{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px 16px;
+  border-radius:16px;
+  padding:16px;
   cursor:pointer;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .category-card:active{
@@ -395,19 +427,19 @@ main{
 }
 
 .cat-ico{
-  width:40px;
-  height:40px;
-  border-radius:13px;
+  width:38px;
+  height:38px;
+  border-radius:11px;
   background:var(--accent-dim);
   color:var(--accent);
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .category-card b{
-  font-size:15px;
+  font-size:14.5px;
   display:block;
 }
 
@@ -424,22 +456,23 @@ main{
   gap:12px;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:15px 16px;
+  border-radius:16px;
+  padding:14px 16px;
   margin-bottom:10px;
   cursor:pointer;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .tool-ico{
-  width:40px;
-  height:40px;
-  border-radius:13px;
+  width:38px;
+  height:38px;
+  border-radius:11px;
   background:var(--accent-dim);
   color:var(--accent);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  font-size:19px;
 }
 
 .tool-info{
@@ -448,7 +481,7 @@ main{
 
 .tool-info b{
   display:block;
-  font-size:15px;
+  font-size:14.5px;
 }
 
 .tool-info span{
@@ -460,7 +493,7 @@ main{
 
 .tool-arrow{
   color:var(--muted);
-  font-size:20px;
+  font-size:19px;
 }
 
 /* WIADOMOŚCI */
@@ -468,23 +501,24 @@ main{
 .message-card{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:18px;
+  border-radius:16px;
   padding:18px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
 .message-category{
   display:inline-flex;
-  background:var(--accent-dim);
-  color:var(--accent);
+  background:var(--danger-dim);
+  color:var(--danger);
   font-size:12px;
-  font-weight:600;
+  font-weight:700;
   padding:6px 10px;
   border-radius:999px;
   margin-bottom:12px;
 }
 
 .message-card h2{
-  font-size:17px;
+  font-size:16.5px;
   margin-bottom:7px;
 }
 
@@ -503,7 +537,7 @@ main{
 }
 
 .empty-state .ico{
-  font-size:40px;
+  font-size:38px;
   margin-bottom:12px;
 }
 
@@ -512,7 +546,7 @@ main{
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
+  background:rgba(15,25,40,.45);
   display:none;
   align-items:flex-end;
   justify-content:center;
@@ -528,7 +562,7 @@ main{
   max-width:430px;
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:24px 24px 0 0;
+  border-radius:22px 22px 0 0;
   padding:22px;
 }
 
@@ -540,7 +574,7 @@ main{
 }
 
 .modal-head h2{
-  font-size:20px;
+  font-size:19px;
 }
 
 .close-btn{
@@ -548,8 +582,8 @@ main{
   height:34px;
   border:0;
   border-radius:50%;
-  background:#232327;
-  color:var(--text);
+  background:var(--accent-dim);
+  color:var(--accent);
   font-size:20px;
   cursor:pointer;
 }
@@ -561,14 +595,15 @@ main{
 }
 
 .stat-item{
-  background:#121216;
+  background:var(--bg);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:14px;
   padding:15px;
 }
 
 .stat-item b{
-  font-size:22px;
+  font-size:21px;
+  color:var(--accent);
 }
 
 .stat-item span{
@@ -582,10 +617,10 @@ main{
   width:100%;
   min-height:110px;
   resize:vertical;
-  background:#121216;
+  background:var(--bg);
   color:var(--text);
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:12px;
   padding:13px;
   font:inherit;
 }
@@ -595,8 +630,9 @@ main{
   margin-top:10px;
   padding:12px;
   border:0;
-  border-radius:13px;
+  border-radius:12px;
   background:var(--accent);
+  color:#fff;
   font-weight:700;
   cursor:pointer;
 }
@@ -613,7 +649,7 @@ main{
   width:44px;
   height:24px;
   border-radius:999px;
-  background:#303035;
+  background:#d5dbe4;
   position:relative;
   cursor:pointer;
 }
@@ -626,17 +662,17 @@ main{
   top:3px;
   left:3px;
   border-radius:50%;
-  background:#aaa;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
   transition:.2s;
 }
 
 .toggle.on{
-  background:var(--accent-dim);
+  background:var(--accent);
 }
 
 .toggle.on::after{
   left:23px;
-  background:var(--accent);
 }
 
 /* MENU */
@@ -647,7 +683,7 @@ nav.bottom{
   height:100vh;
   position:sticky;
   top:0;
-  background:#08152a;
+  background:#ffffff;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -672,8 +708,30 @@ nav.bottom button{
 }
 
 nav.bottom button.active{
-  color:#fff;
+  color:var(--accent);
   background:var(--accent-dim);
+  font-weight:600;
+}
+
+nav.bottom button svg{
+  width:21px;
+  height:21px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.cat-ico svg,
+.tool-ico svg{
+  width:20px;
+  height:20px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 @media(min-width:900px){
@@ -688,10 +746,10 @@ nav.bottom button.active{
     width:100%;
     height:calc(100vh - 80px);
     min-height:600px;
-    border-radius:22px;
+    border-radius:20px;
     overflow:hidden;
     border:1px solid var(--line);
-    box-shadow:0 24px 70px rgba(0,0,0,.55);
+    box-shadow:0 24px 70px rgba(20,30,50,.12);
   }
 
   nav.bottom{
@@ -709,11 +767,11 @@ nav.bottom button.active{
   }
 
   header{
-    padding:34px 44px 22px;
+    padding:30px 44px 20px;
   }
 
   main{
-    padding:0 44px 44px;
+    padding:18px 44px 44px;
   }
 
   .view.active{
@@ -734,7 +792,7 @@ nav.bottom button.active{
   }
 
   .modal-box{
-    border-radius:22px;
+    border-radius:20px;
   }
 }
 </style>
@@ -747,27 +805,33 @@ nav.bottom button.active{
 <nav class="bottom">
 
   <button class="active" data-view="start" onclick="showView('start')">
-    🏠 Start
+    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+    Start
   </button>
 
   <button data-view="wiadomosci" onclick="showView('wiadomosci')">
-    💬 Wiadomości
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg>
+    Wiadomości
   </button>
 
   <button data-view="oceny" onclick="showView('oceny')">
-    📘 Oceny
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+    Oceny
   </button>
 
   <button data-view="plan" onclick="showView('plan')">
-    📅 Plan
+    <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
+    Plan
   </button>
 
   <button data-view="frekwencja" onclick="showView('frekwencja')">
-    ✓ Frekw.
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+    Frekw.
   </button>
 
   <button data-view="wiecej" onclick="showView('wiecej')">
-    ••• Więcej
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Więcej
   </button>
 
 </nav>
@@ -863,7 +927,7 @@ nav.bottom button.active{
 
   <div class="empty-state">
 
-    <div class="ico">📘</div>
+    <div class="ico"><svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
 
     <div>
       Brak nowych ocen
@@ -954,31 +1018,31 @@ nav.bottom button.active{
   <div class="category-grid">
 
     <div class="category-card" onclick="showView('start')">
-      <div class="cat-ico">🏠</div>
+      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></div>
       <b>Start</b>
       <span>Podsumowanie</span>
     </div>
 
     <div class="category-card" onclick="showView('wiadomosci')">
-      <div class="cat-ico">💬</div>
+      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg></div>
       <b>Wiadomości</b>
       <span>Komunikaty</span>
     </div>
 
     <div class="category-card" onclick="showView('oceny')">
-      <div class="cat-ico">📘</div>
+      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
       <b>Oceny</b>
       <span>Twoje oceny</span>
     </div>
 
     <div class="category-card" onclick="showView('plan')">
-      <div class="cat-ico">📅</div>
+      <div class="cat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg></div>
       <b>Plan lekcji</b>
       <span>Zajęcia</span>
     </div>
 
     <div class="category-card" onclick="showView('frekwencja')">
-      <div class="cat-ico">✓</div>
+      <div class="cat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg></div>
       <b>Frekwencja</b>
       <span>Obecności</span>
     </div>
@@ -991,7 +1055,7 @@ nav.bottom button.active{
 
   <div class="tool-row" onclick="openModal('statystyki')">
 
-    <div class="tool-ico">📊</div>
+    <div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></div>
 
     <div class="tool-info">
       <b>Statystyki</b>
@@ -1004,7 +1068,7 @@ nav.bottom button.active{
 
   <div class="tool-row" onclick="openModal('notatki')">
 
-    <div class="tool-ico">📝</div>
+    <div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
 
     <div class="tool-info">
       <b>Notatki</b>
