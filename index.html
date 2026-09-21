@@ -1532,14 +1532,9 @@ const weeklyPlan = {
 };
 
 
-/* =====================================================
-   PRAWDZIWA DATA
-   Startujemy od piątku 11 września 2026
-===================================================== */
-
-let currentDate = new Date(2026,8,11);
-
-
+let currentDate = new Date();
+currentDate.setHours(0, 0, 0, 0); 
+  
 /* =====================================================
    NAZWY DNI I MIESIĘCY
 ===================================================== */
