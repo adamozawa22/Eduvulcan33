@@ -791,6 +791,81 @@ main{
   margin-bottom:12px;
 }
 
+.grades-summary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:16px;
+  text-align:center;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(0,100,200,.25);
+}
+
+.grades-summary .pct{
+  font-size:44px;
+  font-weight:700;
+}
+
+.grades-summary .sub{
+  color:rgba(255,255,255,.85);
+  font-size:14px;
+  margin-top:4px;
+}
+
+.grade-subject-block{margin-bottom:16px}
+
+.grade-subject-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:4px 4px 8px;
+}
+
+.grade-subject-head .gs-name{
+  font-weight:700;
+  font-size:15px;
+}
+
+.grade-subject-head .gs-avg{
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+.grade-subject-head .gs-avg b{color:var(--accent-dark)}
+
+.grade-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.grade-chip{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-width:52px;
+  padding:8px 10px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 1px 3px rgba(20,30,50,.05);
+}
+
+.grade-chip .val{
+  font-size:17px;
+  font-weight:700;
+  color:var(--accent-dark);
+}
+
+.grade-chip .cat{
+  font-size:10px;
+  color:var(--muted);
+  margin-top:2px;
+  text-align:center;
+  line-height:1.3;
+}
+
 /* MODALE */
 
 .modal{
@@ -1203,18 +1278,7 @@ wysyłania wiadomości. Prosimy spróbować ponownie później.
 
 <section class="view" id="view-oceny">
 
-<div class="empty-state">
-
-<div class="ico">
-<svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
-<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
-</svg>
-</div>
-
-<div>Brak nowych ocen</div>
-
-</div>
+<div id="oceny-content"></div>
 
 </section>
 
@@ -1458,6 +1522,7 @@ const sb=
 let lessonPlanData=[];
 let attendanceData=[];
 let teacherChangesData=[];
+let gradesData=[];
 
 
 function showNotice(text){
@@ -1830,6 +1895,27 @@ async function loadSupabaseData(){
     }
 
     teacherChangesData=changes.data||[];
+
+
+    /*
+      Oceny są opcjonalne, tak samo jak zastępstwa -
+      jeżeli tabela jeszcze nie istnieje (42P01),
+      po prostu jedziemy dalej bez błędu.
+    */
+
+    const grades=
+      await sb
+        .from("grades")
+        .select("*")
+        .order("grade_date",{ascending:false});
+
+    if(grades.error && grades.error.code!=="42P01"){
+
+      throw grades.error;
+
+    }
+
+    gradesData=grades.data||[];
 
 
     showNotice("");
@@ -2683,6 +2769,178 @@ function renderAttendance(){
 
 
 /* =====================================================
+   OCENY
+===================================================== */
+
+function gradeToNumber(v){
+
+  const s=String(v||"").trim();
+  const base=parseFloat(s);
+
+  if(Number.isNaN(base))return null;
+
+  if(s.endsWith("+"))return base+0.5;
+  if(s.endsWith("-"))return base-0.25;
+
+  return base;
+
+}
+
+
+function fmtShortGradeDate(d){
+
+  const date=parseISODate(d);
+
+  if(!date)return "";
+
+  return String(date.getDate()).padStart(2,"0")+
+    "."+
+    String(date.getMonth()+1).padStart(2,"0");
+
+}
+
+
+function renderOceny(){
+
+  const box=document.getElementById("oceny-content");
+
+  if(!box)return;
+
+
+  if(!gradesData.length){
+
+    box.innerHTML=`
+
+      <div class="empty-state">
+
+        <div class="ico">
+          <svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+          </svg>
+        </div>
+
+        <div>Brak nowych ocen</div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  const bySubject={};
+
+  gradesData.forEach(g=>{
+
+    const key=g.subject||"Inne";
+
+    (bySubject[key]=bySubject[key]||[]).push(g);
+
+  });
+
+
+  const subjects=
+    Object.keys(bySubject)
+      .sort((a,b)=>a.localeCompare(b,"pl"));
+
+
+  let overallSum=0;
+  let overallWeight=0;
+
+  const blocks=subjects.map(subj=>{
+
+    const rows=
+      bySubject[subj]
+        .slice()
+        .sort((a,b)=>
+          String(b.grade_date||"")
+            .localeCompare(String(a.grade_date||""))
+        );
+
+    let wsum=0;
+    let wtotal=0;
+
+    rows.forEach(r=>{
+
+      const n=gradeToNumber(r.value);
+      const w=Number(r.weight)||1;
+
+      if(n!==null){
+        wsum+=n*w;
+        wtotal+=w;
+        overallSum+=n*w;
+        overallWeight+=w;
+      }
+
+    });
+
+    const avg=
+      wtotal
+        ? (wsum/wtotal).toFixed(2)
+        : "—";
+
+    return `
+
+      <div class="grade-subject-block">
+
+        <div class="grade-subject-head">
+
+          <div class="gs-name">${escapeHTML(subj)}</div>
+
+          <div class="gs-avg">Średnia: <b>${escapeHTML(avg)}</b></div>
+
+        </div>
+
+        <div class="grade-chips">
+
+          ${rows.map(r=>`
+
+            <div class="grade-chip">
+              <div class="val">${escapeHTML(r.value)}</div>
+              <div class="cat">
+                ${escapeHTML(r.category||"")}<br>
+                ${fmtShortGradeDate(r.grade_date)}
+              </div>
+            </div>
+
+          `).join("")}
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+
+  const overallAvg=
+    overallWeight
+      ? (overallSum/overallWeight).toFixed(2)
+      : "—";
+
+
+  box.innerHTML=`
+
+    <div class="grades-summary">
+
+      <div class="pct">${escapeHTML(overallAvg)}</div>
+
+      <div class="sub">średnia ważona ze wszystkich przedmiotów</div>
+
+    </div>
+
+    ${blocks}
+
+  `;
+
+}
+
+
+/* =====================================================
    WSZYSTKO
 ===================================================== */
 
@@ -2691,6 +2949,7 @@ function renderAll(){
   renderStart();
   renderPlan();
   renderAttendance();
+  renderOceny();
 
 }
 
