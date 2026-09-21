@@ -255,6 +255,33 @@ const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
 const sb=(SUPABASE_URL.startsWith("UZUPELNIJ_")||SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_"))?null:window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const days=["Poniedziałek","Wtorek","Środa","Czwartek","Piątek"];
+
+let currentWeekMonday = getMonday(new Date());
+
+function getMonday(date){
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function getWeekDate(index){
+  const d = new Date(currentWeekMonday);
+  d.setDate(d.getDate() + index);
+  return d;
+}
+
+function dateISO(date){
+  return date.toISOString().slice(0,10);
+}
+
+function formatShortDate(date){
+  return `${String(date.getDate()).padStart(2,"0")}.${String(date.getMonth()+1).padStart(2,"0")}`;
+}
 const defaultTimes=[
  ["08:00","08:45"],["08:50","09:35"],["09:45","10:30"],["10:40","11:25"],
  ["11:45","12:30"],["12:50","13:35"],["13:45","14:30"],["14:35","15:20"]
