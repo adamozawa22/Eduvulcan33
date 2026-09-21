@@ -21,15 +21,8 @@
   --header-bg:#ffffff;
 }
 
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html,body{
-  height:100%;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
 
 body{
   background:var(--bg);
@@ -70,7 +63,7 @@ header h1{
   color:var(--text);
 }
 
-  .brand{
+.brand{
   display:flex;
   align-items:center;
   gap:12px;
@@ -80,15 +73,16 @@ header h1{
   height:32px;
   width:auto;
   object-fit:contain;
-} 
-  .vulcan-text{
+}
+
+.vulcan-text{
   font-size:18px;
   font-weight:800;
   color:#1d2d50;
   letter-spacing:.5px;
   margin-left:-5px;
 }
-  
+
 .avatar{
   width:40px;
   height:40px;
@@ -108,13 +102,8 @@ main{
   overflow-y:auto;
 }
 
-.view{
-  display:none;
-}
-
-.view.active{
-  display:block;
-}
+.view{display:none}
+.view.active{display:block}
 
 /* START */
 
@@ -183,9 +172,7 @@ main{
   min-width:52px;
 }
 
-.next-lesson .info{
-  flex:1;
-}
+.next-lesson .info{flex:1}
 
 .next-lesson .info b{
   font-size:15px;
@@ -225,9 +212,7 @@ main{
   line-height:1.45;
 }
 
-.mini-info{
-  flex:1;
-}
+.mini-info{flex:1}
 
 .mini-info b{
   font-size:14px;
@@ -278,13 +263,8 @@ main{
   transition:.15s;
 }
 
-.day-nav button:hover{
-  background:#d6e8fa;
-}
-
-.day-nav button:active{
-  transform:scale(.92);
-}
+.day-nav button:hover{background:#d6e8fa}
+.day-nav button:active{transform:scale(.92)}
 
 .day-label{
   font-weight:600;
@@ -328,9 +308,7 @@ main{
   padding-top:2px;
 }
 
-.lesson-body{
-  flex:1;
-}
+.lesson-body{flex:1}
 
 .lesson-body .subj{
   font-size:15px;
@@ -397,25 +375,35 @@ main{
   box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
-.att-lesson .lesson-num{
-  font-size:14px;
-}
-
-.att-lesson .lesson-time{
-  min-width:44px;
-}
+.att-lesson .lesson-num{font-size:14px}
+.att-lesson .lesson-time{min-width:44px}
 
 .status-pill{
   display:flex;
   align-items:center;
   gap:6px;
-  background:#e4f7ea;
-  color:#1f8a3e;
+  background:#eef1f5;
+  color:#6b7686;
   font-size:12px;
   font-weight:700;
   padding:6px 12px;
   border-radius:999px;
   white-space:nowrap;
+}
+
+.status-pill.present{
+  background:#e4f7ea;
+  color:#1f8a3e;
+}
+
+.status-pill.absent{
+  background:#fbe9e8;
+  color:#d6413a;
+}
+
+.status-pill.late{
+  background:#fff4d6;
+  color:#a36d00;
 }
 
 .status-pill svg{
@@ -441,9 +429,7 @@ main{
   box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
-.category-card:active{
-  transform:scale(.97);
-}
+.category-card:active{transform:scale(.97)}
 
 .cat-ico{
   width:38px;
@@ -494,9 +480,7 @@ main{
   font-size:19px;
 }
 
-.tool-info{
-  flex:1;
-}
+.tool-info{flex:1}
 
 .tool-info b{
   display:block;
@@ -572,9 +556,7 @@ main{
   z-index:20;
 }
 
-.modal.show{
-  display:flex;
-}
+.modal.show{display:flex}
 
 .modal-box{
   width:100%;
@@ -592,9 +574,7 @@ main{
   margin-bottom:18px;
 }
 
-.modal-head h2{
-  font-size:19px;
-}
+.modal-head h2{font-size:19px}
 
 .close-btn{
   width:34px;
@@ -686,13 +666,8 @@ main{
   transition:.2s;
 }
 
-.toggle.on{
-  background:var(--accent);
-}
-
-.toggle.on::after{
-  left:23px;
-}
+.toggle.on{background:var(--accent)}
+.toggle.on::after{left:23px}
 
 /* MENU */
 
@@ -785,34 +760,20 @@ nav.bottom button svg{
     padding:13px 16px;
   }
 
-  header{
-    padding:30px 44px 20px;
-  }
-
-  main{
-    padding:18px 44px 44px;
-  }
+  header{padding:30px 44px 20px}
+  main{padding:18px 44px 44px}
 
   .view.active{
     max-width:840px;
     margin:0 auto;
   }
 
-  .quick-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
+  .quick-grid{grid-template-columns:repeat(2,1fr)}
+  .category-grid{grid-template-columns:repeat(3,1fr)}
 
-  .category-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
+  .modal{align-items:center}
 
-  .modal{
-    align-items:center;
-  }
-
-  .modal-box{
-    border-radius:20px;
-  }
+  .modal-box{border-radius:20px}
 }
 </style>
 </head>
@@ -823,819 +784,705 @@ nav.bottom button svg{
 
 <nav class="bottom">
 
-  <button class="active" data-view="start" onclick="showView('start')">
-    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
-    Start
-  </button>
+<button class="active" data-view="start" onclick="showView('start')">
+<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+Start
+</button>
 
-  <button data-view="wiadomosci" onclick="showView('wiadomosci')">
-    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg>
-    Wiadomości
-  </button>
+<button data-view="wiadomosci" onclick="showView('wiadomosci')">
+<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg>
+Wiadomości
+</button>
 
-  <button data-view="oceny" onclick="showView('oceny')">
-    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
-    Oceny
-  </button>
+<button data-view="oceny" onclick="showView('oceny')">
+<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+Oceny
+</button>
 
-  <button data-view="plan" onclick="showView('plan')">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
-    Plan
-  </button>
+<button data-view="plan" onclick="showView('plan')">
+<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
+Plan
+</button>
 
-  <button data-view="frekwencja" onclick="showView('frekwencja')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
-    Frekw.
-  </button>
+<button data-view="frekwencja" onclick="showView('frekwencja')">
+<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+Frekw.
+</button>
 
-  <button data-view="wiecej" onclick="showView('wiecej')">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-    Więcej
-  </button>
+<button data-view="wiecej" onclick="showView('wiecej')">
+<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+Więcej
+</button>
 
 </nav>
 
 <div class="content">
-<header>
- <div class="brand">
-  <img src="vulcan-logo.png" alt="VULCAN">
-  <span class="vulcan-text">VULCAN</span>
-  <h1 id="header-title">Start</h1>
-</div>
 
-  <div class="avatar">AZ</div>
+<header>
+<div class="brand">
+<img src="vulcan-logo.png" alt="VULCAN">
+<span class="vulcan-text">VULCAN</span>
+<h1 id="header-title">Start</h1>
+</div>
+<div class="avatar">AZ</div>
 </header>
 
 <main>
 
-<!-- START -->
-
 <section class="view active" id="view-start">
 
-  <div class="hero">
-    <div class="big">100%</div>
-    <div class="label">frekwencja w tym semestrze</div>
-  </div>
+<div class="hero">
+<div class="big" id="start-att-percent">—</div>
+<div class="label">frekwencja w tym semestrze</div>
+</div>
 
-  <div class="section-title">
-    Wybrany dzień
-  </div>
+<div class="section-title">Wybrany dzień</div>
 
-  <div class="day-nav">
+<div class="day-nav">
+<button onclick="changeDay(-1)">‹</button>
+<div class="day-label" id="start-day-label"></div>
+<button onclick="changeDay(1)">›</button>
+</div>
 
-    <button onclick="changeDay(-1)">‹</button>
+<div class="quick-grid">
 
-    <div class="day-label" id="start-day-label"></div>
+<div class="quick-card">
+<div class="n" id="start-lesson-count">0</div>
+<div class="t">lekcji</div>
+</div>
 
-    <button onclick="changeDay(1)">›</button>
+<div class="quick-card">
+<div class="n" id="start-end-time">—</div>
+<div class="t">koniec zajęć</div>
+</div>
 
-  </div>
+</div>
 
-  <div class="quick-grid">
+<div class="section-title">Najbliższa lekcja</div>
 
-    <div class="quick-card">
-      <div class="n" id="start-lesson-count">0</div>
-      <div class="t">lekcji</div>
-    </div>
+<div class="next-lesson" id="start-next-lesson"></div>
 
-    <div class="quick-card">
-      <div class="n" id="start-end-time">—</div>
-      <div class="t">koniec zajęć</div>
-    </div>
+<div class="section-title">Mini plan lekcji</div>
 
-  </div>
-
-  <div class="section-title">
-    Najbliższa lekcja
-  </div>
-
-  <div class="next-lesson" id="start-next-lesson"></div>
-
-  <div class="section-title">
-    Mini plan lekcji
-  </div>
-
-  <div id="start-mini-plan"></div>
+<div id="start-mini-plan"></div>
 
 </section>
-
-
-<!-- WIADOMOŚCI -->
 
 <section class="view" id="view-wiadomosci">
 
-  <div class="message-card">
+<div class="message-card">
 
-    <div class="message-category">
-      Awaria
-    </div>
+<div class="message-category">Awaria</div>
 
-    <h2>
-      Problemy z wiadomościami
-    </h2>
+<h2>Problemy z wiadomościami</h2>
 
-    <p>
-      Z przyczyn awarii chwilowo brak możliwości odczytu oraz
-      wysyłania wiadomości. Prosimy spróbować ponownie później.
-    </p>
+<p>
+Z przyczyn awarii chwilowo brak możliwości odczytu oraz
+wysyłania wiadomości. Prosimy spróbować ponownie później.
+</p>
 
-  </div>
+</div>
 
 </section>
-
-
-<!-- OCENY -->
 
 <section class="view" id="view-oceny">
 
-  <div class="empty-state">
+<div class="empty-state">
 
-    <div class="ico"><svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+<div class="ico">
+<svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+</svg>
+</div>
 
-    <div>
-      Brak nowych ocen
-    </div>
+<div>Brak nowych ocen</div>
 
-  </div>
+</div>
 
 </section>
-
-
-<!-- PLAN -->
 
 <section class="view" id="view-plan">
 
-  <div class="day-nav">
+<div class="day-nav">
 
-    <button onclick="changeDay(-1)">‹</button>
+<button onclick="changeDay(-1)">‹</button>
 
-    <div class="day-label" id="plan-day-label"></div>
+<div class="day-label" id="plan-day-label"></div>
 
-    <button onclick="changeDay(1)">›</button>
+<button onclick="changeDay(1)">›</button>
 
-  </div>
+</div>
 
-  <div id="plan-list"></div>
+<div id="plan-list"></div>
 
 </section>
-
-
-<!-- FREKWENCJA -->
 
 <section class="view" id="view-frekwencja">
 
-  <div class="att-summary">
+<div class="att-summary">
 
-    <div class="pct" id="att-percent">
-      100%
-    </div>
+<div class="pct" id="att-percent">—</div>
 
-    <div class="sub">
-      obecności
-    </div>
+<div class="sub">obecności</div>
 
-    <div class="breakdown">
+<div class="breakdown">
 
-      <div>
-        <div class="num" id="att-total">0</div>
-        <div class="lbl">Lekcje</div>
-      </div>
+<div>
+<div class="num" id="att-total">0</div>
+<div class="lbl">Lekcje</div>
+</div>
 
-      <div>
-        <div class="num" id="att-present">0</div>
-        <div class="lbl">Obecności</div>
-      </div>
+<div>
+<div class="num" id="att-present">0</div>
+<div class="lbl">Obecności</div>
+</div>
 
-      <div>
-        <div class="num" id="att-absent">0</div>
-        <div class="lbl">Nieobecności</div>
-      </div>
+<div>
+<div class="num" id="att-absent">0</div>
+<div class="lbl">Nieobecności</div>
+</div>
 
-    </div>
+</div>
 
-  </div>
+</div>
 
-  <div class="day-nav">
+<div class="day-nav">
 
-    <button onclick="changeDay(-1)">‹</button>
+<button onclick="changeDay(-1)">‹</button>
 
-    <div class="day-label" id="att-day-label"></div>
+<div class="day-label" id="att-day-label"></div>
 
-    <button onclick="changeDay(1)">›</button>
+<button onclick="changeDay(1)">›</button>
 
-  </div>
+</div>
 
-  <div id="att-list"></div>
+<div id="att-list"></div>
 
 </section>
 
-
-<!-- WIĘCEJ -->
-
 <section class="view" id="view-wiecej">
 
-  <div class="section-title" style="margin-top:0">
-    Kategorie
-  </div>
+<div class="section-title" style="margin-top:0">Kategorie</div>
 
-  <div class="category-grid">
+<div class="category-grid">
 
-    <div class="category-card" onclick="showView('start')">
-      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></div>
-      <b>Start</b>
-      <span>Podsumowanie</span>
-    </div>
+<div class="category-card" onclick="showView('start')">
+<div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></div>
+<b>Start</b>
+<span>Podsumowanie</span>
+</div>
 
-    <div class="category-card" onclick="showView('wiadomosci')">
-      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg></div>
-      <b>Wiadomości</b>
-      <span>Komunikaty</span>
-    </div>
+<div class="category-card" onclick="showView('wiadomosci')">
+<div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg></div>
+<b>Wiadomości</b>
+<span>Komunikaty</span>
+</div>
 
-    <div class="category-card" onclick="showView('oceny')">
-      <div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
-      <b>Oceny</b>
-      <span>Twoje oceny</span>
-    </div>
+<div class="category-card" onclick="showView('oceny')">
+<div class="cat-ico"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+<b>Oceny</b>
+<span>Twoje oceny</span>
+</div>
 
-    <div class="category-card" onclick="showView('plan')">
-      <div class="cat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg></div>
-      <b>Plan lekcji</b>
-      <span>Zajęcia</span>
-    </div>
+<div class="category-card" onclick="showView('plan')">
+<div class="cat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg></div>
+<b>Plan lekcji</b>
+<span>Zajęcia</span>
+</div>
 
-    <div class="category-card" onclick="showView('frekwencja')">
-      <div class="cat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg></div>
-      <b>Frekwencja</b>
-      <span>Obecności</span>
-    </div>
+<div class="category-card" onclick="showView('frekwencja')">
+<div class="cat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg></div>
+<b>Frekwencja</b>
+<span>Obecności</span>
+</div>
 
-  </div>
+</div>
 
-  <div class="section-title">
-    Narzędzia
-  </div>
+<div class="section-title">Narzędzia</div>
 
-  <div class="tool-row" onclick="openModal('statystyki')">
+<div class="tool-row" onclick="openModal('statystyki')">
+<div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></div>
+<div class="tool-info">
+<b>Statystyki</b>
+<span>Podsumowanie frekwencji</span>
+</div>
+<div class="tool-arrow">›</div>
+</div>
 
-    <div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></div>
+<div class="tool-row" onclick="openModal('notatki')">
+<div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+<div class="tool-info">
+<b>Notatki</b>
+<span>Własne przypomnienia</span>
+</div>
+<div class="tool-arrow">›</div>
+</div>
 
-    <div class="tool-info">
-      <b>Statystyki</b>
-      <span>Podsumowanie frekwencji</span>
-    </div>
-
-    <div class="tool-arrow">›</div>
-
-  </div>
-
-  <div class="tool-row" onclick="openModal('notatki')">
-
-    <div class="tool-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
-
-    <div class="tool-info">
-      <b>Notatki</b>
-      <span>Własne przypomnienia</span>
-    </div>
-
-    <div class="tool-arrow">›</div>
-
-  </div>
-
-  <div class="tool-row" onclick="openModal('ustawienia')">
-
-    <div class="tool-ico">⚙️</div>
-
-    <div class="tool-info">
-      <b>Ustawienia</b>
-      <span>Personalizacja</span>
-    </div>
-
-    <div class="tool-arrow">›</div>
-
-  </div>
+<div class="tool-row" onclick="openModal('ustawienia')">
+<div class="tool-ico">⚙️</div>
+<div class="tool-info">
+<b>Ustawienia</b>
+<span>Personalizacja</span>
+</div>
+<div class="tool-arrow">›</div>
+</div>
 
 </section>
 
 </main>
 
-
-<!-- MODAL STATYSTYKI -->
-
 <div class="modal" id="modal-statystyki">
 
-  <div class="modal-box">
+<div class="modal-box">
 
-    <div class="modal-head">
+<div class="modal-head">
+<h2>Statystyki</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
+</div>
 
-      <h2>Statystyki</h2>
+<div class="stat-box">
 
-      <button class="close-btn" onclick="closeModal()">
-        ×
-      </button>
+<div class="stat-item">
+<b id="stat-percent">—</b>
+<span>Frekwencja</span>
+</div>
 
-    </div>
+<div class="stat-item">
+<b id="stat-lessons">0</b>
+<span>Wpisane lekcje</span>
+</div>
 
-    <div class="stat-box">
+<div class="stat-item">
+<b id="stat-absent">0</b>
+<span>Nieobecności</span>
+</div>
 
-      <div class="stat-item">
-        <b>100%</b>
-        <span>Frekwencja</span>
-      </div>
-
-      <div class="stat-item">
-        <b>35</b>
-        <span>Lekcje w tygodniu</span>
-      </div>
-
-      <div class="stat-item">
-        <b>0</b>
-        <span>Nieobecności</span>
-      </div>
-
-      <div class="stat-item">
-        <b>5</b>
-        <span>Dni zajęć</span>
-      </div>
-
-    </div>
-
-  </div>
+<div class="stat-item">
+<b id="stat-days">0</b>
+<span>Dni z frekwencją</span>
+</div>
 
 </div>
 
-
-<!-- MODAL NOTATKI -->
+</div>
+</div>
 
 <div class="modal" id="modal-notatki">
 
-  <div class="modal-box">
+<div class="modal-box">
 
-    <div class="modal-head">
-
-      <h2>Notatki</h2>
-
-      <button class="close-btn" onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <textarea
-      class="note-input"
-      id="note-input"
-      placeholder="Wpisz notatkę..."
-    ></textarea>
-
-    <button class="save-note" onclick="saveNote()">
-      Zapisz notatkę
-    </button>
-
-    <p id="note-status"
-       style="font-size:12px;color:var(--muted);margin-top:10px;">
-    </p>
-
-  </div>
-
+<div class="modal-head">
+<h2>Notatki</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
 </div>
 
+<textarea class="note-input" id="note-input" placeholder="Wpisz notatkę..."></textarea>
 
-<!-- MODAL USTAWIENIA -->
+<button class="save-note" onclick="saveNote()">Zapisz notatkę</button>
+
+<p id="note-status" style="font-size:12px;color:var(--muted);margin-top:10px"></p>
+
+</div>
+</div>
 
 <div class="modal" id="modal-ustawienia">
 
-  <div class="modal-box">
+<div class="modal-box">
 
-    <div class="modal-head">
+<div class="modal-head">
+<h2>Ustawienia</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
+</div>
 
-      <h2>Ustawienia</h2>
+<div class="setting-row">
+<span>Powiadomienia</span>
+<div class="toggle on" onclick="this.classList.toggle('on')"></div>
+</div>
 
-      <button class="close-btn" onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="setting-row">
-
-      <span>Powiadomienia</span>
-
-      <div
-        class="toggle on"
-        onclick="this.classList.toggle('on')">
-      </div>
-
-    </div>
-
-    <div class="setting-row">
-
-      <span>Mini plan na starcie</span>
-
-      <div
-        class="toggle on"
-        onclick="this.classList.toggle('on')">
-      </div>
-
-    </div>
-
-  </div>
-
+<div class="setting-row">
+<span>Mini plan na starcie</span>
+<div class="toggle on" onclick="this.classList.toggle('on')"></div>
 </div>
 
 </div>
 </div>
 
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
 /* =====================================================
-   PLAN TYGODNIA
-   0 = niedziela
-   1 = poniedziałek
-   2 = wtorek
-   3 = środa
-   4 = czwartek
-   5 = piątek
-   6 = sobota
+   SUPABASE
 ===================================================== */
 
-const weeklyPlan = {
+const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
 
-  1: [
-    {
-      n:1,
-      start:"08:00",
-      end:"08:45",
-      subj:"Język polski",
-      room:"74",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:2,
-      start:"08:50",
-      end:"09:35",
-      subj:"Język polski",
-      room:"74",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:3,
-      start:"09:45",
-      end:"10:30",
-      subj:"Chemia",
-      room:"56",
-      teacher:"Małgorzata Witosławska"
-    },
-    {
-      n:4,
-      start:"10:40",
-      end:"11:25",
-      subj:"Matematyka",
-      room:"75",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:5,
-      start:"11:45",
-      end:"12:30",
-      subj:"Matematyka",
-      room:"75",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:6,
-      start:"12:50",
-      end:"13:35",
-      subj:"Zajęcia z wychowawcą",
-      room:"wych",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:7,
-      start:"13:45",
-      end:"14:30",
-      subj:"Wychowanie fizyczne",
-      room:"sg2",
-      teacher:"Agnieszka Hojniak"
-    }
-  ],
+const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVNwLJXAx8jipA_rV0lZfdD";
+
+const sb=window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let lessonPlanData=[];
+let attendanceData=[];
 
 
-  2: [
-    {
-      n:1,
-      start:"08:00",
-      end:"08:45",
-      subj:"Wiedza o społeczeństwie",
-      room:"65",
-      teacher:"Marta Kwiatkowska"
-    },
-    {
-      n:2,
-      start:"08:50",
-      end:"09:35",
-      subj:"Fizyka",
-      room:"74",
-      teacher:"Edyta Gaworek"
-    },
-    {
-      n:3,
-      start:"09:45",
-      end:"10:30",
-      subj:"Język angielski",
-      room:"57",
-      teacher:"Agata Lewandowska"
-    },
-    {
-      n:4,
-      start:"10:40",
-      end:"11:25",
-      subj:"Matematyka",
-      room:"75",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:5,
-      start:"11:45",
-      end:"12:30",
-      subj:"Informatyka",
-      room:"52",
-      teacher:"Piotr Antoniuk"
-    },
-    {
-      n:6,
-      start:"12:50",
-      end:"13:35",
-      subj:"Historia",
-      room:"61",
-      teacher:"Marta Kwiatkowska"
-    },
-    {
-      n:7,
-      start:"13:45",
-      end:"14:30",
-      subj:"Edukacja dla bezpieczeństwa",
-      room:"20",
-      teacher:"Anna Kula"
-    }
-  ],
+/* =====================================================
+   PLAN ZAPASOWY
+===================================================== */
 
+const weeklyPlan={
 
-  3: [
-    {
-      n:1,
-      start:"08:00",
-      end:"08:45",
-      subj:"Język niemiecki",
-      room:"gs",
-      teacher:"Marta Kamińska"
-    },
-    {
-      n:2,
-      start:"08:50",
-      end:"09:35",
-      subj:"Język niemiecki",
-      room:"gs",
-      teacher:"Marta Kamińska"
-    },
-    {
-      n:3,
-      start:"09:45",
-      end:"10:30",
-      subj:"Wychowanie fizyczne",
-      room:"sg1",
-      teacher:"Agnieszka Hojniak"
-    },
-    {
-      n:4,
-      start:"10:40",
-      end:"11:25",
-      subj:"MAK",
-      room:"68",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:5,
-      start:"11:45",
-      end:"12:30",
-      subj:"Matematyka",
-      room:"61",
-      teacher:"Małgorzata Jankowska"
-    },
-    {
-      n:6,
-      start:"12:50",
-      end:"13:35",
-      subj:"POK",
-      room:"20",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:7,
-      start:"13:45",
-      end:"14:30",
-      subj:"Chemia",
-      room:"56",
-      teacher:"Małgorzata Witosławska"
-    }
-  ],
+1:[
+{n:1,start:"08:00",end:"08:45",subj:"Język polski",room:"74",teacher:"Joanna Ołdak"},
+{n:2,start:"08:50",end:"09:35",subj:"Język polski",room:"74",teacher:"Joanna Ołdak"},
+{n:3,start:"09:45",end:"10:30",subj:"Chemia",room:"56",teacher:"Małgorzata Witosławska"},
+{n:4,start:"10:40",end:"11:25",subj:"Matematyka",room:"75",teacher:"Małgorzata Jankowska"},
+{n:5,start:"11:45",end:"12:30",subj:"Matematyka",room:"75",teacher:"Małgorzata Jankowska"},
+{n:6,start:"12:50",end:"13:35",subj:"Zajęcia z wychowawcą",room:"wych",teacher:"Małgorzata Jankowska"},
+{n:7,start:"13:45",end:"14:30",subj:"Wychowanie fizyczne",room:"sg2",teacher:"Agnieszka Hojniak"}
+],
 
+2:[
+{n:1,start:"08:00",end:"08:45",subj:"Wiedza o społeczeństwie",room:"65",teacher:"Marta Kwiatkowska"},
+{n:2,start:"08:50",end:"09:35",subj:"Fizyka",room:"74",teacher:"Edyta Gaworek"},
+{n:3,start:"09:45",end:"10:30",subj:"Język angielski",room:"57",teacher:"Agata Lewandowska"},
+{n:4,start:"10:40",end:"11:25",subj:"Matematyka",room:"75",teacher:"Małgorzata Jankowska"},
+{n:5,start:"11:45",end:"12:30",subj:"Informatyka",room:"52",teacher:"Piotr Antoniuk"},
+{n:6,start:"12:50",end:"13:35",subj:"Historia",room:"61",teacher:"Marta Kwiatkowska"},
+{n:7,start:"13:45",end:"14:30",subj:"Edukacja dla bezpieczeństwa",room:"20",teacher:"Anna Kula"}
+],
 
-  4: [
-    {
-      n:2,
-      start:"08:50",
-      end:"09:35",
-      subj:"Wychowanie fizyczne",
-      room:"sg2",
-      teacher:"Agnieszka Hojniak"
-    },
-    {
-      n:3,
-      start:"09:45",
-      end:"10:30",
-      subj:"Język angielski",
-      room:"57",
-      teacher:"Agata Lewandowska"
-    },
-    {
-      n:4,
-      start:"10:40",
-      end:"11:25",
-      subj:"Język angielski",
-      room:"57",
-      teacher:"Agata Lewandowska"
-    },
-    {
-      n:5,
-      start:"11:45",
-      end:"12:30",
-      subj:"Język polski",
-      room:"61",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:6,
-      start:"12:50",
-      end:"13:35",
-      subj:"Historia",
-      room:"65",
-      teacher:"Marta Kwiatkowska"
-    }
-  ],
+3:[
+{n:1,start:"08:00",end:"08:45",subj:"Język niemiecki",room:"gs",teacher:"Marta Kamińska"},
+{n:2,start:"08:50",end:"09:35",subj:"Język niemiecki",room:"gs",teacher:"Marta Kamińska"},
+{n:3,start:"09:45",end:"10:30",subj:"Wychowanie fizyczne",room:"sg1",teacher:"Agnieszka Hojniak"},
+{n:4,start:"10:40",end:"11:25",subj:"MAK",room:"68",teacher:"Małgorzata Jankowska"},
+{n:5,start:"11:45",end:"12:30",subj:"Matematyka",room:"61",teacher:"Małgorzata Jankowska"},
+{n:6,start:"12:50",end:"13:35",subj:"POK",room:"20",teacher:"Joanna Ołdak"},
+{n:7,start:"13:45",end:"14:30",subj:"Chemia",room:"56",teacher:"Małgorzata Witosławska"}
+],
 
+4:[
+{n:2,start:"08:50",end:"09:35",subj:"Wychowanie fizyczne",room:"sg2",teacher:"Agnieszka Hojniak"},
+{n:3,start:"09:45",end:"10:30",subj:"Język angielski",room:"57",teacher:"Agata Lewandowska"},
+{n:4,start:"10:40",end:"11:25",subj:"Język angielski",room:"57",teacher:"Agata Lewandowska"},
+{n:5,start:"11:45",end:"12:30",subj:"Język polski",room:"61",teacher:"Joanna Ołdak"},
+{n:6,start:"12:50",end:"13:35",subj:"Historia",room:"65",teacher:"Marta Kwiatkowska"}
+],
 
-  5: [
-    {
-      n:1,
-      start:"08:00",
-      end:"08:45",
-      subj:"Geografia",
-      room:"65",
-      teacher:"Joanna Sosińska"
-    },
-    {
-      n:2,
-      start:"08:50",
-      end:"09:35",
-      subj:"Wychowanie fizyczne",
-      room:"sg1",
-      teacher:"Agnieszka Hojniak"
-    },
-    {
-      n:3,
-      start:"09:45",
-      end:"10:30",
-      subj:"Fizyka",
-      room:"74",
-      teacher:"Edyta Gaworek"
-    },
-    {
-      n:4,
-      start:"10:40",
-      end:"11:25",
-      subj:"Język polski",
-      room:"68",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:5,
-      start:"11:45",
-      end:"12:30",
-      subj:"Język polski",
-      room:"68",
-      teacher:"Joanna Ołdak"
-    },
-    {
-      n:6,
-      start:"12:50",
-      end:"13:35",
-      subj:"Biologia",
-      room:"61",
-      teacher:"Justyna Kubiak"
-    },
-    {
-      n:7,
-      start:"13:45",
-      end:"14:30",
-      subj:"Wiedza o społeczeństwie",
-      room:"61",
-      teacher:"Marta Kwiatkowska"
-    },
-    {
-      n:8,
-      start:"14:35",
-      end:"15:20",
-      subj:"Edukacja zdrowotna",
-      room:"66",
-      teacher:"Agnieszka Hojniak"
-    }
-  ]
+5:[
+{n:1,start:"08:00",end:"08:45",subj:"Geografia",room:"65",teacher:"Joanna Sosińska"},
+{n:2,start:"08:50",end:"09:35",subj:"Wychowanie fizyczne",room:"sg1",teacher:"Agnieszka Hojniak"},
+{n:3,start:"09:45",end:"10:30",subj:"Fizyka",room:"74",teacher:"Edyta Gaworek"},
+{n:4,start:"10:40",end:"11:25",subj:"Język polski",room:"68",teacher:"Joanna Ołdak"},
+{n:5,start:"11:45",end:"12:30",subj:"Język polski",room:"68",teacher:"Joanna Ołdak"},
+{n:6,start:"12:50",end:"13:35",subj:"Biologia",room:"61",teacher:"Justyna Kubiak"},
+{n:7,start:"13:45",end:"14:30",subj:"Wiedza o społeczeństwie",room:"61",teacher:"Marta Kwiatkowska"},
+{n:8,start:"14:35",end:"15:20",subj:"Edukacja zdrowotna",room:"66",teacher:"Agnieszka Hojniak"}
+]
 
 };
 
 
-let currentDate = new Date();
-currentDate.setHours(0, 0, 0, 0); 
-  
 /* =====================================================
-   NAZWY DNI I MIESIĘCY
+   DATA
 ===================================================== */
 
-const dayNames = [
-  "Niedziela",
-  "Poniedziałek",
-  "Wtorek",
-  "Środa",
-  "Czwartek",
-  "Piątek",
-  "Sobota"
+let currentDate=new Date();
+currentDate.setHours(0,0,0,0);
+
+const dayNames=[
+"Niedziela",
+"Poniedziałek",
+"Wtorek",
+"Środa",
+"Czwartek",
+"Piątek",
+"Sobota"
 ];
 
-const monthNames = [
-  "Stycznia",
-  "Lutego",
-  "Marca",
-  "Kwietnia",
-  "Maja",
-  "Czerwca",
-  "Lipca",
-  "Sierpnia",
-  "Września",
-  "Października",
-  "Listopada",
-  "Grudnia"
+const monthNames=[
+"Stycznia",
+"Lutego",
+"Marca",
+"Kwietnia",
+"Maja",
+"Czerwca",
+"Lipca",
+"Sierpnia",
+"Września",
+"Października",
+"Listopada",
+"Grudnia"
 ];
 
 
 /* =====================================================
-   FORMATOWANIE DATY
+   DATA -> YYYY-MM-DD
+===================================================== */
+
+function formatISODate(date){
+
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,"0");
+  const d=String(date.getDate()).padStart(2,"0");
+
+  return `${y}-${m}-${d}`;
+
+}
+
+
+/* =====================================================
+   DATA -> DZIEŃ ADMINA
+   Admin:
+   0 Poniedziałek
+   1 Wtorek
+   2 Środa
+   3 Czwartek
+   4 Piątek
+===================================================== */
+
+function adminWeekdayFromDate(date){
+
+  const jsDay=date.getDay();
+
+  if(jsDay>=1 && jsDay<=5){
+    return jsDay-1;
+  }
+
+  return -1;
+
+}
+
+
+/* =====================================================
+   FORMAT DATY
 ===================================================== */
 
 function formatDate(date){
 
   return (
     dayNames[date.getDay()]
-    + ", "
-    + date.getDate()
-    + " "
-    + monthNames[date.getMonth()]
-    + " "
-    + date.getFullYear()
+    +" · "+
+    date.getDate()
+    +" "+
+    monthNames[date.getMonth()]
+    +" "+
+    date.getFullYear()
   );
 
 }
 
 
 /* =====================================================
-   POBIERANIE LEKCJI DLA DATY
+   LEKCJE Z SUPABASE
 ===================================================== */
 
-function getLessons(date){
+function getLessonsFromSupabase(date){
 
-  const weekday = date.getDay();
+  const weekday=adminWeekdayFromDate(date);
 
-  return weeklyPlan[weekday] || [];
+  if(weekday<0)return [];
+
+  return lessonPlanData
+    .filter(x=>Number(x.weekday)===weekday)
+    .sort((a,b)=>Number(a.lesson_number)-Number(b.lesson_number))
+    .map(x=>({
+
+      n:Number(x.lesson_number),
+
+      start:String(x.start_time||"").slice(0,5),
+
+      end:String(x.end_time||"").slice(0,5),
+
+      subj:x.subject||"",
+
+      room:x.room||"",
+
+      teacher:x.teacher||""
+
+    }));
 
 }
 
 
 /* =====================================================
-   IKONA
+   LEKCJE
 ===================================================== */
 
-function checkIcon(){
+function getLessons(date){
+
+  if(lessonPlanData.length){
+
+    return getLessonsFromSupabase(date);
+
+  }
+
+  return weeklyPlan[date.getDay()]||[];
+
+}
+
+
+/* =====================================================
+   POBIERANIE DANYCH
+===================================================== */
+
+async function loadSupabaseData(){
+
+  try{
+
+    const lessons=
+      await sb
+        .from("lesson_plan")
+        .select("*")
+        .order("weekday")
+        .order("lesson_number");
+
+    if(lessons.error)throw lessons.error;
+
+    lessonPlanData=lessons.data||[];
+
+
+    const attendance=
+      await sb
+        .from("attendance")
+        .select("*")
+        .order("lesson_date")
+        .order("lesson_number");
+
+    if(attendance.error)throw attendance.error;
+
+    attendanceData=attendance.data||[];
+
+
+    renderAll();
+
+  }catch(error){
+
+    console.error(
+      "Błąd pobierania danych Supabase:",
+      error
+    );
+
+    renderAll();
+
+  }
+
+}
+
+
+/* =====================================================
+   STATUS FREKWENCJI
+===================================================== */
+
+function getAttendanceForLesson(date,lessonNumber){
+
+  const dateISO=formatISODate(date);
+
+  const weekday=adminWeekdayFromDate(date);
+
+  if(weekday<0)return null;
+
+  return attendanceData.find(x=>
+    Number(x.weekday)===weekday &&
+    Number(x.lesson_number)===Number(lessonNumber) &&
+    String(x.lesson_date||"")===dateISO
+  )||null;
+
+}
+
+
+/* =====================================================
+   IKONY
+===================================================== */
+
+function iconForStatus(status){
+
+  if(status==="absent"){
+
+    return `
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="3">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </svg>`;
+
+  }
+
+  if(status==="late"){
+
+    return `
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.5">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7v5l3 2"/>
+    </svg>`;
+
+  }
+
+  if(status==="present"){
+
+    return `
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="3">
+      <path d="M20 6L9 17l-5-5"/>
+    </svg>`;
+
+  }
 
   return `
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="3"
-    >
-      <path d="M20 6L9 17l-5-5"/>
-    </svg>
-  `;
+  <svg viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M8 12h8"/>
+  </svg>`;
+
+}
+
+
+/* =====================================================
+   STATYSTYKI FREKWENCJI
+===================================================== */
+
+function calculateAttendance(){
+
+  let present=0;
+  let absent=0;
+  let late=0;
+
+  attendanceData.forEach(x=>{
+
+    if(x.status==="present")present++;
+
+    if(x.status==="absent")absent++;
+
+    if(x.status==="late")late++;
+
+  });
+
+  const total=present+absent+late;
+
+  /*
+    Spóźnienie traktujemy jako obecność.
+  */
+
+  const percent=
+    total
+      ? Math.round(((present+late)/total)*100)
+      : null;
+
+  return {
+    present,
+    absent,
+    late,
+    total,
+    percent
+  };
 
 }
 
@@ -1646,50 +1493,54 @@ function checkIcon(){
 
 function renderStart(){
 
-  const lessons = getLessons(currentDate);
+  const lessons=getLessons(currentDate);
 
-  document.getElementById(
-    "start-day-label"
-  ).textContent = formatDate(currentDate);
+  document.getElementById("start-day-label")
+    .textContent=formatDate(currentDate);
 
+  document.getElementById("start-lesson-count")
+    .textContent=lessons.length;
 
-  document.getElementById(
-    "start-lesson-count"
-  ).textContent = lessons.length;
-
-
-  document.getElementById(
-    "start-end-time"
-  ).textContent =
-    lessons.length
-      ? lessons[lessons.length-1].end
-      : "—";
+  document.getElementById("start-end-time")
+    .textContent=
+      lessons.length
+        ? lessons[lessons.length-1].end
+        : "—";
 
 
-  const nextBox =
-    document.getElementById(
-      "start-next-lesson"
-    );
+  const stats=calculateAttendance();
+
+  document.getElementById("start-att-percent")
+    .textContent=
+      stats.percent===null
+        ? "—"
+        : stats.percent+"%";
+
+
+  const nextBox=
+    document.getElementById("start-next-lesson");
 
 
   if(lessons.length){
 
-    const next = lessons[0];
+    const next=lessons[0];
 
-    nextBox.innerHTML = `
+    nextBox.innerHTML=`
 
       <div class="time">
-        ${next.start}
+        ${escapeHTML(next.start)}
       </div>
 
       <div class="info">
 
         <b>
-          ${next.subj}
+          ${escapeHTML(next.subj)}
         </b>
 
         <span>
-          Sala ${next.room} · ${next.teacher}
+          Sala ${escapeHTML(next.room)}
+          ·
+          ${escapeHTML(next.teacher)}
         </span>
 
       </div>
@@ -1698,17 +1549,13 @@ function renderStart(){
 
   }else{
 
-    nextBox.innerHTML = `
+    nextBox.innerHTML=`
 
-      <div class="time">
-        —
-      </div>
+      <div class="time">—</div>
 
       <div class="info">
 
-        <b>
-          Brak zajęć
-        </b>
+        <b>Brak zajęć</b>
 
         <span>
           Dzień wolny od lekcji
@@ -1721,21 +1568,17 @@ function renderStart(){
   }
 
 
-  const mini =
-    document.getElementById(
-      "start-mini-plan"
-    );
+  const mini=
+    document.getElementById("start-mini-plan");
 
 
   if(!lessons.length){
 
-    mini.innerHTML = `
+    mini.innerHTML=`
 
       <div class="empty-state">
 
-        <div class="ico">
-          💤
-        </div>
+        <div class="ico">💤</div>
 
         <div>
           Brak lekcji tego dnia
@@ -1750,69 +1593,61 @@ function renderStart(){
   }
 
 
-  mini.innerHTML =
-    lessons.map(l => `
+  mini.innerHTML=lessons.map(l=>`
 
-      <div class="mini-lesson">
+    <div class="mini-lesson">
 
-        <div class="mini-num">
-          ${l.n}
-        </div>
+      <div class="mini-num">
+        ${l.n}
+      </div>
 
-        <div class="mini-time">
-          ${l.start}<br>
-          ${l.end}
-        </div>
+      <div class="mini-time">
+        ${escapeHTML(l.start)}<br>
+        ${escapeHTML(l.end)}
+      </div>
 
-        <div class="mini-info">
+      <div class="mini-info">
 
-          <b>
-            ${l.subj}
-          </b>
+        <b>
+          ${escapeHTML(l.subj)}
+        </b>
 
-          <span>
-            Sala ${l.room} · ${l.teacher}
-          </span>
-
-        </div>
+        <span>
+          Sala ${escapeHTML(l.room)}
+          ·
+          ${escapeHTML(l.teacher)}
+        </span>
 
       </div>
 
-    `).join("");
+    </div>
+
+  `).join("");
 
 }
 
 
 /* =====================================================
-   RENDEROWANIE PLANU
+   PLAN
 ===================================================== */
 
 function renderPlan(){
 
-  const lessons = getLessons(currentDate);
+  const lessons=getLessons(currentDate);
 
+  document.getElementById("plan-day-label")
+    .textContent=formatDate(currentDate);
 
-  document.getElementById(
-    "plan-day-label"
-  ).textContent =
-    formatDate(currentDate);
-
-
-  const list =
-    document.getElementById(
-      "plan-list"
-    );
+  const list=document.getElementById("plan-list");
 
 
   if(!lessons.length){
 
-    list.innerHTML = `
+    list.innerHTML=`
 
       <div class="empty-state">
 
-        <div class="ico">
-          💤
-        </div>
+        <div class="ico">💤</div>
 
         <div>
           Brak lekcji tego dnia
@@ -1827,35 +1662,36 @@ function renderPlan(){
   }
 
 
-  list.innerHTML =
-    lessons.map(l => `
+  list.innerHTML=lessons.map(l=>`
 
-      <div class="lesson-card">
+    <div class="lesson-card">
 
-        <div class="lesson-num">
-          ${l.n}
+      <div class="lesson-num">
+        ${l.n}
+      </div>
+
+      <div class="lesson-time">
+        ${escapeHTML(l.start)}<br>
+        ${escapeHTML(l.end)}
+      </div>
+
+      <div class="lesson-body">
+
+        <div class="subj">
+          ${escapeHTML(l.subj)}
         </div>
 
-        <div class="lesson-time">
-          ${l.start}<br>
-          ${l.end}
-        </div>
-
-        <div class="lesson-body">
-
-          <div class="subj">
-            ${l.subj}
-          </div>
-
-          <div class="meta">
-            Sala ${l.room} · ${l.teacher}
-          </div>
-
+        <div class="meta">
+          Sala ${escapeHTML(l.room)}
+          ·
+          ${escapeHTML(l.teacher)}
         </div>
 
       </div>
 
-    `).join("");
+    </div>
+
+  `).join("");
 
 }
 
@@ -1866,47 +1702,71 @@ function renderPlan(){
 
 function renderAttendance(){
 
-  const lessons = getLessons(currentDate);
+  const lessons=getLessons(currentDate);
+
+  const stats=calculateAttendance();
 
 
-  document.getElementById(
-    "att-day-label"
-  ).textContent =
-    formatDate(currentDate);
+  document.getElementById("att-day-label")
+    .textContent=formatDate(currentDate);
 
 
-  document.getElementById(
-    "att-total"
-  ).textContent =
-    lessons.length;
+  document.getElementById("att-percent")
+    .textContent=
+      stats.percent===null
+        ? "—"
+        : stats.percent+"%";
 
 
-  document.getElementById(
-    "att-present"
-  ).textContent =
-    lessons.length;
+  document.getElementById("att-total")
+    .textContent=stats.total;
 
 
-  document.getElementById(
-    "att-absent"
-  ).textContent = 0;
+  document.getElementById("att-present")
+    .textContent=stats.present;
 
 
-  const list =
-    document.getElementById(
-      "att-list"
-    );
+  document.getElementById("att-absent")
+    .textContent=stats.absent;
+
+
+  document.getElementById("stat-percent")
+    .textContent=
+      stats.percent===null
+        ? "—"
+        : stats.percent+"%";
+
+
+  document.getElementById("stat-lessons")
+    .textContent=stats.total;
+
+
+  document.getElementById("stat-absent")
+    .textContent=stats.absent;
+
+
+  const dates=[
+    ...new Set(
+      attendanceData
+        .map(x=>x.lesson_date)
+        .filter(Boolean)
+    )
+  ];
+
+  document.getElementById("stat-days")
+    .textContent=dates.length;
+
+
+  const list=document.getElementById("att-list");
 
 
   if(!lessons.length){
 
-    list.innerHTML = `
+    list.innerHTML=`
 
       <div class="empty-state">
 
-        <div class="ico">
-          💤
-        </div>
+        <div class="ico">💤</div>
 
         <div>
           Brak lekcji tego dnia
@@ -1921,8 +1781,31 @@ function renderAttendance(){
   }
 
 
-  list.innerHTML =
-    lessons.map(l => `
+  list.innerHTML=lessons.map(l=>{
+
+    const record=
+      getAttendanceForLesson(
+        currentDate,
+        l.n
+      );
+
+
+    const status=record?.status||"none";
+
+
+    let label="Brak wpisu";
+
+    if(status==="present")
+      label="Obecność";
+
+    if(status==="absent")
+      label="Nieobecność";
+
+    if(status==="late")
+      label="Spóźnienie";
+
+
+    return `
 
       <div class="att-lesson">
 
@@ -1931,69 +1814,63 @@ function renderAttendance(){
         </div>
 
         <div class="lesson-time">
-          ${l.start}<br>
-          ${l.end}
+          ${escapeHTML(l.start)}<br>
+          ${escapeHTML(l.end)}
         </div>
 
         <div class="lesson-body">
 
           <div class="subj">
-            ${l.subj}
+            ${escapeHTML(l.subj)}
           </div>
 
           <div class="meta">
-            Sala ${l.room} · ${l.teacher}
+            Sala ${escapeHTML(l.room)}
+            ·
+            ${escapeHTML(l.teacher)}
           </div>
 
         </div>
 
-        <div class="status-pill">
+        <div class="status-pill ${status}">
 
-          ${checkIcon()}
+          ${iconForStatus(status)}
 
-          Obecność
+          ${label}
 
         </div>
 
       </div>
 
-    `).join("");
+    `;
+
+  }).join("");
 
 }
 
 
 /* =====================================================
-   WSZYSTKO RAZEM
+   WSZYSTKO
 ===================================================== */
 
 function renderAll(){
 
   renderStart();
-
   renderPlan();
-
   renderAttendance();
 
 }
 
 
 /* =====================================================
-   ZMIANA PRAWDZIWEJ DATY
+   ZMIANA DATY
 ===================================================== */
 
 function changeDay(delta){
 
-  /*
-    Tutaj NIE MA już żadnego dayIndex.
-
-    Data przesuwa się normalnie:
-    11 → 12 → 13 → 14 → 15 → ...
-  */
-
   currentDate.setDate(
-    currentDate.getDate() + delta
+    currentDate.getDate()+delta
   );
-
 
   renderAll();
 
@@ -2001,70 +1878,49 @@ function changeDay(delta){
 
 
 /* =====================================================
-   PRZEŁĄCZANIE WIDOKÓW
+   WIDOKI
 ===================================================== */
 
 function showView(name){
 
   document
     .querySelectorAll(".view")
-    .forEach(v =>
-      v.classList.remove("active")
-    );
+    .forEach(v=>v.classList.remove("active"));
 
 
-  const selected =
-    document.getElementById(
-      "view-" + name
-    );
+  const selected=
+    document.getElementById("view-"+name);
 
-
-  if(selected){
+  if(selected)
     selected.classList.add("active");
-  }
 
 
   document
-    .querySelectorAll(
-      "nav.bottom button"
-    )
-    .forEach(b =>
-      b.classList.remove("active")
-    );
+    .querySelectorAll("nav.bottom button")
+    .forEach(b=>b.classList.remove("active"));
 
 
-  const button =
+  const button=
     document.querySelector(
       `nav.bottom button[data-view="${name}"]`
     );
 
-
-  if(button){
+  if(button)
     button.classList.add("active");
-  }
 
 
-  const titles = {
-
+  const titles={
     start:"Start",
-
     wiadomosci:"Wiadomości",
-
     oceny:"Oceny",
-
     plan:"Plan lekcji",
-
     frekwencja:"Frekwencja",
-
     wiecej:"Więcej"
-
   };
 
 
-  document.getElementById(
-    "header-title"
-  ).textContent =
-    titles[name] || "Dziennik";
+  document.getElementById("header-title")
+    .textContent=titles[name]||"Dziennik";
 
 }
 
@@ -2075,25 +1931,22 @@ function showView(name){
 
 function openModal(name){
 
-  const modal =
+  const modal=
     document.getElementById(
-      "modal-" + name
+      "modal-"+name
     );
 
-
-  if(modal){
+  if(modal)
     modal.classList.add("show");
-  }
 
 
-  if(name === "notatki"){
+  if(name==="notatki"){
 
-    document.getElementById(
-      "note-input"
-    ).value =
-      localStorage.getItem(
-        "dziennik_note"
-      ) || "";
+    document.getElementById("note-input")
+      .value=
+        localStorage.getItem(
+          "dziennik_note"
+        )||"";
 
   }
 
@@ -2104,9 +1957,7 @@ function closeModal(){
 
   document
     .querySelectorAll(".modal")
-    .forEach(m =>
-      m.classList.remove("show")
-    );
+    .forEach(m=>m.classList.remove("show"));
 
 }
 
@@ -2117,7 +1968,7 @@ function closeModal(){
 
 function saveNote(){
 
-  const value =
+  const value=
     document
       .getElementById("note-input")
       .value
@@ -2130,19 +1981,38 @@ function saveNote(){
   );
 
 
-  document.getElementById(
-    "note-status"
-  ).textContent =
-    "Notatka została zapisana.";
+  document.getElementById("note-status")
+    .textContent=
+      "Notatka została zapisana.";
 
 }
 
 
 /* =====================================================
-   START APLIKACJI
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value??"")
+    .replace(/[&<>"']/g,m=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[m]));
+
+}
+
+
+/* =====================================================
+   START
 ===================================================== */
 
 renderAll();
+
+loadSupabaseData();
 
 </script>
 
