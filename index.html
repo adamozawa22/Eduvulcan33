@@ -351,7 +351,7 @@ main{
 
 .wd.today .wd-name{color:var(--accent)}
 
-/* Start: listy / karty */
+/* Start: karty/listy */
 
 .issues{overflow:hidden}
 
@@ -402,82 +402,6 @@ main{
   margin-top:2px;
   font-size:12.5px;
   color:var(--muted);
-}
-
-/* Start: przedmioty */
-
-.subjects{padding:2px 16px}
-
-.subj-row{padding:13px 0}
-
-.subj-row + .subj-row{border-top:1px solid var(--line)}
-
-.subj-top{
-  display:flex;
-  align-items:baseline;
-  gap:8px;
-  margin-bottom:9px;
-}
-
-.subj-name{
-  flex:1;
-  min-width:0;
-  font-size:14px;
-  font-weight:600;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.subj-cnt{
-  font-size:12px;
-  color:var(--muted);
-  font-variant-numeric:tabular-nums;
-}
-
-.subj-pct{
-  min-width:42px;
-  text-align:right;
-  font-size:14px;
-  font-weight:700;
-  font-variant-numeric:tabular-nums;
-}
-
-.bar{
-  height:6px;
-  border-radius:999px;
-  background:var(--line);
-  overflow:hidden;
-}
-
-.bar i{
-  display:block;
-  height:100%;
-  border-radius:inherit;
-  background:var(--ok);
-}
-
-.bar i.warn{background:var(--warn)}
-.bar i.bad{background:var(--danger)}
-
-.more-btn{
-  display:block;
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--card);
-  color:var(--accent);
-  font:inherit;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.more-btn:focus-visible{
-  outline:2px solid var(--accent);
-  outline-offset:2px;
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -1250,13 +1174,6 @@ Więcej
 
 <div id="start-grades"></div>
 
-<div class="st-head">
-<h3>Frekwencja z przedmiotów</h3>
-<span>od najniższej</span>
-</div>
-
-<div id="start-subjects"></div>
-
 </section>
 
 <section class="view" id="view-wiadomosci">
@@ -1497,19 +1414,6 @@ wysyłania wiadomości. Prosimy spróbować ponownie później.
 const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
 
 const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
-/*
-  Klucz zapasowy (stary anon, format JWT) na wypadek,
-  gdyby nowe klucze API byly wylaczone w projekcie:
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvenBpa3l4aWxtZWR6c3lxdWN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0ODg4MzIsImV4cCI6MjEwNTA2NDgzMn0.WHPtOpswRUeMOrzjmlL2Rplm4x14gwPRuzsJ9uDVxDc"
-*/
-
-
-/*
-  Jeżeli biblioteka Supabase się nie załaduje
-  (brak internetu, blokada CDN), to sb będzie null.
-  Aplikacja działa wtedy na planie zapasowym,
-  zamiast wywalać się na starcie.
-*/
 
 const sb=
   (window.supabase && window.supabase.createClient)
@@ -1678,12 +1582,6 @@ function parseISODate(value){
 
 /* =====================================================
    DATA -> DZIEŃ ADMINA
-   Admin:
-   0 Poniedziałek
-   1 Wtorek
-   2 Środa
-   3 Czwartek
-   4 Piątek
 ===================================================== */
 
 function adminWeekdayFromDate(date){
@@ -1755,8 +1653,6 @@ function getLessonsFromSupabase(date){
 
         teacher:x.teacher||"",
 
-        /* zastępstwo na ten konkretny dzień */
-
         absent:!!(change && change.teacher_absent),
 
         substitute:(change && change.substitute_teacher)||"",
@@ -1782,11 +1678,6 @@ function getLessons(date){
 
   }
 
-  /*
-    Plan zapasowy. Kopiujemy obiekty,
-    żeby przypadkiem ich nie nadpisać.
-  */
-
   return (weeklyPlan[date.getDay()]||[])
     .map(l=>({...l,absent:false,substitute:"",note:""}));
 
@@ -1794,7 +1685,7 @@ function getLessons(date){
 
 
 /* =====================================================
-   OPIS NAUCZYCIELA (z zastępstwem)
+   OPIS NAUCZYCIELA
 ===================================================== */
 
 function teacherLine(l){
@@ -1876,12 +1767,6 @@ async function loadSupabaseData(){
     attendanceData=attendance.data||[];
 
 
-    /*
-      Zastępstwa są opcjonalne.
-      Jeżeli tabela nie istnieje (42P01),
-      po prostu jedziemy dalej.
-    */
-
     const changes=
       await sb
         .from("teacher_changes")
@@ -1896,12 +1781,6 @@ async function loadSupabaseData(){
 
     teacherChangesData=changes.data||[];
 
-
-    /*
-      Oceny są opcjonalne, tak samo jak zastępstwa -
-      jeżeli tabela jeszcze nie istnieje (42P01),
-      po prostu jedziemy dalej bez błędu.
-    */
 
     const grades=
       await sb
@@ -1947,12 +1826,6 @@ async function loadSupabaseData(){
 function getAttendanceForLesson(date,lessonNumber){
 
   const dateISO=formatISODate(date);
-
-  /*
-    Kluczem jest data i numer lekcji.
-    Kolumna weekday bywa pusta w starszych wpisach,
-    więc nie może decydować o dopasowaniu.
-  */
 
   return attendanceData.find(x=>
     Number(x.lesson_number)===Number(lessonNumber) &&
@@ -2031,10 +1904,6 @@ function calculateAttendance(){
 
   const total=present+absent+late;
 
-  /*
-    Spóźnienie traktujemy jako obecność.
-  */
-
   const percent=
     total
       ? Math.round(((present+late)/total)*100)
@@ -2055,11 +1924,7 @@ function calculateAttendance(){
    START
 ===================================================== */
 
-let showAllSubjects=false;
 let startSummarySig="";
-
-
-/* pierścień z trzema kolorami: obecność / spóźnienie / nieobecność */
 
 function buildSummary(stats,days){
 
@@ -2177,8 +2042,6 @@ function buildSummary(stats,days){
 }
 
 
-/* poniedziałek–piątek tygodnia, w którym jest dzisiaj */
-
 function getWeekDays(){
 
   const base=new Date();
@@ -2226,26 +2089,6 @@ function renderStart(){
   const stats=calculateAttendance();
 
   const byDate={};
-  const lessonCache={};
-
-  /* lekcja z planu, do której należy wpis frekwencji */
-
-  function lessonAt(rec){
-
-    const key=String(rec.lesson_date||"");
-
-    if(!(key in lessonCache)){
-
-      const d=parseISODate(key);
-
-      lessonCache[key]=d?getLessons(d):[];
-
-    }
-
-    return lessonCache[key]
-      .find(l=>l.n===Number(rec.lesson_number))||null;
-
-  }
 
   attendanceData.forEach(x=>{
 
@@ -2269,7 +2112,7 @@ function renderStart(){
       .length;
 
 
-  /* --- podsumowanie (pierścień animuje się tylko przy zmianie danych) --- */
+  /* --- podsumowanie --- */
 
   const sig=
     [stats.present,stats.late,stats.absent,daysWithData].join("|");
@@ -2397,113 +2240,6 @@ function renderStart(){
         `</div>`
       : `<div class="st-card"><div class="st-empty">Brak ostatnich ocen.</div></div>`;
   }
-
-
-  /* --- frekwencja z przedmiotów --- */
-
-  const subjMap={};
-
-  attendanceData.forEach(x=>{
-
-    if(
-      x.status!=="present" &&
-      x.status!=="late" &&
-      x.status!=="absent"
-    )return;
-
-    const lesson=lessonAt(x);
-
-    if(!lesson || !lesson.subj)return;
-
-    const s=
-      subjMap[lesson.subj]||
-      (subjMap[lesson.subj]={subj:lesson.subj,total:0,ok:0});
-
-    s.total++;
-
-    if(x.status!=="absent")s.ok++;
-
-  });
-
-  const subjects=
-    Object.values(subjMap)
-      .map(s=>({
-        ...s,
-        percent:Math.round((s.ok/s.total)*100)
-      }))
-      .sort((a,b)=>
-        a.percent-b.percent ||
-        b.total-a.total ||
-        a.subj.localeCompare(b.subj,"pl")
-      );
-
-  const box=document.getElementById("start-subjects");
-
-  if(!subjects.length){
-
-    box.innerHTML=
-      `<div class="st-card"><div class="st-empty">Brak wpisów frekwencji.</div></div>`;
-
-    return;
-
-  }
-
-  const visible=
-    showAllSubjects
-      ? subjects
-      : subjects.slice(0,5);
-
-  box.innerHTML=
-
-    `<div class="st-card subjects">`+
-
-    visible.map(s=>{
-
-      const tone=
-        s.percent>=85
-          ? ""
-          : (s.percent>=70 ? "warn" : "bad");
-
-      return `
-
-        <div class="subj-row">
-
-          <div class="subj-top">
-            <span class="subj-name">${escapeHTML(s.subj)}</span>
-            <span class="subj-cnt">${s.ok}/${s.total}</span>
-            <span class="subj-pct">${s.percent}%</span>
-          </div>
-
-          <div class="bar">
-            <i class="${tone}" style="width:${s.percent}%"></i>
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("")+
-
-    `</div>`+
-
-    (
-      subjects.length>5
-        ? `<button class="more-btn" onclick="toggleSubjects()">${
-            showAllSubjects
-              ? "Pokaż mniej"
-              : "Pokaż wszystkie ("+subjects.length+")"
-          }</button>`
-        : ""
-    );
-
-}
-
-
-function toggleSubjects(){
-
-  showAllSubjects=!showAllSubjects;
-
-  renderStart();
 
 }
 
