@@ -2036,7 +2036,9 @@ async function generateLoginQr(){
     qrLoginLink.value=data.action_link;
     qrMeta.style.display="block";
     qrMeta.textContent="Kod dla: "+email+" · jednorazowy · po pierwszym użyciu użytkownik ustawi nowe hasło";
-    qrAdminMsg.textContent="Kod został wygenerowany. Możesz otworzyć panel na kilku ekranach i wygenerować kod ponownie dla tej samej osoby.";
+    const accountInfo=data.account_created?" Utworzono nowe konto ucznia.":" Konto już istniało.";
+    const familyInfo=data.family_linked?" Połączono je z kontem rodzica.":"";
+    qrAdminMsg.textContent="Kod został wygenerowany."+accountInfo+familyInfo+" Kod możesz wyświetlić na kilku ekranach, ale zadziała tylko raz.";
   }catch(e){
     qrAdminMsg.textContent="Błąd: "+(e.message||"nie udało się wygenerować kodu");
   }finally{
