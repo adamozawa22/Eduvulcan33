@@ -1914,6 +1914,34 @@ function calculateAttendance(){
 
 let startSummarySig="";
 
+function animateAttendancePercent(){
+  const value=document.querySelector(".attendance-value");
+  if(!value)return;
+
+  const target=Number(value.dataset.target);
+  if(!Number.isFinite(target))return;
+
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    value.innerHTML=target+"<small>%</small>";
+    return;
+  }
+
+  const start=100;
+  const duration=900;
+  const started=performance.now();
+
+  function frame(now){
+    const progress=Math.min((now-started)/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    const current=Math.round(start+(target-start)*eased);
+    value.innerHTML=current+"<small>%</small>";
+
+    if(progress<1)requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
 function buildSummary(stats,days){
 
   const R=52;
@@ -1952,7 +1980,7 @@ function buildSummary(stats,days){
   const big=
     stats.percent===null
       ? `<b>—</b>`
-      : `<b>${stats.percent}<small>%</small></b>`;
+      : `<b class="attendance-value" data-target="${stats.percent}">100<small>%</small></b>`;
 
   const caption=
     stats.percent===null
@@ -2111,6 +2139,8 @@ function renderStart(){
 
     document.getElementById("start-summary")
       .innerHTML=buildSummary(stats,daysWithData);
+
+    animateAttendancePercent();
 
   }
 
