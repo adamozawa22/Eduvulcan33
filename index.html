@@ -2079,7 +2079,7 @@ function buildSummary(stats,days){
     }
   ].filter(p=>p.v>0);
 
-  const gap=overlays.length?3:0;
+  const gap=0;
 
   const successBase=stats.total
     ? `<circle class="ring-success-base" cx="70" cy="70" r="${R}" style="--circ:${C.toFixed(2)}" stroke-dasharray="${C.toFixed(2)} 0"/>`
