@@ -1333,6 +1333,12 @@ nav.bottom button svg{
 .qr-status.error{color:var(--danger)}
 .qr-status.ok{color:var(--ok)}
 
+.password-change-screen{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#edf5fc,#f8fafc)}
+.password-change-screen[hidden]{display:none}
+.password-change-card{width:min(430px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 65px rgba(20,45,75,.17)}
+.password-change-card h2{margin:0 0 8px;font-size:23px}
+.password-change-card>p{margin:0 0 22px;color:var(--muted);font-size:13px;line-height:1.55}
+
 .auth-field{display:block;margin-bottom:16px}
 .auth-field span{display:block;margin-bottom:7px;font-size:12px;font-weight:700;color:var(--text)}
 
@@ -1475,6 +1481,17 @@ nav.bottom button svg{
       <div class="auth-help">Jeśli nie pamiętasz danych logowania, skontaktuj się z administratorem dziennika.</div>
     </form>
   </div>
+</section>
+
+<section class="password-change-screen" id="password-change-screen" hidden>
+  <form class="password-change-card" id="password-change-form">
+    <h2>Ustaw nowe hasło</h2>
+    <p>Logowanie kodem QR było jednorazowe. Zanim przejdziesz do dziennika, ustaw własne hasło składające się z co najmniej 8 znaków.</p>
+    <label class="auth-field"><span>Nowe hasło</span><input id="new-password" type="password" autocomplete="new-password" minlength="8" required></label>
+    <label class="auth-field"><span>Powtórz nowe hasło</span><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required></label>
+    <button class="auth-submit" id="password-change-submit" type="submit">Zapisz nowe hasło</button>
+    <div class="auth-error" id="password-change-error" role="alert" aria-live="polite"></div>
+  </form>
 </section>
 
 <div class="phone" id="diary-app" hidden>
@@ -1824,6 +1841,7 @@ async function verifyQrLogin(raw){
     const {data,error}=await sb.auth.verifyOtp(payload);
     if(error)throw error;
     if(!data.session)throw new Error("Kod nie utworzył sesji.");
+    sessionStorage.setItem("qrPasswordRequired","1");
     status.classList.add("ok");
     status.textContent="Kod zaakceptowany.";
     stopQrScanner();
@@ -1899,6 +1917,14 @@ async function scanQrFile(event){
 async function showDiary(session){
   stopQrScanner();
   document.getElementById("auth-screen").hidden=true;
+
+  if(sessionStorage.getItem("qrPasswordRequired")==="1"){
+    document.getElementById("diary-app").hidden=true;
+    document.getElementById("password-change-screen").hidden=false;
+    return;
+  }
+
+  document.getElementById("password-change-screen").hidden=true;
   document.getElementById("diary-app").hidden=false;
 
   renderAll();
@@ -1909,9 +1935,45 @@ async function showDiary(session){
   }
 }
 
+async function saveNewPassword(event){
+  event.preventDefault();
+  const password=document.getElementById("new-password").value;
+  const confirm=document.getElementById("confirm-password").value;
+  const errorBox=document.getElementById("password-change-error");
+  const button=document.getElementById("password-change-submit");
+  errorBox.textContent="";
+
+  if(password.length<8){
+    errorBox.textContent="Hasło musi mieć co najmniej 8 znaków.";
+    return;
+  }
+  if(password!==confirm){
+    errorBox.textContent="Wpisane hasła nie są takie same.";
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="Zapisywanie…";
+  try{
+    const {error}=await sb.auth.updateUser({password});
+    if(error)throw error;
+    sessionStorage.removeItem("qrPasswordRequired");
+    document.getElementById("new-password").value="";
+    document.getElementById("confirm-password").value="";
+    const {data}=await sb.auth.getSession();
+    await showDiary(data.session);
+  }catch(_){
+    errorBox.textContent="Nie udało się zmienić hasła. Spróbuj ponownie.";
+  }finally{
+    button.disabled=false;
+    button.textContent="Zapisz nowe hasło";
+  }
+}
+
 function showLogin(){
   stopQrScanner();
   switchAuthMethod("password");
+  document.getElementById("password-change-screen").hidden=true;
   document.getElementById("diary-app").hidden=true;
   document.getElementById("auth-screen").hidden=false;
   document.getElementById("login-password").value="";
@@ -1955,6 +2017,9 @@ async function logoutDiary(){
 async function initAuth(){
   document.getElementById("login-form")
     .addEventListener("submit",loginDiary);
+
+  document.getElementById("password-change-form")
+    .addEventListener("submit",saveNewPassword);
 
   if(!sb){
     document.getElementById("login-error").textContent=
