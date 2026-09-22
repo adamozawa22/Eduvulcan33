@@ -558,16 +558,6 @@ button.secondary:hover{background:var(--card-hover)}
 .sub-wrap{display:none;margin-top:10px}
 .sub-wrap.show{display:block}
 
-.login{
-  max-width:430px;
-  margin:70px auto;
-}
-
-.login h1{
-  margin-top:0;
-  font-size:24px;
-}
-
 .auto-hint{
   font-size:11px;
   margin-top:5px;
@@ -690,7 +680,7 @@ body{
   border:1px solid var(--line);
   border-radius:20px;
   overflow:hidden;
-  box-shadow:0 24px 70px rgba(20,30,50,.12);
+  box-shadow:0 2px 8px rgba(20,30,50,.045);
 }
 
 .sidebar{
@@ -838,12 +828,7 @@ table{
   overflow:hidden;
 }
 
-.login.card{
-  max-width:420px;
-  margin:10vh auto;
-  padding:28px;
-  box-shadow:0 20px 55px rgba(20,30,50,.13);
-}
+
 
 .admin-menu-toggle{display:none;width:42px;height:42px;border:0;border-radius:12px;background:var(--accent-dim);color:var(--accent);cursor:pointer;align-items:center;justify-content:center}
 .admin-menu-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
@@ -883,41 +868,36 @@ table{
   .admin-menu-backdrop.show{display:block}
 }
 
-.qr-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}
-.qr-preview{min-height:280px;display:flex;align-items:center;justify-content:center;padding:18px;border:1px dashed #b8c5d4;border-radius:18px;background:#f8fafc}
-.qr-preview canvas,.qr-preview img{max-width:100%;height:auto;border-radius:10px}
-.qr-empty{text-align:center;color:var(--muted);font-size:13px;line-height:1.55}
-.qr-meta{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--accent-dim);color:var(--accent-dark);font-size:12px;line-height:1.5}
-.qr-copy{width:100%;min-height:78px;margin-top:10px;font-size:11px;word-break:break-all}
-@media(max-width:720px){.qr-admin-grid{grid-template-columns:1fr}}
 
 </style>
+<link rel="stylesheet" href="auth.css">
 </head>
 
 <body>
 
-<div id="loginScreen" class="login card">
-
-<h1>Panel administracyjny</h1>
-
-<p style="color:var(--muted)">
-Zaloguj się, żeby edytować plan i frekwencję.
-</p>
-
-<label>E-mail</label>
-<input id="loginEmail" type="email">
-
-<label>Hasło</label>
-<input id="loginPassword" type="password">
-
-<div class="actions">
-<button class="primary" onclick="login()">Zaloguj</button>
-</div>
-
-<div class="status-msg" id="loginStatus"></div>
-
-</div>
-
+<section id="loginScreen" class="auth-screen">
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <div class="auth-logo">
+        <img src="vulcan-logo.png" alt="VULCAN" onerror="this.remove()">
+        <strong>VULCAN</strong>
+      </div>
+      <div class="auth-copy">
+        <h1>Panel administracyjny</h1>
+        <p>Zarządzaj planem lekcji, frekwencją, ocenami i informacjami dla uczniów.</p>
+      </div>
+    </div>
+    <form class="auth-form" id="admin-login-form">
+      <h2>Zaloguj się</h2>
+      <p class="auth-intro">Wpisz dane swojego konta administratora.</p>
+      <label class="auth-field"><span>Adres e-mail</span><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required placeholder="admin@szkola.pl"></label>
+      <label class="auth-field"><span>Hasło</span><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Wpisz hasło"></label>
+      <button class="auth-submit" id="admin-login-submit" type="submit">Zaloguj się</button>
+      <div class="auth-error" id="loginStatus" role="alert" aria-live="polite"></div>
+      <div class="auth-help"><a href="index.html">Przejdź do dziennika ucznia</a></div>
+    </form>
+  </div>
+</section>
 
 <div id="app" class="wrap" style="display:none">
 
@@ -962,9 +942,6 @@ Uwagi i pochwały
 Nauczyciele
 </button>
 
-<button class="tab" onclick="switchPanel('kodyqr',this)">
-Kody QR
-</button>
 
 </nav>
 
@@ -1239,25 +1216,7 @@ Anuluj edycję
 
 </section>
 
-<section id="panel-kodyqr" class="panel">
-<div class="card">
-<h2>Jednorazowy kod logowania QR</h2>
-<div class="status-msg" style="margin-top:0;margin-bottom:16px">Wygeneruj kod dla konkretnego użytkownika. Możesz wyświetlić ten sam kod na kilku ekranach, ale po pierwszym poprawnym skanowaniu kod przestaje działać.</div>
-<div class="qr-admin-grid">
-  <div>
-    <label>E-mail użytkownika</label>
-    <input id="qrUserEmail" type="email" placeholder="uczen@szkola.pl" autocomplete="off">
-    <div class="actions"><button class="primary" id="generateQrButton" onclick="generateLoginQr()">Generuj kod QR</button></div>
-    <div class="status-msg" id="qrAdminMsg"></div>
-    <textarea class="qr-copy" id="qrLoginLink" readonly placeholder="Jednorazowy link pojawi się tutaj"></textarea>
-  </div>
-  <div>
-    <div class="qr-preview" id="qrPreview"><div class="qr-empty">Kod QR pojawi się tutaj po wygenerowaniu.</div></div>
-    <div class="qr-meta" id="qrMeta" style="display:none"></div>
-  </div>
-</div>
-</div>
-</section>
+
 
 </main>
 
@@ -1442,7 +1401,6 @@ Wyczyść
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 
@@ -1757,7 +1715,13 @@ function db(){
    LOGOWANIE
 ===================================================== */
 
-async function login(){
+async function login(event){
+  event.preventDefault();
+  const button=document.getElementById('admin-login-submit');
+  if(button.disabled)return;
+  button.disabled=true;
+  button.textContent='Logowanie…';
+  loginStatus.textContent='';
 
   try{
 
@@ -1766,7 +1730,7 @@ async function login(){
     const {error}=
       await sb.auth.signInWithPassword({
 
-        email:loginEmail.value,
+        email:loginEmail.value.trim(),
 
         password:loginPassword.value
 
@@ -1779,13 +1743,12 @@ async function login(){
 
   }catch(e){
 
-    loginStatus.textContent=
-      e.message;
-
+    loginStatus.textContent="Nie udało się zalogować. Sprawdź e-mail i hasło lub spróbuj ponownie.";
+  }finally{
+    button.disabled=false;
+    button.textContent="Zaloguj się";
   }
-
 }
-
 
 async function logout(){
 
@@ -1808,7 +1771,7 @@ async function showApp(){
   if(data.session.user.id!==ADMIN_USER_ID){
     await sb.auth.signOut();
     app.style.display="none";
-    loginScreen.style.display="block";
+    loginScreen.style.display="flex";
     loginPassword.value="";
     loginStatus.textContent=
       "To konto nie ma uprawnień administratora. Zaloguj się jako admin@gmail.com.";
@@ -2027,11 +1990,6 @@ const viewTitles={
   nauczyciele:[
     "Nauczyciele",
     "Przypisania nauczycieli do przedmiotów"
-  ],
-
-  kodyqr:[
-    "Kody QR",
-    "Jednorazowe logowanie użytkowników"
   ]
 
 };
@@ -2054,59 +2012,6 @@ function closeAdminMenu(){
   button.setAttribute("aria-expanded","false");
   button.setAttribute("aria-label","Otwórz menu");
 }
-
-async function generateLoginQr(){
-  const email=qrUserEmail.value.trim().toLowerCase();
-  qrAdminMsg.textContent="";
-  qrMeta.style.display="none";
-
-  if(!email || !email.includes("@")){
-    qrAdminMsg.textContent="Podaj prawidłowy adres e-mail użytkownika.";
-    return;
-  }
-
-  generateQrButton.disabled=true;
-  generateQrButton.textContent="Generowanie…";
-
-  try{
-    const {data,error}=await sb.functions.invoke("generate-login-qr",{
-      body:{email}
-    });
-
-    if(error)throw error;
-    if(!data?.action_link)throw new Error(data?.error||"Nie otrzymano linku logowania.");
-
-    qrPreview.innerHTML="";
-    new QRCode(qrPreview,{
-      text:data.action_link,
-      width:244,
-      height:244,
-      colorDark:"#10253b",
-      colorLight:"#ffffff",
-      correctLevel:QRCode.CorrectLevel.M
-    });
-
-    qrLoginLink.value=data.action_link;
-    qrMeta.style.display="block";
-    qrMeta.textContent="Kod dla: "+email+" · jednorazowy · po pierwszym użyciu użytkownik ustawi nowe hasło";
-    const accountInfo=data.account_created?" Utworzono nowe konto ucznia.":" Konto już istniało.";
-    const familyInfo=data.family_linked?" Połączono je z kontem rodzica.":"";
-    qrAdminMsg.textContent="Kod został wygenerowany."+accountInfo+familyInfo+" Kod możesz wyświetlić na kilku ekranach, ale zadziała tylko raz.";
-  }catch(e){
-    let message=e.message||"nie udało się wygenerować kodu";
-    if(e.context){
-      try{
-        const details=await e.context.json();
-        if(details?.error)message=details.error;
-      }catch(_){}
-    }
-    qrAdminMsg.textContent="Błąd: "+message;
-  }finally{
-    generateQrButton.disabled=false;
-    generateQrButton.textContent="Generuj kod QR";
-  }
-}
-
 
 function switchPanel(name,btn){
 
@@ -4384,26 +4289,14 @@ function fmtTime(t){
    START
 ===================================================== */
 
+document.getElementById("admin-login-form").addEventListener("submit",login);
+
 if(sb){
 
   sb.auth
     .getSession()
     .then(showApp);
 
-  /*
-    Enter w polu hasła też loguje.
-  */
-
-  [loginEmail,loginPassword].forEach(el=>{
-
-    el.addEventListener("keydown",e=>{
-
-      if(e.key==="Enter")
-        login();
-
-    });
-
-  });
 
 }else{
 
