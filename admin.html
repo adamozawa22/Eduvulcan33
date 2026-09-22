@@ -2040,7 +2040,14 @@ async function generateLoginQr(){
     const familyInfo=data.family_linked?" Połączono je z kontem rodzica.":"";
     qrAdminMsg.textContent="Kod został wygenerowany."+accountInfo+familyInfo+" Kod możesz wyświetlić na kilku ekranach, ale zadziała tylko raz.";
   }catch(e){
-    qrAdminMsg.textContent="Błąd: "+(e.message||"nie udało się wygenerować kodu");
+    let message=e.message||"nie udało się wygenerować kodu";
+    if(e.context){
+      try{
+        const details=await e.context.json();
+        if(details?.error)message=details.error;
+      }catch(_){}
+    }
+    qrAdminMsg.textContent="Błąd: "+message;
   }finally{
     generateQrButton.disabled=false;
     generateQrButton.textContent="Generuj kod QR";
