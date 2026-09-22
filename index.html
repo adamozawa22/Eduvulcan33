@@ -1102,6 +1102,10 @@ nav.bottom button svg{
   stroke-linejoin:round;
 }
 
+.menu-toggle{display:none;width:42px;height:42px;border:0;border-radius:12px;background:var(--accent-dim);color:var(--accent);cursor:pointer;align-items:center;justify-content:center}
+.menu-toggle svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.menu-backdrop{display:none}
+
 
 /* PASEK OFFLINE */
 
@@ -1150,26 +1154,32 @@ nav.bottom button svg{
 
   nav.bottom{
     position:fixed;
-    left:0;
     right:0;
+    top:0;
     bottom:0;
-    top:auto;
-    width:100%;
-    height:auto;
-    flex-direction:row;
-    gap:2px;
+    width:min(82vw,310px);
+    height:100dvh;
+    flex-direction:column;
+    gap:5px;
     border-right:none;
-    border-top:1px solid var(--line);
-    padding:7px 4px calc(7px + env(safe-area-inset-bottom,0px));
-    z-index:10;
+    border-left:1px solid var(--line);
+    padding:82px 14px 24px;
+    z-index:31;
+    transform:translateX(105%);
+    transition:transform .24s cubic-bezier(.22,.8,.3,1);
+    box-shadow:-18px 0 45px rgba(20,30,50,.16);
   }
 
+  nav.bottom.open{transform:translateX(0)}
+
   nav.bottom button{
-    flex:1;
-    min-width:0;
-    font-size:9.5px;
-    padding:7px 1px;
-    gap:4px;
+    flex:none;
+    width:100%;
+    flex-direction:row;
+    justify-content:flex-start;
+    font-size:14px;
+    padding:12px 14px;
+    gap:13px;
   }
 
   nav.bottom button svg{
@@ -1177,9 +1187,10 @@ nav.bottom button svg{
     height:19px;
   }
 
-  main{
-    padding-bottom:88px;
-  }
+  .menu-toggle{display:flex;position:relative;z-index:33}
+  .menu-backdrop{position:fixed;inset:0;z-index:30;background:rgba(15,25,40,.42);backdrop-filter:blur(2px)}
+  .menu-backdrop.show{display:block}
+  main{padding-bottom:24px}
 
 }
 
@@ -1535,6 +1546,8 @@ Ustawienia
 
 </nav>
 
+<div class="menu-backdrop" id="menu-backdrop" onclick="closeMobileMenu()"></div>
+
 <div class="content">
 
 <header>
@@ -1543,7 +1556,12 @@ Ustawienia
 <span class="vulcan-text">VULCAN</span>
 <h1 id="header-title">Start</h1>
 </div>
-<div class="avatar">AZ</div>
+<div style="display:flex;align-items:center;gap:9px">
+  <div class="avatar">AZ</div>
+  <button class="menu-toggle" id="menu-toggle" type="button" onclick="toggleMobileMenu()" aria-label="Otwórz menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+</div>
 </header>
 
 <main>
@@ -3424,7 +3442,30 @@ function changeDay(delta){
    WIDOKI
 ===================================================== */
 
+function toggleMobileMenu(){
+  const menu=document.querySelector("nav.bottom");
+  const backdrop=document.getElementById("menu-backdrop");
+  const button=document.getElementById("menu-toggle");
+  const open=!menu.classList.contains("open");
+  menu.classList.toggle("open",open);
+  backdrop.classList.toggle("show",open);
+  button.setAttribute("aria-expanded",String(open));
+  button.setAttribute("aria-label",open?"Zamknij menu":"Otwórz menu");
+}
+
+function closeMobileMenu(){
+  document.querySelector("nav.bottom").classList.remove("open");
+  document.getElementById("menu-backdrop").classList.remove("show");
+  const button=document.getElementById("menu-toggle");
+  if(button){
+    button.setAttribute("aria-expanded","false");
+    button.setAttribute("aria-label","Otwórz menu");
+  }
+}
+
 function showView(name){
+
+  closeMobileMenu();
 
   document
     .querySelectorAll(".view")
