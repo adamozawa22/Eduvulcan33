@@ -418,7 +418,7 @@ h2{
   align-items:center;
   justify-content:center;
   padding:20px;
-  z-index:20;
+  z-index:60;
 }
 
 .modal.show{display:flex}
@@ -555,8 +555,8 @@ button.secondary:hover{background:var(--card-hover)}
 
 .check-row input{width:auto}
 
-.sub-wrap{display:none;margin-top:10px}
-.sub-wrap.show{display:block}
+.absence-fields{display:none;margin-top:10px}
+.absence-fields.show{display:block}
 
 .auto-hint{
   font-size:11px;
@@ -585,7 +585,16 @@ button.secondary:hover{background:var(--card-hover)}
 
 /* ---- oceny ---- */
 
-.grade-subject-block{margin-bottom:16px}
+.grade-subject-block{margin-bottom:22px}
+#gradesList .grade-subject-head{padding:10px 0;border-bottom:1px solid var(--line)}
+#gradesList .grade-row{border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;padding:12px 0;box-shadow:none}
+#gradesList .grade-badge{min-width:32px;height:32px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--text)}
+#gradesList .gr-info{overflow-wrap:anywhere}
+@media(max-width:480px){
+  #gradesList .grade-row{flex-wrap:wrap;gap:8px}
+  #gradesList .gr-info{flex:1;min-width:150px}
+  #gradesList .gr-actions{width:100%;justify-content:flex-end}
+}
 
 .grade-subject-head{
   display:flex;
@@ -1282,7 +1291,7 @@ Lekcja
 <div class="teacher-box">
 
 <h4>
-Nieobecność nauczyciela i zastępstwo
+Nieobecność nauczyciela
 </h4>
 
 <label class="check-row">
@@ -1290,33 +1299,20 @@ Nieobecność nauczyciela i zastępstwo
 <input
 id="mTeacherAbsent"
 type="checkbox"
-onchange="toggleSubstitute()">
+onchange="toggleTeacherAbsence()">
 
 Nauczyciel jest nieobecny
 
 </label>
 
-<div class="sub-wrap" id="subWrap">
+<div class="absence-fields" id="absenceFields">
 
 <label>
-Data nieobecności / zastępstwa
+Data nieobecności
 </label>
 
 <input id="mChangeDate" type="date">
 
-<label>
-Zastępstwo
-</label>
-
-<select id="mSubstitute"></select>
-
-<label>
-Informacja dla ucznia
-</label>
-
-<input
-id="mSubNote"
-placeholder="np. zastępstwo za nauczyciela">
 
 </div>
 
@@ -1932,7 +1928,6 @@ async function loadData(){
 
 
     prepareSubjectOptions();
-    prepareSubstituteOptions();
     prepareSubjectDatalist();
     prepareGradeOptions();
 
@@ -2199,8 +2194,7 @@ function renderSchedule(){
               ? esc(t.room||"")+" · "+
                 (
                   change?.teacher_absent
-                    ? "<s>"+esc(t.teacher||"—")+"</s> "+
-                      esc(change.substitute_teacher||"zastępstwo")
+                    ? esc(t.teacher||"—")
                     : "<b>"+esc(t.teacher||"—")+"</b>"
                 )
               : ""
@@ -2210,7 +2204,7 @@ function renderSchedule(){
 
         ${
           change?.teacher_absent
-            ? '<div class="flag">⚠ zastępstwo</div>'
+            ? '<div class="flag">Nauczyciel nieobecny</div>'
             : ""
         }
 
@@ -2315,33 +2309,6 @@ function prepareGradeOptions(){
 }
 
 
-function prepareSubstituteOptions(){
-
-  const teachers=[
-    ...new Set(
-      (subjectTeachers||[])
-        .map(x=>x.teacher)
-        .filter(Boolean)
-    )
-  ].sort(
-    (a,b)=>
-      a.localeCompare(b,"pl")
-  );
-
-
-  mSubstitute.innerHTML=
-    `<option value="">
-      Wybierz nauczyciela zastępującego
-    </option>`+
-    teachers.map(x=>
-      `<option value="${esc(x)}">
-        ${esc(x)}
-      </option>`
-    ).join("");
-
-}
-
-
 function getTeacherForSubject(subject){
 
   const row=
@@ -2397,12 +2364,12 @@ function updateTeacherHint(t){
 
 
 /* =====================================================
-   ZASTĘPSTWO
+   NIEOBECNOŚĆ NAUCZYCIELA
 ===================================================== */
 
-function toggleSubstitute(){
+function toggleTeacherAbsence(){
 
-  subWrap.classList.toggle(
+  absenceFields.classList.toggle(
     "show",
     mTeacherAbsent.checked
   );
@@ -2411,7 +2378,7 @@ function toggleSubstitute(){
 
 
 /* =====================================================
-   ZASTĘPSTWO DLA KONKRETNEJ DATY
+   NIEOBECNOŚĆ NAUCZYCIELA DLA KONKRETNEJ DATY
 ===================================================== */
 
 function getTeacherChange(
@@ -2461,7 +2428,6 @@ function openLesson(id,n){
 
 
   prepareSubjectOptions();
-  prepareSubstituteOptions();
 
 
   mNum.value=
@@ -2524,17 +2490,7 @@ function openLesson(id,n){
     localDateISO(selectedDate);
 
 
-  mSubstitute.value=
-    change?.substitute_teacher||
-    "";
-
-
-  mSubNote.value=
-    change?.note||
-    "";
-
-
-  toggleSubstitute();
+  toggleTeacherAbsence();
 
   lessonMsg.textContent="";
 
@@ -2655,12 +2611,9 @@ async function saveLesson(){
         teacher_absent:
           true,
 
-        substitute_teacher:
-          mSubstitute.value||
-          null,
+        substitute_teacher:null,
 
-        note:
-          mSubNote.value.trim()
+        note:""
 
       };
 
@@ -2794,7 +2747,7 @@ async function deleteLesson(){
 
 
     /*
-      Usuwamy również zastępstwa
+      Usuwamy również informacje o nieobecności nauczyciela
       powiązane z tą lekcją.
     */
 
