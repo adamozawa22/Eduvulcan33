@@ -726,6 +726,10 @@ Frekwencja
 Oceny
 </button>
 
+<button class="tab" onclick="switchPanel('uwagi',this)">
+Uwagi i pochwały
+</button>
+
 <button class="tab" onclick="switchPanel('nauczyciele',this)">
 Nauczyciele
 </button>
@@ -774,6 +778,56 @@ Nauczyciele
 Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klikalna, więc można od razu dodać zajęcia.
 </div>
 
+</div>
+
+</section>
+
+
+<section id="panel-uwagi" class="panel">
+
+<div class="card">
+
+<h2>Dodaj uwagę lub pochwałę</h2>
+
+<div class="form-grid">
+
+<div>
+<label>Rodzaj</label>
+<select id="rKind">
+<option value="praise">Pochwała</option>
+<option value="remark">Uwaga</option>
+</select>
+</div>
+
+<div>
+<label>Data</label>
+<input id="rDate" type="date">
+</div>
+
+<div>
+<label>Tytuł</label>
+<input id="rTitle" maxlength="120" placeholder="np. Pomoc koleżeńska">
+</div>
+
+<div>
+<label>Treść</label>
+<input id="rContent" maxlength="500" placeholder="Wpisz treść uwagi lub pochwały">
+</div>
+
+</div>
+
+<div class="actions">
+<button class="primary" onclick="saveRemark()">Zapisz wpis</button>
+<button class="secondary" id="cancelEditRemark" style="display:none" onclick="cancelRemarkEdit()">Anuluj edycję</button>
+</div>
+
+<div class="status-msg" id="remarkMsg"></div>
+
+</div>
+
+<div class="card">
+<h2>Wszystkie uwagi i pochwały</h2>
+<div id="remarksList"></div>
 </div>
 
 </section>
@@ -1331,12 +1385,14 @@ let attendance=[];
 let subjectTeachers=[];
 let teacherChanges=[];
 let grades=[];
+let remarks=[];
 
 let selectedDay=0;
 let selectedLesson=null;
 let selectedAtt=null;
 let editingTeacherId=null;
 let editingGradeId=null;
+let editingRemarkId=null;
 
 
 /*
@@ -1491,6 +1547,8 @@ async function showApp(){
 
   app.style.display="block";
 
+  rDate.value=localDateISO(new Date());
+
   await loadData();
 
 }
@@ -1625,6 +1683,19 @@ async function loadData(){
       g.data||[];
 
 
+    const r=
+      await sb
+        .from("remarks")
+        .select("*")
+        .order("entry_date",{ascending:false});
+
+    if(r.error && r.error.code!=="42P01"){
+      throw r.error;
+    }
+
+    remarks=r.data||[];
+
+
     prepareSubjectOptions();
     prepareSubstituteOptions();
     prepareSubjectDatalist();
@@ -1638,6 +1709,7 @@ async function loadData(){
 
     renderTeachers();
     renderGrades();
+    renderRemarks();
 
 
   }catch(e){
@@ -1673,6 +1745,11 @@ const viewTitles={
   oceny:[
     "Oceny",
     "Zarządzanie ocenami uczniów"
+  ],
+
+  uwagi:[
+    "Uwagi i pochwały",
+    "Wpisy widoczne na stronie głównej"
   ],
 
   nauczyciele:[
@@ -3214,6 +3291,115 @@ function markBulk(status){
 function clearBulk(){
 
   askBulkConfirm("clear",null);
+
+}
+
+
+/* =====================================================
+   UWAGI I POCHWAŁY
+===================================================== */
+
+function renderRemarks(){
+
+  remarksList.innerHTML=remarks.length
+    ? remarks.map(item=>{
+        const praise=item.kind==="praise";
+        return `
+          <div class="teacher-row">
+            <div class="tr-subject">${esc(item.entry_date||"")}</div>
+            <div class="tr-teacher">
+              <b>${praise?"Pochwała":"Uwaga"}: ${esc(item.title||"")}</b><br>
+              ${esc(item.content||"")}
+            </div>
+            <div class="tr-actions">
+              <button class="secondary" onclick="editRemark('${esc(String(item.id))}')">Edytuj</button>
+              <button class="secondary" onclick="removeRemark('${esc(String(item.id))}')">Usuń</button>
+            </div>
+          </div>`;
+      }).join("")
+    : "<div style='color:var(--muted);padding:10px 0'>Brak uwag i pochwał. Dodaj pierwszy wpis powyżej.</div>";
+
+}
+
+
+function editRemark(id){
+
+  const item=remarks.find(x=>String(x.id)===String(id));
+  if(!item)return;
+
+  editingRemarkId=id;
+  rKind.value=item.kind||"remark";
+  rDate.value=item.entry_date||"";
+  rTitle.value=item.title||"";
+  rContent.value=item.content||"";
+  cancelEditRemark.style.display="inline-block";
+  remarkMsg.textContent="";
+  rTitle.focus();
+
+}
+
+
+function cancelRemarkEdit(){
+
+  editingRemarkId=null;
+  rKind.value="praise";
+  rDate.value=localDateISO(new Date());
+  rTitle.value="";
+  rContent.value="";
+  cancelEditRemark.style.display="none";
+  remarkMsg.textContent="";
+
+}
+
+
+async function saveRemark(){
+
+  try{
+
+    db();
+
+    const payload={
+      kind:rKind.value,
+      entry_date:rDate.value||localDateISO(new Date()),
+      title:rTitle.value.trim(),
+      content:rContent.value.trim()
+    };
+
+    if(!payload.title||!payload.content){
+      throw new Error("Podaj tytuł i treść wpisu.");
+    }
+
+    const {error}=editingRemarkId
+      ? await sb.from("remarks").update(payload).eq("id",editingRemarkId)
+      : await sb.from("remarks").insert(payload);
+
+    if(error)throw error;
+
+    cancelRemarkEdit();
+    remarkMsg.textContent="Zapisano wpis.";
+    await loadData();
+
+  }catch(e){
+    remarkMsg.textContent="Błąd: "+e.message;
+  }
+
+}
+
+
+async function removeRemark(id){
+
+  try{
+
+    db();
+
+    const {error}=await sb.from("remarks").delete().eq("id",id);
+    if(error)throw error;
+
+    await loadData();
+
+  }catch(e){
+    remarkMsg.textContent="Błąd: "+e.message;
+  }
 
 }
 

@@ -404,6 +404,19 @@ main{
   color:var(--muted);
 }
 
+.remark-badge{
+  flex:none;
+  min-width:78px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  text-align:center;
+}
+
+.remark-badge.praise{background:var(--ok-dim);color:var(--ok)}
+.remark-badge.remark{background:var(--warn-dim);color:var(--warn-ink)}
+
 @media(prefers-reduced-motion:reduce){
   .ring-seg{animation:none}
 }
@@ -1174,6 +1187,12 @@ Więcej
 
 <div id="start-grades"></div>
 
+<div class="st-head">
+<h3>Uwagi i pochwały</h3>
+</div>
+
+<div id="start-remarks"></div>
+
 </section>
 
 <section class="view" id="view-wiadomosci">
@@ -1427,6 +1446,7 @@ let lessonPlanData=[];
 let attendanceData=[];
 let teacherChangesData=[];
 let gradesData=[];
+let remarksData=[];
 
 
 function showNotice(text){
@@ -1795,6 +1815,21 @@ async function loadSupabaseData(){
     }
 
     gradesData=grades.data||[];
+
+
+    const remarks=
+      await sb
+        .from("remarks")
+        .select("*")
+        .order("entry_date",{ascending:false});
+
+    if(remarks.error && remarks.error.code!=="42P01"){
+
+      throw remarks.error;
+
+    }
+
+    remarksData=remarks.data||[];
 
 
     showNotice("");
@@ -2239,6 +2274,41 @@ function renderStart(){
           .join("") +
         `</div>`
       : `<div class="st-card"><div class="st-empty">Brak ostatnich ocen.</div></div>`;
+  }
+
+
+  const startRemarksBox=document.getElementById("start-remarks");
+
+  if(startRemarksBox){
+
+    const recentRemarks=(remarksData||[]).slice(0,6);
+
+    startRemarksBox.innerHTML=recentRemarks.length
+      ? `<div class="st-card issues">`+recentRemarks.map(item=>{
+
+          const d=parseISODate(item.entry_date);
+          const dayNum=d?d.getDate():"—";
+          const monthStr=d?monthShort[d.getMonth()]:"";
+          const isPraise=item.kind==="praise";
+
+          return `
+            <div class="issue">
+              <div class="issue-date">
+                <b>${dayNum}</b>
+                <span>${monthStr}</span>
+              </div>
+              <div class="issue-body">
+                <b>${escapeHTML(item.title|| (isPraise?"Pochwała":"Uwaga"))}</b>
+                <span>${escapeHTML(item.content||"")}</span>
+              </div>
+              <div class="remark-badge ${isPraise?"praise":"remark"}">
+                ${isPraise?"Pochwała":"Uwaga"}
+              </div>
+            </div>`;
+
+        }).join("")+`</div>`
+      : `<div class="st-card"><div class="st-empty">Brak uwag i pochwał.</div></div>`;
+
   }
 
 }
