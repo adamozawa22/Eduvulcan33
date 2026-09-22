@@ -1434,6 +1434,9 @@ const SUPABASE_URL=
 
 const SUPABASE_ANON_KEY=
 "sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
+
+const ADMIN_USER_ID=
+"1f049736-fd58-4b4e-ac61-62af34e02651";
 /*
   Klucz zapasowy (stary anon, format JWT) na wypadek,
   gdyby nowe klucze API byly wylaczone w projekcie:
@@ -1780,6 +1783,16 @@ async function showApp(){
 
   if(!data.session)
     return;
+
+  if(data.session.user.id!==ADMIN_USER_ID){
+    await sb.auth.signOut();
+    app.style.display="none";
+    loginScreen.style.display="block";
+    loginPassword.value="";
+    loginStatus.textContent=
+      "To konto nie ma uprawnień administratora. Zaloguj się jako admin@gmail.com.";
+    return;
+  }
 
   loginScreen.style.display="none";
 
