@@ -669,6 +669,205 @@ button.secondary:hover{background:var(--card-hover)}
   .teacher-row{flex-wrap:wrap}
 
 }
+
+
+/* Spójny wygląd z dziennikiem ucznia */
+body{
+  min-height:100vh;
+  background:var(--bg);
+}
+
+.wrap{
+  max-width:1180px;
+  padding:40px 20px;
+}
+
+.layout{
+  grid-template-columns:230px minmax(0,1fr);
+  gap:0;
+  min-height:calc(100vh - 80px);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 24px 70px rgba(20,30,50,.12);
+}
+
+.sidebar{
+  top:0;
+  height:100%;
+  min-height:calc(100vh - 80px);
+  border:0;
+  border-right:1px solid var(--line);
+  border-radius:0;
+  padding:28px 16px;
+  box-shadow:none;
+}
+
+.admin-brand-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.admin-brand-row img{
+  width:34px;
+  height:34px;
+  object-fit:contain;
+}
+
+.admin-vulcan{
+  color:#1d2d50;
+  font-size:16px;
+  font-weight:850;
+  letter-spacing:.05em;
+}
+
+.sidebar .brand h1{
+  margin-top:2px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.sidebar .brand>span{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+
+.sidebar-sep{display:none}
+
+.tabs{gap:4px;margin-top:16px}
+
+.tab{
+  position:relative;
+  padding:12px 14px;
+  border-radius:12px;
+  color:var(--muted);
+  transition:background .16s ease,color .16s ease,transform .16s ease;
+}
+
+.tab:hover{
+  background:var(--accent-dim);
+  color:var(--accent);
+  transform:translateX(2px);
+}
+
+.tab.active{
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-weight:750;
+}
+
+.tab.active::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:10px;
+  bottom:10px;
+  width:3px;
+  border-radius:3px;
+  background:var(--accent);
+}
+
+.sidebar .logout{
+  margin-top:24px;
+  color:var(--danger);
+  background:var(--danger-dim);
+  border-color:transparent;
+}
+
+.content{
+  padding:0 34px 34px;
+  background:var(--bg);
+}
+
+.top{
+  position:sticky;
+  top:0;
+  z-index:5;
+  margin:0 -34px 24px;
+  padding:25px 34px 18px;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  box-shadow:none;
+}
+
+.top h1{font-size:22px}
+.top span{display:block;margin-top:4px}
+
+.card{
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 2px 8px rgba(20,30,50,.045);
+}
+
+h2{font-size:16px}
+
+input,select,textarea{
+  border-radius:12px!important;
+  border:1px solid var(--line)!important;
+  background:#fbfcfe!important;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  background:#fff!important;
+  border-color:var(--accent)!important;
+  box-shadow:0 0 0 3px rgba(0,100,200,.11);
+}
+
+button.primary{
+  border-radius:11px;
+  background:var(--accent);
+  box-shadow:0 4px 12px rgba(0,100,200,.18);
+}
+
+button.primary:hover{background:var(--accent-dark)}
+
+button.secondary,.week-nav button{
+  border-radius:11px;
+  background:var(--card);
+}
+
+table{
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.login.card{
+  max-width:420px;
+  margin:10vh auto;
+  padding:28px;
+  box-shadow:0 20px 55px rgba(20,30,50,.13);
+}
+
+@media(max-width:850px){
+  .wrap{padding:0}
+  .layout{display:block;min-height:100vh;border:0;border-radius:0}
+  .sidebar{
+    position:static;
+    min-height:0;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    padding:16px;
+  }
+  .sidebar .brand>span{display:none}
+  .tabs{
+    flex-direction:row;
+    overflow-x:auto;
+    padding-bottom:3px;
+  }
+  .tab{flex:none}
+  .tab.active::before{left:10px;right:10px;top:auto;bottom:2px;width:auto;height:3px}
+  .sidebar .logout{margin:12px 0 0;width:auto}
+  .content{padding:0 16px 24px}
+  .top{position:static;margin:0 -16px 18px;padding:18px 16px 14px}
+}
+
 </style>
 </head>
 
@@ -706,8 +905,14 @@ Zaloguj się, żeby edytować plan i frekwencję.
 <aside class="sidebar">
 
 <div class="brand">
+<div class="admin-brand-row">
+<img src="vulcan-logo.png" alt="VULCAN" onerror="this.remove()">
+<div>
+<div class="admin-vulcan">VULCAN</div>
 <h1>Panel administracyjny</h1>
-<span>Dziennik</span>
+</div>
+</div>
+<span>Zarządzanie dziennikiem</span>
 </div>
 
 <div class="sidebar-sep"></div>
