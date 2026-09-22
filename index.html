@@ -184,8 +184,18 @@ main{
 
 .ring-track{stroke:var(--line)}
 
+.ring-success-base{
+  stroke:var(--ok);
+  animation:ringGreenIn .48s cubic-bezier(.22,.8,.3,1) both;
+}
+
 .ring-seg{
-  animation:ringIn .9s cubic-bezier(.22,.8,.3,1) both;
+  animation:ringIn .72s cubic-bezier(.22,.8,.3,1) both;
+  animation-delay:var(--delay,.52s);
+}
+
+@keyframes ringGreenIn{
+  from{stroke-dasharray:0 var(--circ)}
 }
 
 @keyframes ringIn{
@@ -418,7 +428,7 @@ main{
 .remark-badge.remark{background:var(--warn-dim);color:var(--warn-ink)}
 
 @media(prefers-reduced-motion:reduce){
-  .ring-seg{animation:none}
+  .ring-seg,.ring-success-base{animation:none}
 }
 
 /* DATA */
@@ -2052,32 +2062,40 @@ function buildSummary(stats,days){
   const R=52;
   const C=2*Math.PI*R;
 
-  const parts=[
-    {v:stats.present,color:"var(--ok)"},
-    {v:stats.late,color:"var(--warn)"},
-    {v:stats.absent,color:"var(--danger)"}
+  const presentLen=stats.total
+    ? (stats.present/stats.total)*C
+    : 0;
+
+  const overlays=[
+    {
+      v:stats.late,
+      color:"var(--warn)",
+      offset:presentLen
+    },
+    {
+      v:stats.absent,
+      color:"var(--danger)",
+      offset:presentLen+(stats.total?(stats.late/stats.total)*C:0)
+    }
   ].filter(p=>p.v>0);
 
-  const gap=parts.length>1?3:0;
+  const gap=overlays.length?3:0;
 
-  let offset=0;
+  const successBase=stats.total
+    ? `<circle class="ring-success-base" cx="70" cy="70" r="${R}" style="--circ:${C.toFixed(2)}" stroke-dasharray="${C.toFixed(2)} 0"/>`
+    : "";
 
   const segments=
     stats.total
-      ? parts.map(p=>{
+      ? overlays.map((p,index)=>{
 
           const len=(p.v/stats.total)*C;
           const draw=Math.max(len-gap,0.5);
 
-          const svg=
-            `<circle class="ring-seg" cx="70" cy="70" r="${R}"`+
-            ` style="stroke:${p.color};--circ:${C.toFixed(2)}"`+
+          return `<circle class="ring-seg" cx="70" cy="70" r="${R}"`+
+            ` style="stroke:${p.color};--circ:${C.toFixed(2)};--delay:${.52+index*.14}s"`+
             ` stroke-dasharray="${draw.toFixed(2)} ${(C-draw).toFixed(2)}"`+
-            ` stroke-dashoffset="${(-offset).toFixed(2)}"/>`;
-
-          offset+=len;
-
-          return svg;
+            ` stroke-dashoffset="${(-p.offset).toFixed(2)}"/>`;
 
         }).join("")
       : "";
@@ -2108,6 +2126,7 @@ function buildSummary(stats,days){
           <svg class="ring" viewBox="0 0 140 140"
             role="img" aria-label="${aria}">
             <circle class="ring-track" cx="70" cy="70" r="${R}"/>
+            ${successBase}
             ${segments}
           </svg>
 
