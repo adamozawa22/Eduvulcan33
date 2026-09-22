@@ -261,6 +261,15 @@ h2{
   box-shadow:0 2px 8px rgba(0,100,200,.12);
 }
 
+.lesson.cancelled{background:var(--card-hover)}
+.lesson.cancelled .num,
+.lesson.cancelled .subject,
+.lesson.cancelled .meta{
+  color:var(--muted);
+  text-decoration:line-through;
+  text-decoration-thickness:1.5px;
+}
+
 .lesson .num{
   font-size:11.5px;
   color:var(--muted);
@@ -2169,7 +2178,7 @@ function renderSchedule(){
     out+=`
 
       <div
-        class="lesson"
+        class="lesson ${change?.teacher_absent?"cancelled":""}"
         onclick="openLesson(${t?`'${esc(String(t.id))}'`:"null"},${n})"
       >
 
@@ -4262,3 +4271,4 @@ if(sb){
 
 </body>
 </html>
+

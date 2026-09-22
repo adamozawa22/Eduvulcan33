@@ -481,6 +481,23 @@ main{
   box-shadow:0 1px 3px rgba(20,30,50,.05);
 }
 
+.lesson-card.cancelled,.att-lesson.cancelled{background:var(--card-hover)}
+.lesson-card.cancelled .lesson-num,.att-lesson.cancelled .lesson-num{background:#e2e6ee}
+.lesson-card.cancelled .lesson-num,
+.lesson-card.cancelled .lesson-time,
+.lesson-card.cancelled .subj,
+.lesson-card.cancelled .lesson-room,
+.lesson-card.cancelled .teacher-name,
+.att-lesson.cancelled .lesson-num,
+.att-lesson.cancelled .lesson-time,
+.att-lesson.cancelled .subj,
+.att-lesson.cancelled .lesson-room,
+.att-lesson.cancelled .teacher-name{
+  color:var(--muted);
+  text-decoration:line-through;
+  text-decoration-thickness:1.5px;
+}
+
 .lesson-num{
   font-size:15px;
   font-weight:700;
@@ -1794,7 +1811,7 @@ function getLessons(date){
 ===================================================== */
 
 function teacherLine(l){
-  return escapeHTML(l.teacher)+(l.absent
+  return '<span class="teacher-name">'+escapeHTML(l.teacher)+'</span>'+(l.absent
     ? ' <span class="teacher-absent">Nauczyciel nieobecny</span>'
     : "");
 }
@@ -2464,7 +2481,7 @@ function renderPlan(){
 
   list.innerHTML=lessons.map(l=>`
 
-    <div class="lesson-card">
+    <div class="lesson-card ${l.absent?"cancelled":""}">
 
       <div class="lesson-num">
         ${l.n}
@@ -2482,7 +2499,7 @@ function renderPlan(){
         </div>
 
         <div class="meta">
-          Sala ${escapeHTML(l.room)}
+          <span class="lesson-room">Sala ${escapeHTML(l.room)}</span>
           ·
           ${teacherLine(l)}
         </div>
@@ -2608,7 +2625,7 @@ function renderAttendance(){
 
     return `
 
-      <div class="att-lesson">
+      <div class="att-lesson ${l.absent?"cancelled":""}">
 
         <div class="lesson-num">
           ${l.n}
@@ -2626,7 +2643,7 @@ function renderAttendance(){
           </div>
 
           <div class="meta">
-            Sala ${escapeHTML(l.room)}
+            <span class="lesson-room">Sala ${escapeHTML(l.room)}</span>
             ·
             ${teacherLine(l)}
           </div>
@@ -2939,3 +2956,4 @@ initAuth();
 
 </body>
 </html>
+
