@@ -868,6 +868,14 @@ table{
   .top{position:static;margin:0 -16px 18px;padding:18px 16px 14px}
 }
 
+.qr-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}
+.qr-preview{min-height:280px;display:flex;align-items:center;justify-content:center;padding:18px;border:1px dashed #b8c5d4;border-radius:18px;background:#f8fafc}
+.qr-preview canvas,.qr-preview img{max-width:100%;height:auto;border-radius:10px}
+.qr-empty{text-align:center;color:var(--muted);font-size:13px;line-height:1.55}
+.qr-meta{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--accent-dim);color:var(--accent-dark);font-size:12px;line-height:1.5}
+.qr-copy{width:100%;min-height:78px;margin-top:10px;font-size:11px;word-break:break-all}
+@media(max-width:720px){.qr-admin-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -937,6 +945,10 @@ Uwagi i pochwały
 
 <button class="tab" onclick="switchPanel('nauczyciele',this)">
 Nauczyciele
+</button>
+
+<button class="tab" onclick="switchPanel('kodyqr',this)">
+Kody QR
 </button>
 
 </nav>
@@ -1206,6 +1218,26 @@ Anuluj edycję
 
 </section>
 
+<section id="panel-kodyqr" class="panel">
+<div class="card">
+<h2>Jednorazowy kod logowania QR</h2>
+<div class="status-msg" style="margin-top:0;margin-bottom:16px">Wygeneruj kod dla konkretnego użytkownika. Możesz wyświetlić ten sam kod na kilku ekranach, ale po pierwszym poprawnym skanowaniu kod przestaje działać.</div>
+<div class="qr-admin-grid">
+  <div>
+    <label>E-mail użytkownika</label>
+    <input id="qrUserEmail" type="email" placeholder="uczen@szkola.pl" autocomplete="off">
+    <div class="actions"><button class="primary" id="generateQrButton" onclick="generateLoginQr()">Generuj kod QR</button></div>
+    <div class="status-msg" id="qrAdminMsg"></div>
+    <textarea class="qr-copy" id="qrLoginLink" readonly placeholder="Jednorazowy link pojawi się tutaj"></textarea>
+  </div>
+  <div>
+    <div class="qr-preview" id="qrPreview"><div class="qr-empty">Kod QR pojawi się tutaj po wygenerowaniu.</div></div>
+    <div class="qr-meta" id="qrMeta" style="display:none"></div>
+  </div>
+</div>
+</div>
+</section>
+
 </main>
 
 </div>
@@ -1389,6 +1421,7 @@ Wyczyść
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 
@@ -1960,9 +1993,57 @@ const viewTitles={
   nauczyciele:[
     "Nauczyciele",
     "Przypisania nauczycieli do przedmiotów"
+  ],
+
+  kodyqr:[
+    "Kody QR",
+    "Jednorazowe logowanie użytkowników"
   ]
 
 };
+
+async function generateLoginQr(){
+  const email=qrUserEmail.value.trim().toLowerCase();
+  qrAdminMsg.textContent="";
+  qrMeta.style.display="none";
+
+  if(!email || !email.includes("@")){
+    qrAdminMsg.textContent="Podaj prawidłowy adres e-mail użytkownika.";
+    return;
+  }
+
+  generateQrButton.disabled=true;
+  generateQrButton.textContent="Generowanie…";
+
+  try{
+    const {data,error}=await sb.functions.invoke("generate-login-qr",{
+      body:{email}
+    });
+
+    if(error)throw error;
+    if(!data?.action_link)throw new Error(data?.error||"Nie otrzymano linku logowania.");
+
+    qrPreview.innerHTML="";
+    new QRCode(qrPreview,{
+      text:data.action_link,
+      width:244,
+      height:244,
+      colorDark:"#10253b",
+      colorLight:"#ffffff",
+      correctLevel:QRCode.CorrectLevel.M
+    });
+
+    qrLoginLink.value=data.action_link;
+    qrMeta.style.display="block";
+    qrMeta.textContent="Kod dla: "+email+" · jednorazowy · po pierwszym użyciu użytkownik ustawi nowe hasło";
+    qrAdminMsg.textContent="Kod został wygenerowany. Możesz otworzyć panel na kilku ekranach i wygenerować kod ponownie dla tej samej osoby.";
+  }catch(e){
+    qrAdminMsg.textContent="Błąd: "+(e.message||"nie udało się wygenerować kodu");
+  }finally{
+    generateQrButton.disabled=false;
+    generateQrButton.textContent="Generuj kod QR";
+  }
+}
 
 
 function switchPanel(name,btn){
