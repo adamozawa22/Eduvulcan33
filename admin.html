@@ -133,6 +133,9 @@ h2{
 }
 
 .tab{
+  display:flex;
+  align-items:center;
+  gap:11px;
   background:transparent;
   color:var(--text);
   border:none;
@@ -144,6 +147,16 @@ h2{
   font-size:14px;
   font-family:inherit;
   text-align:left;
+}
+.tab svg{
+  width:20px;
+  height:20px;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 .tab:hover{background:var(--accent-dim);color:var(--accent)}
@@ -941,22 +954,27 @@ table{
 <nav class="tabs">
 
 <button class="tab active" onclick="switchPanel('plan',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"/></svg>
 Plan lekcji
 </button>
 
 <button class="tab" onclick="switchPanel('frekwencja',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#attendance"/></svg>
 Frekwencja
 </button>
 
 <button class="tab" onclick="switchPanel('oceny',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"/></svg>
 Oceny
 </button>
 
 <button class="tab" onclick="switchPanel('uwagi',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#remarks"/></svg>
 Uwagi i pochwały
 </button>
 
 <button class="tab" onclick="switchPanel('nauczyciele',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#teachers"/></svg>
 Nauczyciele
 </button>
 

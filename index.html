@@ -459,6 +459,16 @@ main{
 
 .day-nav button:hover{background:#d6e8fa}
 .day-nav button:active{transform:scale(.92)}
+.day-nav button svg{
+  width:19px;
+  height:19px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vertical-align:middle;
+}
 
 .day-label{
   font-weight:600;
@@ -754,6 +764,15 @@ main{
   font-size:38px;
   margin-bottom:12px;
 }
+.empty-state .ico svg{
+  width:38px;
+  height:38px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
 
 .grades-overview{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px;color:var(--muted);font-size:13px}
 .grades-overview b{color:var(--text);font-weight:600}
@@ -962,9 +981,10 @@ nav.bottom button svg{
   height:21px;
   stroke:currentColor;
   fill:none;
-  stroke-width:2;
+  stroke-width:1.8;
   stroke-linecap:round;
   stroke-linejoin:round;
+  flex:none;
 }
 
 .cat-ico svg,
@@ -1181,37 +1201,37 @@ nav.bottom button svg{
 <nav class="bottom">
 
 <button class="active" data-view="start" onclick="showView('start')">
-<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#home"/></svg>
 Start
 </button>
 
 <button data-view="wiadomosci" onclick="showView('wiadomosci')">
-<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-4.8 7.6 8.5 8.5 0 0 1-9.8-1.7L3 19l1.6-3.4a8.5 8.5 0 0 1 8.9-12A8.5 8.5 0 0 1 21 11.5Z"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
 Wiadomości
 </button>
 
 <button data-view="oceny" onclick="showView('oceny')">
-<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"/></svg>
 Oceny
 </button>
 
 <button data-view="plan" onclick="showView('plan')">
-<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"/></svg>
 Plan
 </button>
 
 <button data-view="frekwencja" onclick="showView('frekwencja')">
-<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5 11 15l4.5-5"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#attendance"/></svg>
 Frekwencja
 </button>
 
 <button data-view="uwagi" onclick="showView('uwagi')">
-<svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M12 8v5M12 16.5h.01"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#remarks"/></svg>
 Uwagi i pochwały
 </button>
 
 <button data-view="ustawienia" onclick="showView('ustawienia')">
-<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"/></svg>
 Ustawienia
 </button>
 
@@ -1285,11 +1305,11 @@ wysyłania wiadomości. Prosimy spróbować ponownie później.
 
 <div class="day-nav">
 
-<button onclick="changeDay(-1)">‹</button>
+<button type="button" onclick="changeDay(-1)" aria-label="Poprzedni dzień"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#chevron-left"/></svg></button>
 
 <div class="day-label" id="plan-day-label"></div>
 
-<button onclick="changeDay(1)">›</button>
+<button type="button" onclick="changeDay(1)" aria-label="Następny dzień"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#chevron-right"/></svg></button>
 
 </div>
 
@@ -1328,11 +1348,11 @@ wysyłania wiadomości. Prosimy spróbować ponownie później.
 
 <div class="day-nav">
 
-<button onclick="changeDay(-1)">‹</button>
+<button type="button" onclick="changeDay(-1)" aria-label="Poprzedni dzień"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#chevron-left"/></svg></button>
 
 <div class="day-label" id="att-day-label"></div>
 
-<button onclick="changeDay(1)">›</button>
+<button type="button" onclick="changeDay(1)" aria-label="Następny dzień"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#chevron-right"/></svg></button>
 
 </div>
 
@@ -2464,7 +2484,7 @@ function renderPlan(){
 
       <div class="empty-state">
 
-        <div class="ico">💤</div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar-empty"/></svg></div>
 
         <div>
           Brak lekcji tego dnia
@@ -2584,7 +2604,7 @@ function renderAttendance(){
 
       <div class="empty-state">
 
-        <div class="ico">💤</div>
+        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar-empty"/></svg></div>
 
         <div>
           Brak lekcji tego dnia
