@@ -1234,6 +1234,9 @@ Anuluj edycję
       <option value="" selected disabled>Wybierz nauczyciela</option>
     </select>
     <p class="hint">Wiadomość będzie widoczna dla ucznia i rodzica wyłącznie jako wiadomość od wybranego nauczyciela.</p>
+    <label for="admin-message-created-at">Data i godzina wysłania</label>
+    <input id="admin-message-created-at" type="datetime-local" step="60" required>
+    <p class="hint">Możesz ustawić wcześniejszą datę lub godzinę, która będzie widoczna przy wiadomości.</p>
     <label for="admin-message-subject">Temat</label>
     <input id="admin-message-subject" maxlength="120" required placeholder="Temat wiadomości">
     <label for="admin-message-body">Treść</label>
@@ -1681,6 +1684,11 @@ function formatAdminMessageDate(value){
     : date.toLocaleString("pl-PL",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
 }
 
+function localDateTimeInputValue(date=new Date()){
+  const pad=value=>String(value).padStart(2,"0");
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function renderAdminMessageSenders(){
   const sender=document.getElementById("admin-message-sender");
   const selected=sender.value;
@@ -1714,6 +1722,8 @@ function renderAdminMessages(){
 function openAdminMessageComposer(){
   document.getElementById("admin-message-composer").hidden=false;
   document.getElementById("admin-message-status").textContent="";
+  const createdAt=document.getElementById("admin-message-created-at");
+  if(!createdAt.value)createdAt.value=localDateTimeInputValue();
   document.getElementById("admin-message-sender").focus();
 }
 
@@ -1765,6 +1775,7 @@ async function loadAdminMessages(){
 async function sendAdminMessage(event){
   event.preventDefault();
   const sender=document.getElementById("admin-message-sender");
+  const createdAt=document.getElementById("admin-message-created-at");
   const subject=document.getElementById("admin-message-subject");
   const body=document.getElementById("admin-message-body");
   const status=document.getElementById("admin-message-status");
@@ -1779,11 +1790,14 @@ async function sendAdminMessage(event){
       throw new Error("Zaloguj się ponownie jako administrator.");
     }
     if(!sender.value)throw new Error("Wybierz nauczyciela.");
+    const sentAt=new Date(createdAt.value);
+    if(!createdAt.value||Number.isNaN(sentAt.getTime()))throw new Error("Wybierz poprawną datę i godzinę wysłania.");
     const {error}=await sb.from("messages").insert({
       sender_id:auth.user.id,
       recipient_id:null,
       sender_email:auth.user.email,
       sender_name:sender.value,
+      created_at:sentAt.toISOString(),
       subject:subject.value.trim(),
       body:body.value.trim()
     });
