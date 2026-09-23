@@ -667,6 +667,20 @@ button.secondary:hover{background:var(--card-hover)}
 .grade-row .gr-actions{display:flex;gap:6px}
 .grade-row .gr-actions button{padding:8px 12px;font-size:12px}
 
+.admin-message-form textarea{display:block;width:100%;min-height:110px;resize:vertical;padding:11px;font:inherit;font-size:14px}
+.admin-message-status{min-height:18px;margin-top:10px;color:var(--muted);font-size:12px}
+.admin-message-status.error{color:var(--danger)}
+.admin-message-list{display:grid;gap:10px}
+.admin-message-item{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.admin-message-item.sent{background:var(--card-hover)}
+.admin-message-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.admin-message-item h3{font-size:15px;margin:8px 0}
+.admin-message-item p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
+.admin-message-item button{margin-top:12px}
+.admin-message-item .danger{color:var(--danger);border-color:#f0c6c6}
+.message-fab{position:fixed;left:22px;bottom:22px;z-index:12;width:48px;height:48px;border:0;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 14px rgba(0,100,200,.32)}
+.message-fab svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
 @media(max-width:900px){
 
   .layout{grid-template-columns:1fr}
@@ -978,6 +992,11 @@ Uwagi i pochwały
 Nauczyciele
 </button>
 
+<button class="tab" onclick="switchPanel('wiadomosci',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
+Wiadomości
+</button>
+
 
 </nav>
 
@@ -1205,6 +1224,30 @@ Anuluj edycję
 
 </section>
 
+
+<section id="panel-wiadomosci" class="panel">
+<div class="card" id="admin-message-composer" hidden>
+  <h2>Nowa wiadomość</h2>
+  <form id="admin-message-form" class="admin-message-form">
+    <label for="admin-message-sender">Nadawca</label>
+    <select id="admin-message-sender" required>
+      <option value="" selected disabled>Wybierz nauczyciela</option>
+    </select>
+    <p class="hint">Wiadomość będzie widoczna dla ucznia i rodzica wyłącznie jako wiadomość od wybranego nauczyciela.</p>
+    <label for="admin-message-subject">Temat</label>
+    <input id="admin-message-subject" maxlength="120" required placeholder="Temat wiadomości">
+    <label for="admin-message-body">Treść</label>
+    <textarea id="admin-message-body" maxlength="2000" required placeholder="Napisz wiadomość"></textarea>
+    <div class="actions"><button class="primary" id="admin-message-submit" type="submit">Wyślij uczniom</button><button class="secondary" type="button" onclick="closeAdminMessageComposer()">Anuluj</button></div>
+  </form>
+</div>
+<div class="admin-message-status" id="admin-message-status" role="status" aria-live="polite"></div>
+<div class="card">
+  <div class="week-nav" style="justify-content:space-between"><h2 style="margin:0">Wiadomości od nauczycieli</h2><button type="button" onclick="loadAdminMessages()">Odśwież</button></div>
+  <div class="admin-message-list" id="admin-message-list"><div class="status-msg">Otwórz wiadomości, aby je wczytać.</div></div>
+</div>
+<button class="message-fab" type="button" onclick="openAdminMessageComposer()" aria-label="Dodaj wiadomość" title="Dodaj wiadomość"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#plus"/></svg></button>
+</section>
 
 <section id="panel-nauczyciele" class="panel">
 
@@ -1629,6 +1672,134 @@ let subjectTeachers=[];
 let teacherChanges=[];
 let grades=[];
 let remarks=[];
+let adminMessages=[];
+
+function formatAdminMessageDate(value){
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleString("pl-PL",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+}
+
+function renderAdminMessageSenders(){
+  const sender=document.getElementById("admin-message-sender");
+  const selected=sender.value;
+  const teachers=[...new Set(
+    (subjectTeachers||[])
+      .map(row=>String(row.teacher||"").trim())
+      .filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b,"pl"));
+  sender.innerHTML='<option value="" selected disabled>Wybierz nauczyciela</option>'+
+    teachers.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
+  if(teachers.includes(selected))sender.value=selected;
+}
+
+function renderAdminMessages(){
+  renderAdminMessageSenders();
+  const list=document.getElementById("admin-message-list");
+  const teacherMessages=adminMessages.filter(message=>message.sender_id===ADMIN_USER_ID);
+  list.innerHTML=teacherMessages.length
+    ? teacherMessages.map(message=>{
+        const senderName=String(message.sender_name||"Nauczyciel").trim()||"Nauczyciel";
+        return `<article class="admin-message-item sent">
+          <div class="admin-message-meta"><span>Od nauczyciela: ${esc(senderName)}</span><time>${esc(formatAdminMessageDate(message.created_at))}</time></div>
+          <h3>${esc(message.subject)}</h3>
+          <p>${esc(message.body)}</p>
+          <button class="secondary danger" type="button" onclick="deleteAdminMessage('${esc(String(message.id))}')">Usuń wiadomość</button>
+        </article>`;
+      }).join("")
+    : '<div class="status-msg">Nie ma jeszcze wiadomości.</div>';
+}
+
+function openAdminMessageComposer(){
+  document.getElementById("admin-message-composer").hidden=false;
+  document.getElementById("admin-message-status").textContent="";
+  document.getElementById("admin-message-sender").focus();
+}
+
+function closeAdminMessageComposer(){
+  document.getElementById("admin-message-composer").hidden=true;
+  document.getElementById("admin-message-form").reset();
+}
+
+async function deleteAdminMessage(messageId){
+  const message=adminMessages.find(item=>String(item.id)===String(messageId));
+  const status=document.getElementById("admin-message-status");
+  if(!message)return;
+  if(!window.confirm("Usunąć tę wiadomość? Tej operacji nie można cofnąć."))return;
+  status.textContent="";
+  status.classList.remove("error");
+  try{
+    db();
+    const {data:auth,error:authError}=await sb.auth.getUser();
+    if(authError||auth.user?.id!==ADMIN_USER_ID){
+      throw new Error("Zaloguj się ponownie jako administrator.");
+    }
+    const {error}=await sb.from("messages").delete().eq("id",message.id);
+    if(error)throw error;
+    status.textContent="Wiadomość została usunięta.";
+    await loadAdminMessages();
+  }catch(error){
+    status.classList.add("error");
+    status.textContent=error.message||"Nie udało się usunąć wiadomości.";
+  }
+}
+
+async function loadAdminMessages(){
+  const list=document.getElementById("admin-message-list");
+  list.innerHTML='<div class="status-msg">Wczytywanie wiadomości…</div>';
+  try{
+    db();
+    const {data,error}=await sb.from("messages")
+      .select("id,sender_id,recipient_id,sender_email,sender_name,subject,body,created_at")
+      .order("created_at",{ascending:false})
+      .limit(100);
+    if(error)throw error;
+    adminMessages=data||[];
+    renderAdminMessages();
+  }catch(error){
+    list.innerHTML='<div class="status-msg">Nie udało się wczytać wiadomości. Spróbuj ponownie.</div>';
+  }
+}
+
+async function sendAdminMessage(event){
+  event.preventDefault();
+  const sender=document.getElementById("admin-message-sender");
+  const subject=document.getElementById("admin-message-subject");
+  const body=document.getElementById("admin-message-body");
+  const status=document.getElementById("admin-message-status");
+  const button=document.getElementById("admin-message-submit");
+  status.textContent="";
+  status.classList.remove("error");
+  button.disabled=true;
+  try{
+    db();
+    const {data:auth,error:authError}=await sb.auth.getUser();
+    if(authError||!auth.user?.email||auth.user.id!==ADMIN_USER_ID){
+      throw new Error("Zaloguj się ponownie jako administrator.");
+    }
+    if(!sender.value)throw new Error("Wybierz nauczyciela.");
+    const {error}=await sb.from("messages").insert({
+      sender_id:auth.user.id,
+      recipient_id:null,
+      sender_email:auth.user.email,
+      sender_name:sender.value,
+      subject:subject.value.trim(),
+      body:body.value.trim()
+    });
+    if(error)throw error;
+    subject.value="";
+    body.value="";
+    document.getElementById("admin-message-composer").hidden=true;
+    status.textContent="Wiadomość została wysłana.";
+    await loadAdminMessages();
+  }catch(error){
+    status.classList.add("error");
+    status.textContent=error.message||"Nie udało się wysłać wiadomości.";
+  }finally{
+    button.disabled=false;
+  }
+}
 
 let selectedDay=0;
 let selectedLesson=null;
@@ -1870,6 +2041,8 @@ async function loadData(){
     subjectTeachers=
       st.data||[];
 
+    renderAdminMessageSenders();
+
 
     if(
       !subjectTeachers.length &&
@@ -1893,6 +2066,8 @@ async function loadData(){
 
         subjectTeachers=
           st2.data||[];
+
+        renderAdminMessageSenders();
 
       }
 
@@ -2012,6 +2187,11 @@ const viewTitles={
   nauczyciele:[
     "Nauczyciele",
     "Przypisania nauczycieli do przedmiotów"
+  ],
+
+  wiadomosci:[
+    "Wiadomości",
+    "Korespondencja z uczniami"
   ]
 
 };
@@ -2070,6 +2250,8 @@ function switchPanel(name,btn){
     );
 
   btn.classList.add("active");
+
+  if(name==="wiadomosci")loadAdminMessages();
 
 }
 
@@ -4270,6 +4452,7 @@ function fmtTime(t){
 ===================================================== */
 
 document.getElementById("admin-login-form").addEventListener("submit",login);
+document.getElementById("admin-message-form").addEventListener("submit",sendAdminMessage);
 
 if(sb){
 
@@ -4289,4 +4472,3 @@ if(sb){
 
 </body>
 </html>
-

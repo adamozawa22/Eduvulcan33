@@ -1253,6 +1253,10 @@ nav.bottom button svg{
 Start
 </button>
 
+<button data-view="wiadomosci" onclick="showView('wiadomosci')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
+Wiadomości
+</button>
 
 <button data-view="oceny" onclick="showView('oceny')">
 <svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"/></svg>
@@ -1324,18 +1328,9 @@ Ustawienia
 
 <section class="view" id="view-wiadomosci">
 <div class="messages-heading">
-  <h2>Wiadomości</h2>
+  <h2>Wiadomości od nauczycieli</h2>
   <button type="button" onclick="loadMessages()">Odśwież</button>
 </div>
-<form class="message-form" id="student-message-form">
-  <h3>Nowa wiadomość do administratora</h3>
-  <label for="student-message-subject">Temat</label>
-  <input id="student-message-subject" maxlength="120" required placeholder="Temat wiadomości">
-  <label for="student-message-body">Treść</label>
-  <textarea id="student-message-body" maxlength="2000" required placeholder="Napisz wiadomość"></textarea>
-  <button id="student-message-submit" type="submit">Wyślij wiadomość</button>
-  <div class="message-status" id="student-message-status" role="status" aria-live="polite"></div>
-</form>
 <div id="student-message-list"><div class="message-empty">Otwórz wiadomości, aby je wczytać.</div></div>
 </section>
 
@@ -1522,7 +1517,6 @@ Ustawienia
 const SUPABASE_URL="https://hozpikyxilmedzsyquct.supabase.co";
 
 const SUPABASE_ANON_KEY="sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
-const MESSAGE_ADMIN_ID="1f049736-fd58-4b4e-ac61-62af34e02651";
 
 const sb=
   (window.supabase && window.supabase.createClient)
@@ -1592,8 +1586,6 @@ async function logoutDiary(){
 async function initAuth(){
   document.getElementById("login-form")
     .addEventListener("submit",loginDiary);
-  document.getElementById("student-message-form")
-    .addEventListener("submit",sendMessage);
 
 
   if(!sb){
@@ -1621,7 +1613,6 @@ let teacherChangesData=[];
 let gradesData=[];
 let remarksData=[];
 let messagesData=[];
-let messagesUserId="";
 
 function formatMessageDate(value){
   const date=new Date(value);
@@ -1634,10 +1625,9 @@ function renderMessages(){
   const list=document.getElementById("student-message-list");
   list.innerHTML=messagesData.length
     ? messagesData.map(message=>{
-        const sent=message.sender_id===messagesUserId;
-        const label=sent?"Wysłano do administratora":message.recipient_id?"Od administratora":"Ogłoszenie";
-        return `<article class="message-card ${sent?"sent":""}">
-          <div class="message-meta"><span>${label}</span><time>${escapeHTML(formatMessageDate(message.created_at))}</time></div>
+        const senderName=String(message.sender_name||"Nauczyciel").trim()||"Nauczyciel";
+        return `<article class="message-card">
+          <div class="message-meta"><span>Od nauczyciela: ${escapeHTML(senderName)}</span><time>${escapeHTML(formatMessageDate(message.created_at))}</time></div>
           <h3>${escapeHTML(message.subject)}</h3>
           <p class="message-body">${escapeHTML(message.body)}</p>
         </article>`;
@@ -1653,11 +1643,8 @@ async function loadMessages(){
   }
   list.innerHTML='<div class="message-empty">Wczytywanie wiadomości…</div>';
   try{
-    const {data:auth,error:authError}=await sb.auth.getUser();
-    if(authError||!auth.user)throw authError||new Error("Brak sesji");
-    messagesUserId=auth.user.id;
     const {data,error}=await sb.from("messages")
-      .select("id,sender_id,recipient_id,subject,body,created_at")
+      .select("id,sender_id,recipient_id,sender_name,subject,body,created_at")
       .order("created_at",{ascending:false})
       .limit(100);
     if(error)throw error;
@@ -1665,40 +1652,6 @@ async function loadMessages(){
     renderMessages();
   }catch(error){
     list.innerHTML='<div class="message-empty">Nie udało się wczytać wiadomości. Spróbuj ponownie.</div>';
-  }
-}
-
-async function sendMessage(event){
-  event.preventDefault();
-  const subject=document.getElementById("student-message-subject");
-  const body=document.getElementById("student-message-body");
-  const status=document.getElementById("student-message-status");
-  const button=document.getElementById("student-message-submit");
-  status.textContent="";
-  status.classList.remove("error");
-  button.disabled=true;
-  try{
-    if(!sb)throw new Error("Usługa wiadomości jest niedostępna.");
-    const {data:auth,error:authError}=await sb.auth.getUser();
-    if(authError||!auth.user?.email)throw new Error("Zaloguj się ponownie.");
-    if(auth.user.id===MESSAGE_ADMIN_ID)throw new Error("Konto administratora wysyła wiadomości z panelu administracyjnego.");
-    const {error}=await sb.from("messages").insert({
-      sender_id:auth.user.id,
-      recipient_id:MESSAGE_ADMIN_ID,
-      sender_email:auth.user.email,
-      subject:subject.value.trim(),
-      body:body.value.trim()
-    });
-    if(error)throw error;
-    subject.value="";
-    body.value="";
-    status.textContent="Wiadomość została wysłana.";
-    await loadMessages();
-  }catch(error){
-    status.classList.add("error");
-    status.textContent=error.message||"Nie udało się wysłać wiadomości.";
-  }finally{
-    button.disabled=false;
   }
 }
 
@@ -2999,6 +2952,7 @@ function showView(name){
 
   const titles={
     start:"Start",
+    wiadomosci:"Wiadomości",
     oceny:"Oceny",
     plan:"Plan lekcji",
     frekwencja:"Frekwencja",
@@ -3106,4 +3060,3 @@ initAuth();
 
 </body>
 </html>
-
