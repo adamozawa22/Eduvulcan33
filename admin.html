@@ -667,6 +667,17 @@ button.secondary:hover{background:var(--card-hover)}
 .grade-row .gr-actions{display:flex;gap:6px}
 .grade-row .gr-actions button{padding:8px 12px;font-size:12px}
 
+.admin-message-form textarea{display:block;width:100%;min-height:110px;resize:vertical;padding:11px;font:inherit;font-size:14px}
+.admin-message-status{min-height:18px;margin-top:10px;color:var(--muted);font-size:12px}
+.admin-message-status.error{color:var(--danger)}
+.admin-message-list{display:grid;gap:10px}
+.admin-message-item{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.admin-message-item.sent{background:var(--card-hover)}
+.admin-message-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.admin-message-item h3{font-size:15px;margin:8px 0}
+.admin-message-item p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
+.admin-message-item button{margin-top:12px}
+
 @media(max-width:900px){
 
   .layout{grid-template-columns:1fr}
@@ -978,6 +989,11 @@ Uwagi i pochwały
 Nauczyciele
 </button>
 
+<button class="tab" onclick="switchPanel('wiadomosci',this)">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
+Wiadomości
+</button>
+
 
 </nav>
 
@@ -1205,6 +1221,29 @@ Anuluj edycję
 
 </section>
 
+
+<section id="panel-wiadomosci" class="panel">
+<div class="card">
+  <h2>Nowa wiadomość</h2>
+  <form id="admin-message-form" class="admin-message-form">
+    <label for="admin-message-recipient">Odbiorca</label>
+    <select id="admin-message-recipient">
+      <option value="">Wszyscy uczniowie</option>
+    </select>
+    <p class="hint">Uczeń pojawi się na liście po wysłaniu pierwszej wiadomości.</p>
+    <label for="admin-message-subject">Temat</label>
+    <input id="admin-message-subject" maxlength="120" required placeholder="Temat wiadomości">
+    <label for="admin-message-body">Treść</label>
+    <textarea id="admin-message-body" maxlength="2000" required placeholder="Napisz wiadomość"></textarea>
+    <div class="actions"><button class="primary" id="admin-message-submit" type="submit">Wyślij wiadomość</button></div>
+    <div class="admin-message-status" id="admin-message-status" role="status" aria-live="polite"></div>
+  </form>
+</div>
+<div class="card">
+  <div class="week-nav" style="justify-content:space-between"><h2 style="margin:0">Korespondencja</h2><button type="button" onclick="loadAdminMessages()">Odśwież</button></div>
+  <div class="admin-message-list" id="admin-message-list"><div class="status-msg">Otwórz wiadomości, aby je wczytać.</div></div>
+</div>
+</section>
 
 <section id="panel-nauczyciele" class="panel">
 
@@ -1629,6 +1668,109 @@ let subjectTeachers=[];
 let teacherChanges=[];
 let grades=[];
 let remarks=[];
+let adminMessages=[];
+
+function formatAdminMessageDate(value){
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleString("pl-PL",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+}
+
+function renderAdminMessages(){
+  const recipient=document.getElementById("admin-message-recipient");
+  const selected=recipient.value;
+  const contacts=new Map();
+  adminMessages.forEach(message=>{
+    if(message.sender_id!==ADMIN_USER_ID){
+      contacts.set(message.sender_id,message.sender_email);
+    }
+  });
+  recipient.innerHTML='<option value="">Wszyscy uczniowie</option>'+
+    [...contacts].sort((a,b)=>a[1].localeCompare(b[1],"pl")).map(([id,email])=>
+      `<option value="${esc(id)}">${esc(email)}</option>`
+    ).join("");
+  if(contacts.has(selected))recipient.value=selected;
+
+  const list=document.getElementById("admin-message-list");
+  list.innerHTML=adminMessages.length
+    ? adminMessages.map(message=>{
+        const sent=message.sender_id===ADMIN_USER_ID;
+        const label=sent
+          ? (message.recipient_id?"Do: "+(contacts.get(message.recipient_id)||"uczeń"):"Ogłoszenie dla wszystkich")
+          : "Od: "+message.sender_email;
+        return `<article class="admin-message-item ${sent?"sent":""}">
+          <div class="admin-message-meta"><span>${esc(label)}</span><time>${esc(formatAdminMessageDate(message.created_at))}</time></div>
+          <h3>${esc(message.subject)}</h3>
+          <p>${esc(message.body)}</p>
+          ${sent?"":`<button class="secondary" type="button" onclick="replyToMessage('${esc(String(message.id))}')">Odpowiedz</button>`}
+        </article>`;
+      }).join("")
+    : '<div class="status-msg">Nie ma jeszcze wiadomości.</div>';
+}
+
+function replyToMessage(messageId){
+  const message=adminMessages.find(item=>String(item.id)===String(messageId));
+  if(!message)return;
+  const recipient=document.getElementById("admin-message-recipient");
+  recipient.value=message.sender_id;
+  document.getElementById("admin-message-subject").value=
+    "Odp.: "+String(message.subject).replace(/^Odp\.?:\s*/i,"").slice(0,114);
+  document.getElementById("admin-message-body").focus();
+}
+
+async function loadAdminMessages(){
+  const list=document.getElementById("admin-message-list");
+  list.innerHTML='<div class="status-msg">Wczytywanie wiadomości…</div>';
+  try{
+    db();
+    const {data,error}=await sb.from("messages")
+      .select("id,sender_id,recipient_id,sender_email,subject,body,created_at")
+      .order("created_at",{ascending:false})
+      .limit(100);
+    if(error)throw error;
+    adminMessages=data||[];
+    renderAdminMessages();
+  }catch(error){
+    list.innerHTML='<div class="status-msg">Nie udało się wczytać wiadomości. Spróbuj ponownie.</div>';
+  }
+}
+
+async function sendAdminMessage(event){
+  event.preventDefault();
+  const recipient=document.getElementById("admin-message-recipient");
+  const subject=document.getElementById("admin-message-subject");
+  const body=document.getElementById("admin-message-body");
+  const status=document.getElementById("admin-message-status");
+  const button=document.getElementById("admin-message-submit");
+  status.textContent="";
+  status.classList.remove("error");
+  button.disabled=true;
+  try{
+    db();
+    const {data:auth,error:authError}=await sb.auth.getUser();
+    if(authError||!auth.user?.email||auth.user.id!==ADMIN_USER_ID){
+      throw new Error("Zaloguj się ponownie jako administrator.");
+    }
+    const {error}=await sb.from("messages").insert({
+      sender_id:auth.user.id,
+      recipient_id:recipient.value||null,
+      sender_email:auth.user.email,
+      subject:subject.value.trim(),
+      body:body.value.trim()
+    });
+    if(error)throw error;
+    subject.value="";
+    body.value="";
+    status.textContent="Wiadomość została wysłana.";
+    await loadAdminMessages();
+  }catch(error){
+    status.classList.add("error");
+    status.textContent=error.message||"Nie udało się wysłać wiadomości.";
+  }finally{
+    button.disabled=false;
+  }
+}
 
 let selectedDay=0;
 let selectedLesson=null;
@@ -2012,6 +2154,11 @@ const viewTitles={
   nauczyciele:[
     "Nauczyciele",
     "Przypisania nauczycieli do przedmiotów"
+  ],
+
+  wiadomosci:[
+    "Wiadomości",
+    "Korespondencja z uczniami"
   ]
 
 };
@@ -2070,6 +2217,8 @@ function switchPanel(name,btn){
     );
 
   btn.classList.add("active");
+
+  if(name==="wiadomosci")loadAdminMessages();
 
 }
 
@@ -4270,6 +4419,7 @@ function fmtTime(t){
 ===================================================== */
 
 document.getElementById("admin-login-form").addEventListener("submit",login);
+document.getElementById("admin-message-form").addEventListener("submit",sendAdminMessage);
 
 if(sb){
 
