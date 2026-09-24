@@ -1204,3 +1204,24 @@ nav.bottom a svg{
 nav.bottom a{text-decoration:none}nav.bottom a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}.project-label{font-size:11px;color:var(--muted)}.session-status{max-width:480px;margin:80px auto;padding:24px;text-align:center}.session-status a{color:var(--accent)}
 
 .diary-brand{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.diary-brand img{width:40px;height:40px;object-fit:contain}
+
+/* Szkielet ładowania: karty i paski z przesuwającym się światłem. */
+.loading-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.skeleton-status{width:100%;text-align:left}
+.session-status.skeleton-status{width:min(1100px,100%);max-width:1100px;margin:32px auto;padding:24px}
+.skeleton-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 28px}
+.skeleton-card{min-width:0}
+.skeleton-block{position:relative;overflow:hidden;background:#dedede;border-radius:3px}
+.skeleton-block::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.65) 48%,transparent 70%);transform:translateX(-150%);animation:loading-shimmer 1.6s ease-in-out infinite}
+.skeleton-picture{height:150px;margin-bottom:12px}
+.skeleton-title{height:28px;margin-bottom:12px}
+.skeleton-row{display:flex;gap:16px}
+.skeleton-line{height:19px;flex:1}
+#data-loading{padding:12px 0 24px}
+#diary-app .view[hidden]{display:none}
+.message-skeleton .skeleton-grid{grid-template-columns:1fr;gap:24px}
+.message-skeleton .skeleton-picture{height:80px}
+@keyframes loading-shimmer{to{transform:translateX(150%)}}
+@media(max-width:900px){.skeleton-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px}}
+@media(max-width:540px){.skeleton-grid{grid-template-columns:1fr;gap:28px}.session-status.skeleton-status{margin:12px auto;padding:20px}.skeleton-picture{height:150px}}
+@media(prefers-reduced-motion:reduce){.skeleton-block::after{animation:none;transform:none;background:none}}
