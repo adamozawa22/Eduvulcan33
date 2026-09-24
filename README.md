@@ -1,4 +1,4 @@
-# Eduvulcan33
+# VULCAN
 
 Niezależny projekt edukacyjny. Nie jest oficjalnym serwisem VULCAN.
 
