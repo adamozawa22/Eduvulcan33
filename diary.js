@@ -62,11 +62,13 @@ function renderMessages(){
   list.innerHTML=messagesData.length
     ? messagesData.map(message=>{
         const senderName=String(message.sender_name||"Nauczyciel").trim()||"Nauczyciel";
-        return `<article class="message-card">
-          <div class="message-meta"><span>Od nauczyciela: ${escapeHTML(senderName)}</span><time>${escapeHTML(formatMessageDate(message.created_at))}</time></div>
-          <h3>${escapeHTML(message.subject)}</h3>
+        return `<details class="message-card">
+          <summary>
+            <div class="message-meta"><span>Od nauczyciela: ${escapeHTML(senderName)}</span><time>${escapeHTML(formatMessageDate(message.created_at))}</time></div>
+            <h3>${escapeHTML(message.subject)}</h3>
+          </summary>
           <p class="message-body">${escapeHTML(message.body)}</p>
-        </article>`;
+        </details>`;
       }).join("")
     : '<div class="message-empty">Nie ma jeszcze wiadomości.</div>';
 }
