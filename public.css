@@ -8,3 +8,19 @@
 .logo .brand-logo{display:block;width:52px;height:52px;object-fit:contain;flex:none}.mock-brand-logo{width:34px;height:34px;object-fit:contain}.logo{letter-spacing:.5px}
 @media(max-width:760px){.logo .brand-logo{width:38px;height:38px}.site-header .logo{gap:6px;font-size:19px}}
 @media(max-width:400px){.logo .brand-logo{width:32px;height:32px}.site-header .logo{font-size:16px}}
+
+/* Mobilne menu otwiera się jako panel i nie rozsuwa nagłówka. */
+@media(max-width:760px){
+  .site-header{position:relative;display:flex;flex-wrap:nowrap;align-items:center;gap:8px;min-height:74px;padding-block:14px}
+  .site-header .logo{flex:1;min-width:0}
+  .site-header .login-link{flex:0 0 auto}
+  .menu-button{flex:0 0 auto;min-height:40px;white-space:nowrap}
+  .site-header nav.enhanced{position:absolute;display:none;left:0;right:0;top:calc(100% + 8px);z-index:50;padding:8px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 30px rgba(22,35,55,.16);gap:0}
+  .site-header nav.enhanced.open{display:flex}
+  .site-header nav.enhanced a{display:block;padding:12px 14px;border-radius:10px}
+  .site-header nav.enhanced a:hover,.site-header nav.enhanced a:focus-visible{background:var(--soft);text-decoration:none}
+}
+@media(max-width:400px){
+  .site-header .login-link{font-size:11px;padding:8px 10px}
+  .menu-button{font-size:12px;padding:8px 10px}
+}
