@@ -1343,7 +1343,7 @@ function changeDay(delta){
 ===================================================== */
 
 function toggleMobileMenu(){
-  const menu=document.querySelector("nav.bottom");
+  const menu=document.querySelector("#diary-app nav.bottom");
   const backdrop=document.getElementById("menu-backdrop");
   const button=document.getElementById("menu-toggle");
   const open=!menu.classList.contains("open");
@@ -1354,7 +1354,8 @@ function toggleMobileMenu(){
 }
 
 function closeMobileMenu(){
-  document.querySelector("nav.bottom").classList.remove("open");
+  const menu=document.querySelector("#diary-app nav.bottom");
+  if(menu)menu.classList.remove("open");
   document.getElementById("menu-backdrop").classList.remove("show");
   const button=document.getElementById("menu-toggle");
   if(button){
