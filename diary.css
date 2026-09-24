@@ -1202,3 +1202,5 @@ nav.bottom a svg{
 
 
 nav.bottom a{text-decoration:none}nav.bottom a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}.project-label{font-size:11px;color:var(--muted)}.session-status{max-width:480px;margin:80px auto;padding:24px;text-align:center}.session-status a{color:var(--accent)}
+
+.diary-brand{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.diary-brand img{width:40px;height:40px;object-fit:contain}
