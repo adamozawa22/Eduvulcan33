@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wiadomości — Eduvulcan33</title><link rel="stylesheet" href="diary.css"><link rel="stylesheet" href="auth.css"></head>
+<body data-page="wiadomosci"><p class="session-status" id="session-status" role="status">Sprawdzanie sesji…</p><noscript>Włącz JavaScript, aby korzystać z dziennika.</noscript><div class="phone" id="diary-app" hidden>
+
+<nav class="bottom">
+
+<a data-view="start" href="start.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#home"/></svg>
+Start
+</a>
+
+<a class="active" aria-current="page" data-view="wiadomosci" href="wiadomosci.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
+Wiadomości
+</a>
+
+<a data-view="oceny" href="oceny.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"/></svg>
+Oceny
+</a>
+
+<a data-view="plan" href="plan.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"/></svg>
+Plan
+</a>
+
+<a data-view="frekwencja" href="frekwencja.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#attendance"/></svg>
+Frekwencja
+</a>
+
+<a data-view="uwagi" href="uwagi.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#remarks"/></svg>
+Uwagi i pochwały
+</a>
+
+<a data-view="ustawienia" href="ustawienia.html">
+<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"/></svg>
+Ustawienia
+</a>
+
+</nav>
+
+<div class="menu-backdrop" id="menu-backdrop" onclick="closeMobileMenu()"></div>
+
+<div class="content">
+
+<header>
+<div class="brand">
+<a class="vulcan-text" href="index.html">Eduvulcan33</a>
+<h1 id="header-title">Wiadomości</h1>
+</div>
+<div style="display:flex;align-items:center;gap:9px">
+  <div class="avatar">AZ</div>
+  <button class="menu-toggle" id="menu-toggle" type="button" onclick="toggleMobileMenu()" aria-label="Otwórz menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+</div>
+</header>
+
+<main>
+
+<div class="notice" id="data-notice"></div>
+
+
+
+<section class="view active" id="view-wiadomosci">
+<div class="messages-heading">
+  <h2>Wiadomości od nauczycieli</h2>
+  <button type="button" onclick="loadMessages()">Odśwież</button>
+</div>
+<div id="student-message-list"><div class="message-empty">Otwórz wiadomości, aby je wczytać.</div></div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</main>
+
+<div class="modal" id="modal-statystyki">
+
+<div class="modal-box">
+
+<div class="modal-head">
+<h2>Statystyki</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
+</div>
+
+<div class="stat-box">
+
+<div class="stat-item">
+<b id="stat-percent">—</b>
+<span>Frekwencja</span>
+</div>
+
+<div class="stat-item">
+<b id="stat-lessons">0</b>
+<span>Wpisane lekcje</span>
+</div>
+
+<div class="stat-item">
+<b id="stat-absent">0</b>
+<span>Nieobecności</span>
+</div>
+
+<div class="stat-item">
+<b id="stat-days">0</b>
+<span>Dni z frekwencją</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<div class="modal" id="modal-notatki">
+
+<div class="modal-box">
+
+<div class="modal-head">
+<h2>Notatki</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
+</div>
+
+<textarea class="note-input" id="note-input" placeholder="Wpisz notatkę..."></textarea>
+
+<button class="save-note" onclick="saveNote()">Zapisz notatkę</button>
+
+<p id="note-status" style="font-size:12px;color:var(--muted);margin-top:10px"></p>
+
+</div>
+</div>
+
+<div class="modal" id="modal-ustawienia">
+
+<div class="modal-box">
+
+<div class="modal-head">
+<h2>Ustawienia</h2>
+<button class="close-btn" onclick="closeModal()">×</button>
+</div>
+
+<div class="setting-row">
+<span>Powiadomienia</span>
+<div class="toggle on" onclick="this.classList.toggle('on')"></div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="session.js"></script><script src="diary.js"></script></body></html>
