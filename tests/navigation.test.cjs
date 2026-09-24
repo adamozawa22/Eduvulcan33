@@ -113,10 +113,10 @@ test("message shimmer is replaced with results or an error",async()=>{
     context.pending=new Promise(resolve=>{finish=resolve;});
     vm.runInContext("sb.from=()=>({select:()=>({order:()=>({limit:()=>pending})})})",context);
     const loading=vm.runInContext("loadMessages()",context);
-    assert.match(elements.get("student-message-list").innerHTML,/skeleton-grid/);
+    assert.match(elements.get("student-message-list").innerHTML,/page-skeleton/);
     finish(failed?{error:{message:"offline"}}:{data:[]});
     await loading;
-    assert.doesNotMatch(elements.get("student-message-list").innerHTML,/skeleton-grid/);
+    assert.doesNotMatch(elements.get("student-message-list").innerHTML,/page-skeleton/);
     assert.match(elements.get("student-message-list").innerHTML,failed?/Nie udało się/:/Nie ma jeszcze/);
   }
 });
@@ -125,6 +125,7 @@ test("session failure replaces the initial loading screen with a retry link",asy
   vm.runInContext('sb.auth.getSession=async()=>({error:new Error("offline")})',context);
   await vm.runInContext("initAuth()",context);
   assert.match(elements.get("session-status").innerHTML,/logowanie.html/);
-  assert.doesNotMatch(elements.get("session-status").innerHTML,/skeleton-grid/);
+  assert.doesNotMatch(elements.get("session-status").innerHTML,/page-skeleton/);
   assert.equal(elements.get("diary-app").hidden,true);
 });
+

@@ -1205,23 +1205,47 @@ nav.bottom a{text-decoration:none}nav.bottom a:focus-visible{outline:2px solid v
 
 .diary-brand{display:inline-flex;align-items:center;gap:8px;text-decoration:none}.diary-brand img{width:40px;height:40px;object-fit:contain}
 
-/* Szkielet ładowania: karty i paski z przesuwającym się światłem. */
+/* Szkielety odtwarzają układ docelowych widoków dziennika. */
 .loading-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
-.skeleton-status{width:100%;text-align:left}
-.session-status.skeleton-status{width:min(1100px,100%);max-width:1100px;margin:32px auto;padding:24px}
-.skeleton-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 28px}
-.skeleton-card{min-width:0}
-.skeleton-block{position:relative;overflow:hidden;background:#dedede;border-radius:3px}
-.skeleton-block::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.65) 48%,transparent 70%);transform:translateX(-150%);animation:loading-shimmer 1.6s ease-in-out infinite}
-.skeleton-picture{height:150px;margin-bottom:12px}
-.skeleton-title{height:28px;margin-bottom:12px}
-.skeleton-row{display:flex;gap:16px}
-.skeleton-line{height:19px;flex:1}
-#data-loading{padding:12px 0 24px}
-#diary-app .view[hidden]{display:none}
-.message-skeleton .skeleton-grid{grid-template-columns:1fr;gap:24px}
-.message-skeleton .skeleton-picture{height:80px}
+#session-status[hidden],#data-loading[hidden],#diary-app .view[hidden]{display:none}
+.page-skeleton{max-width:840px;margin:0 auto;pointer-events:none}
+.skeleton-block{display:block;position:relative;overflow:hidden;background:var(--line);border-radius:5px;flex-shrink:0}
+.skeleton-block::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.8) 50%,transparent 80%);transform:translateX(-150%);animation:loading-shimmer 1.6s ease-in-out infinite}
+.sk-bar{height:14px;max-width:100%}
+.sk-small{height:10px}
+.sk-circle{width:36px;height:36px;border-radius:50%}
+.sk-icon{height:21px;border-radius:5px}
+.sk-nav-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 2px}
+.sk-lines{flex:1;min-width:0;display:grid;gap:10px}
+.sk-between{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.sk-number{height:26px;border-radius:8px}
+.sk-date{height:34px}
+.sk-pill{height:28px;border-radius:999px}
+.sk-day{min-height:57px}
+.sk-day .sk-circle{background:var(--accent-dim)}
+.sk-lesson{align-items:center;min-height:77px}
+.sk-times{display:grid;gap:8px;min-width:48px}
+.sk-ring{width:136px;height:136px;border-radius:50%;flex:none;background:transparent;border:14px solid var(--line)}
+.sk-legend{flex:1;min-width:150px;display:grid;gap:20px}
+.page-skeleton .sum-foot>div{display:grid;gap:8px}
+.page-skeleton .wd{cursor:default;min-height:115px}
+.page-skeleton .wd .sk-circle{width:28px;height:28px}
+.sk-att-summary{box-shadow:none;background:var(--accent-dim);min-height:202px}
+.sk-att-summary>.skeleton-block{margin:0 auto 10px}
+.sk-att-summary .skeleton-block{background:#c7def3}
+.sk-percent{height:48px}
+.sk-att-summary .breakdown{border-color:#d0e1ef}
+.sk-att-summary .breakdown>div{display:grid;justify-items:center;gap:8px}
+.sk-columns{min-height:45px}
+.sk-grade-row{display:grid;grid-template-columns:minmax(130px,1.1fr) minmax(100px,2fr) 64px;gap:16px;align-items:center;padding:17px 18px;min-height:65px}
+.sk-grade-row+.sk-grade-row{border-top:1px solid var(--line)}
+.sk-grade-row>.skeleton-block:last-child{justify-self:end}
+.sk-grade{height:30px;border-radius:3px}
+.sk-message{display:grid;gap:12px;min-height:135px}
+.sk-message .sk-heading{height:17px;margin:2px 0}
+.sk-settings{padding:0 16px}
 @keyframes loading-shimmer{to{transform:translateX(150%)}}
-@media(max-width:900px){.skeleton-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px}}
-@media(max-width:540px){.skeleton-grid{grid-template-columns:1fr;gap:28px}.session-status.skeleton-status{margin:12px auto;padding:20px}.skeleton-picture{height:150px}}
-@media(prefers-reduced-motion:reduce){.skeleton-block::after{animation:none;transform:none;background:none}}
+@media(min-width:900px){.sk-nav-item{flex-direction:row;justify-content:flex-start;gap:14px;padding:15px 16px}}
+@media(max-width:640px){.loading-shell .sk-nav{display:none}.sk-grade-row{grid-template-columns:minmax(0,1fr) 64px;padding:16px 14px;gap:10px}.sk-grade-row>.grade-marks{grid-column:1;grid-row:2}.sk-grade-row>.skeleton-block:last-child{grid-column:2;grid-row:1 / 3}}
+@media(prefers-reduced-motion:reduce){.skeleton-block::after{animation:none;background:none;transform:none}}
+
