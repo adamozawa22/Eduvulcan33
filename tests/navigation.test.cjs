@@ -90,3 +90,41 @@ test("logout failure keeps the page and displays a retry message",async()=>{
   assert.match(elements.get("data-notice").textContent,/Nie udało się wylogować/);
 });
 
+
+test("data placeholders remain visible until the request completes",async()=>{
+  const {context,elements}=setup("oceny");
+  let finish;
+  context.pending=new Promise(resolve=>{finish=resolve;});
+  const started=new Promise(resolve=>{context.started=resolve;});
+  vm.runInContext("loadSupabaseData=async()=>{started();await pending;renderAll();}",context);
+  const loading=vm.runInContext("initAuth()",context);
+  await started;
+  assert.equal(elements.get("data-loading").hidden,false);
+  assert.equal(elements.get("view-oceny").hidden,true);
+  finish();
+  await loading;
+  assert.equal(elements.get("data-loading").hidden,true);
+  assert.equal(elements.get("view-oceny").hidden,false);
+});
+test("message shimmer is replaced with results or an error",async()=>{
+  for(const failed of [false,true]){
+    const {context,elements}=setup("wiadomosci");
+    let finish;
+    context.pending=new Promise(resolve=>{finish=resolve;});
+    vm.runInContext("sb.from=()=>({select:()=>({order:()=>({limit:()=>pending})})})",context);
+    const loading=vm.runInContext("loadMessages()",context);
+    assert.match(elements.get("student-message-list").innerHTML,/skeleton-grid/);
+    finish(failed?{error:{message:"offline"}}:{data:[]});
+    await loading;
+    assert.doesNotMatch(elements.get("student-message-list").innerHTML,/skeleton-grid/);
+    assert.match(elements.get("student-message-list").innerHTML,failed?/Nie udało się/:/Nie ma jeszcze/);
+  }
+});
+test("session failure replaces the initial loading screen with a retry link",async()=>{
+  const {context,elements}=setup("start");
+  vm.runInContext('sb.auth.getSession=async()=>({error:new Error("offline")})',context);
+  await vm.runInContext("initAuth()",context);
+  assert.match(elements.get("session-status").innerHTML,/logowanie.html/);
+  assert.doesNotMatch(elements.get("session-status").innerHTML,/skeleton-grid/);
+  assert.equal(elements.get("diary-app").hidden,true);
+});

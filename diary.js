@@ -22,12 +22,26 @@ async function initAuth(){
     sb.auth.onAuthStateChange((event,session)=>{
       if(event==="SIGNED_OUT" || (event==="TOKEN_REFRESHED" && !session))showLogin();
     });
-    renderAll();
-    await loadSupabaseData();
-    if(activePage==="wiadomosci")await loadMessages();
+    if(activePage==="wiadomosci"){
+      await loadMessages();
+    }else if(activePage!=="ustawienia"){
+      setDataLoading(true);
+      try{await loadSupabaseData();}
+      finally{setDataLoading(false);}
+    }
   }catch(error){
     status.innerHTML='Nie udało się sprawdzić sesji. <a href="logowanie.html">Przejdź do logowania</a>';
   }
+}
+function setDataLoading(loading){
+  const placeholder=document.getElementById("data-loading");
+  const view=document.getElementById("view-"+activePage);
+  placeholder.hidden=!loading;
+  view.hidden=loading;
+  view.setAttribute("aria-busy",String(loading));
+}
+function messageSkeleton(){
+  return '<div class="message-skeleton" role="status"><span class="loading-sr-only">Wczytywanie wiadomości…</span><div class="skeleton-grid" aria-hidden="true"><div class="skeleton-card"><div class="skeleton-block skeleton-picture"></div><div class="skeleton-block skeleton-title"></div><div class="skeleton-row"><div class="skeleton-block skeleton-line"></div><div class="skeleton-block skeleton-line"></div></div></div><div class="skeleton-card"><div class="skeleton-block skeleton-picture"></div><div class="skeleton-block skeleton-title"></div><div class="skeleton-row"><div class="skeleton-block skeleton-line"></div><div class="skeleton-block skeleton-line"></div></div></div><div class="skeleton-card"><div class="skeleton-block skeleton-picture"></div><div class="skeleton-block skeleton-title"></div><div class="skeleton-row"><div class="skeleton-block skeleton-line"></div><div class="skeleton-block skeleton-line"></div></div></div></div></div>';
 }
 let lessonPlanData=[];
 let attendanceData=[];
@@ -63,7 +77,7 @@ async function loadMessages(){
     list.innerHTML='<div class="message-empty">Usługa wiadomości jest niedostępna.</div>';
     return;
   }
-  list.innerHTML='<div class="message-empty">Wczytywanie wiadomości…</div>';
+  list.innerHTML=messageSkeleton();
   try{
     const {data,error}=await sb.from("messages")
       .select("id,sender_id,recipient_id,sender_name,subject,body,created_at")
