@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Dziennik — nowy widok</title>
+<style>
+:root{--ink:#153b3a;--muted:#647d7a;--teal:#147d70;--line:#dce8e3;--paper:#fff;--bg:#f3f6f2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #dd9a29;outline-offset:4px}[hidden]{display:none!important}
+.app-shell{max-width:1540px;margin:auto;padding:0 28px}.masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 4px}.identity{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}.logo-mark{height:42px;width:42px;border-radius:14px;background:var(--teal);display:grid;place-items:center;color:#fff}.logo-mark svg{height:24px;width:24px}.wordmark{font-size:20px;font-weight:800;letter-spacing:-.6px}.wordmark small{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:3px}.mast-actions{display:flex;gap:10px;align-items:center}.edition{font-size:11px;font-weight:700;letter-spacing:.04em;background:#e4ede4;padding:8px 12px;border-radius:30px}.refresh{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:white;color:var(--ink);padding:10px 13px;border-radius:12px;font-size:12px;font-weight:650}.refresh svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.intro{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#e7efe5;border:1px solid #d7e3d4;border-radius:24px;padding:24px 30px;position:relative;overflow:hidden}.intro-copy{position:relative;z-index:1}.eyebrow{font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.15em;color:var(--teal);margin:0 0 9px}.intro h1{font-size:clamp(24px,3vw,34px);letter-spacing:-1.2px;line-height:1.15;margin:0 0 8px;font-weight:750}.intro p{font-size:13px;line-height:1.6;color:var(--muted);margin:0;max-width:520px}.intro-date{text-align:right;position:relative;z-index:1}.intro-date span{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.intro-date b{font-size:18px;letter-spacing:-.5px;font-weight:650}.intro::after{content:"";position:absolute;width:250px;height:250px;border:35px solid #d4e2d0;border-radius:50%;right:125px;top:-140px;opacity:.45}
+.role-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 2px}.role-tabs{display:flex;gap:5px;padding:5px;border:1px solid var(--line);background:#e7ece6;border-radius:16px}.role-tab{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 24px;border:0;background:transparent;border-radius:12px;color:var(--muted);font-weight:700;font-size:13px;transition:background .18s,color .18s}.role-tab[aria-selected="true"]{background:white;color:var(--teal);box-shadow:0 2px 6px #17392e0b}.role-tab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.view-caption{font-size:12px;color:var(--muted)}
+.workspace{background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 45px #234b3506}.view-panel{position:relative;height:max(580px,calc(100dvh - 295px));min-height:580px}.view-panel iframe{display:block;width:100%;height:100%;border:0;background:#f7f9f6}.load-label{position:absolute;inset:0;z-index:2;display:grid;place-content:center;gap:12px;text-align:center;color:var(--muted);background:#f7f9f6;font-size:13px;pointer-events:none}.load-label::before{content:"";width:26px;height:26px;margin:auto;border:3px solid #dce8e3;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.footer{display:flex;justify-content:space-between;gap:12px;padding:14px 4px 20px;font-size:10px;color:var(--muted)}.footer a{color:inherit;text-decoration:none}.footer a:hover{text-decoration:underline}.sr-only{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+@media(max-width:640px){.app-shell{padding:0 12px}.masthead{padding:16px 2px}.edition{display:none}.refresh span{display:none}.refresh{padding:11px}.wordmark{font-size:19px}.wordmark small{font-size:10px}.intro{padding:20px;border-radius:20px}.intro h1{font-size:26px}.intro-date{display:none}.intro p{font-size:12px}.role-bar{padding:14px 0}.role-tabs{width:100%}.role-tab{flex:1;padding:11px 16px}.view-caption{display:none}.workspace{border-radius:18px}.view-panel{height:max(620px,calc(100dvh - 266px));min-height:620px}.footer{font-size:9px;flex-wrap:wrap}.footer span:last-child{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header class="masthead">
+<a class="identity" href="test.html" aria-label="Dziennik — nowy widok">
+<span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5.5c3-1 5-1 8 1 3-2 5-2 8-1v13c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6.5v13"/></svg></span>
+<span class="wordmark">Dziennik<small>Wszystko w jednym miejscu</small></span></a>
+<div class="mast-actions"><span class="edition">NOWY WIDOK</span><button class="refresh" id="refresh" aria-label="Odśwież bieżący widok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5"/></svg><span>Odśwież</span></button></div>
+</header>
+<section class="intro" aria-labelledby="intro-title"><div class="intro-copy"><div class="eyebrow" id="intro-eyebrow">Twoja szkolna przestrzeń</div><h1 id="intro-title">Twój dzień, po Twojemu.</h1><p id="intro-description">Oceny, plan i szkolne sprawy. Wszystko, czego potrzebujesz, jest tutaj.</p></div><div class="intro-date"><span id="weekday"></span><b id="today"></b></div></section>
+<div class="role-bar"><div class="role-tabs" role="tablist" aria-label="Wybierz widok">
+<button class="role-tab" id="tab-student" role="tab" aria-selected="true" aria-controls="panel-student" tabindex="0" data-role="student"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5zM6 11v6c4 3 8 3 12 0v-6M22 9v7"/></svg>Uczeń</button>
+<button class="role-tab" id="tab-admin" role="tab" aria-selected="false" aria-controls="panel-admin" tabindex="-1" data-role="admin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4"/></svg>Admin</button>
+</div><span class="view-caption" id="view-caption">Dziennik ucznia</span></div>
+<main class="workspace">
+<section class="view-panel" id="panel-student" role="tabpanel" aria-labelledby="tab-student"><div class="load-label" id="loading-student" role="status">Wczytywanie dziennika…</div><iframe id="frame-student" title="Dziennik ucznia" src="start.html"></iframe></section>
+<section class="view-panel" id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" hidden><div class="load-label" id="loading-admin" role="status">Wczytywanie panelu…</div><iframe id="frame-admin" title="Panel administracyjny" data-src="admin.html"></iframe></section>
+</main>
+<footer class="footer"><span>Dziennik · Twoja szkolna przestrzeń</span><a href="index.html">Strona główna ↗</a><span>Widok ucznia i administratora</span></footer>
+<noscript>Włącz JavaScript, aby przełączać widoki. <a href="start.html">Dziennik ucznia</a> · <a href="admin.html">Panel administratora</a></noscript>
+</div>
+<script>
+/* The existing pages retain their own auth, data and editing logic. The theme is
+   applied only to these same-origin embedded views, including after navigation. */
+const viewTheme = `
+:root{--bg:#f7f9f6;--card:#fff;--card-hover:#f0f5f0;--text:#153b3a;--muted:#6b807b;--accent:#147d70;--accent-dark:#0b5d53;--accent-dim:#e3f1e9;--line:#e0e9e2;--header-bg:#fff;--danger:#c74640;--danger-dim:#fcebe8;--ok:#438348;--ok-dim:#eaf4e4;--warn:#d29b35;--warn-dim:#fff4db}
+html,body{background:var(--bg)!important;color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;scrollbar-color:#d3dfd5 transparent}
+body{margin:0}.phone{max-width:none!important;min-height:100vh}.phone[hidden]{display:none!important}.content{min-width:0}header{padding:24px 28px 20px!important;background:transparent!important;border-bottom:1px solid var(--line)}header h1{font-size:25px!important;letter-spacing:-.7px}.diary-brand{display:none!important}.avatar{background:#e0eee5!important;color:#147d70!important;border-radius:14px!important}.view.active{max-width:1000px!important}main{padding:24px 28px 30px!important}
+nav.bottom{background:#fff!important;border-color:var(--line)!important}nav.bottom a{border-radius:12px!important;font-size:13px!important}nav.bottom a.active{background:var(--accent-dim)!important;color:var(--accent)!important}nav.bottom svg{width:20px!important;height:20px!important}
+.st-card,.lesson-card,.att-lesson,.message-card,.grade-table,.category-card,.day-nav,.logout-card,.card,.teacher-row,.att-cell{border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:0 4px 18px #25483104!important}.st-card.sum{padding:24px!important;background:linear-gradient(120deg,#edf5e9,#fff)!important}.st-head{margin-top:24px!important}.st-head h3{font-size:16px;letter-spacing:-.3px}.week{gap:10px!important}.wd{border-radius:16px!important;padding:15px 5px!important}.wd.today{box-shadow:none!important;background:#edf5e9!important}.wd.today .wd-num{color:var(--accent)}.issue{padding:17px 18px!important}.lesson-card{padding:19px!important}.lesson-num{border-radius:9px!important;background:#e3f1e9!important;color:var(--accent)!important}.lesson-body .subj{font-weight:700!important}.day-nav{padding:12px!important}.att-summary{background:linear-gradient(120deg,#147d70,#295d51)!important;box-shadow:none!important}.modal-box{border-radius:22px!important}.grade-table{overflow:hidden}.notice.show{border-radius:12px}
+.wrap{max-width:none!important;padding:22px!important}.layout{grid-template-columns:220px minmax(0,1fr)!important;gap:22px!important;border:0!important;box-shadow:none!important;overflow:visible!important;background:transparent!important}.sidebar{background:#fff!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important;top:22px!important;padding:18px 12px!important;height:auto!important;min-height:0!important}.sidebar .brand{padding:0 8px}.sidebar .brand>span{font-size:11px!important}.sidebar .brand h1{font-size:14px!important}.admin-brand-row img{display:none!important}.admin-vulcan{font-size:11px!important;letter-spacing:2px;color:var(--accent)!important}.tab{font-size:12px!important;padding:12px!important;border-radius:12px!important}.tab.active{background:var(--accent-dim)!important;color:var(--accent)!important}.top{margin:0 0 20px!important;border:0!important;background:transparent!important;box-shadow:none!important;padding:5px 0 18px!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}.top h1{font-size:25px!important;letter-spacing:-.7px}.top span{display:block;margin-top:5px}.card{padding:24px!important}.day-tab{border-radius:12px!important;padding:12px!important}.day-tab.active{background:var(--accent-dim)!important;color:var(--accent)!important;border-color:#9cc8b5!important}.timecell{background:#edf3ec!important;border-radius:12px!important}.lesson{border-radius:12px!important;box-shadow:none!important}.week-nav button,button.secondary,.bulk-btn{border-radius:10px!important}.primary{background:var(--accent)!important}.grade-badge{border-radius:10px!important}#gradesList .grade-badge{border-radius:9px!important;background:var(--accent-dim)!important;color:var(--accent)!important}.form-grid{gap:14px!important}input,select,textarea{border-radius:12px!important;background:#f8faf7!important;color:var(--text)!important;border-color:var(--line)!important}.auth-screen{background:var(--bg)!important;min-height:100vh!important}.auth-shell{border-radius:22px!important;box-shadow:none!important;border:1px solid var(--line)!important}.auth-brand{background:#e7efe5!important;color:var(--text)!important}.auth-copy p{color:var(--muted)!important}.auth-submit{background:var(--accent)!important;border-radius:12px!important}.auth-logo strong{color:var(--accent)!important}
+@media(min-width:900px){nav.bottom{width:220px!important;padding:24px 12px!important}nav.bottom a{padding:13px 12px!important}.phone{width:100%!important}.sum-main{gap:32px!important}}
+@media(max-width:899px) and (min-width:641px){.phone{max-width:none!important}.layout{grid-template-columns:190px minmax(0,1fr)!important}.sidebar{padding:14px 8px!important}.wrap{padding:18px!important}.card{padding:18px!important}}
+@media(max-width:640px){header{padding:20px 16px 15px!important}header h1{font-size:23px!important}main{padding:18px 14px 28px!important}.wrap{padding:16px!important}.layout{display:block!important}.sidebar{top:0!important}.card{padding:18px 14px!important}.day-tab{min-width:90px!important}.schedule{grid-template-columns:65px minmax(0,1fr)!important}.lesson-card{padding:14px 12px!important;gap:10px!important}.week{gap:6px!important}.wd{padding:12px 3px!important}.ring-wrap{width:116px!important;height:116px!important}.sum-main{gap:18px!important}.st-card.sum{padding:19px!important}.legend{min-width:125px!important}.legend li{font-size:12px!important}.auth-shell{margin:16px!important}.top{padding-bottom:16px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+`;
+const roles=['student','admin'];
+let activeRole='student';
+const lastPages={student:'start.html',admin:'admin.html'};
+const allowedPages=new Set(['start.html','plan.html','oceny.html','frekwencja.html','wiadomosci.html','uwagi.html','ustawienia.html','admin.html','logowanie.html','index.html']);
+function decorate(role){
+  const frame=document.getElementById('frame-'+role);
+  try{
+    const doc=frame.contentDocument;
+    if(!doc||!doc.head)return;
+    let theme=doc.getElementById('test-view-theme');
+    if(!theme){theme=doc.createElement('style');theme.id='test-view-theme';doc.head.appendChild(theme)}
+    theme.textContent=viewTheme;
+    const path=new URL(frame.contentWindow.location.href).pathname.split('/').pop();
+    if(allowedPages.has(path))lastPages[role]=path+frame.contentWindow.location.search;
+    // Keep the public-home action inside the combined page.
+    doc.querySelectorAll('a[href="index.html"]').forEach(link=>{link.addEventListener('click',event=>{event.preventDefault();location.href='index.html'})});
+    document.getElementById('loading-'+role).hidden=true;
+  }catch(error){
+    const label=document.getElementById('loading-'+role);
+    label.textContent='Nie udało się wczytać widoku. Użyj przycisku Odśwież.';
+  }
+}
+function refreshRole(role){
+  document.getElementById('loading-'+role).hidden=false;
+  const frame=document.getElementById('frame-'+role);
+  frame.src=lastPages[role];
+}
+function selectRole(role,focus=false){
+  if(!roles.includes(role))return;
+  const previous=activeRole;activeRole=role;
+  roles.forEach(name=>{
+    const selected=name===role;
+    const tab=document.getElementById('tab-'+name);
+    tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;
+    document.getElementById('panel-'+name).hidden=!selected;
+  });
+  const frame=document.getElementById('frame-'+role);
+  if(!frame.getAttribute('src')){document.getElementById('loading-'+role).hidden=false;frame.src=frame.dataset.src;delete frame.dataset.src}
+  // Reload the student's last page after edits in the admin view.
+  else if(role==='student'&&previous==='admin')refreshRole(role);
+  const admin=role==='admin';
+  document.getElementById('intro-eyebrow').textContent=admin?'Twoja przestrzeń zarządzania':'Twoja szkolna przestrzeń';
+  document.getElementById('intro-title').textContent=admin?'Szkolne sprawy pod kontrolą.':'Twój dzień, po Twojemu.';
+  document.getElementById('intro-description').textContent=admin?'Zarządzaj planem, ocenami i frekwencją. Potem przełącz się na widok ucznia.':'Oceny, plan i szkolne sprawy. Wszystko, czego potrzebujesz, jest tutaj.';
+  document.getElementById('view-caption').textContent=admin?'Panel administracyjny':'Dziennik ucznia';
+  const url=new URL(location.href);url.hash=role==='admin'?'admin':'student';history.replaceState(null,'',url);
+  if(focus)document.getElementById('tab-'+role).focus();
+}
+roles.forEach(role=>{
+  document.getElementById('frame-'+role).addEventListener('load',()=>decorate(role));
+  document.getElementById('tab-'+role).addEventListener('click',()=>selectRole(role));
+});
+document.querySelector('[role="tablist"]').addEventListener('keydown',event=>{
+  if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
+    event.preventDefault();const role=event.key==='Home'?'student':event.key==='End'?'admin':activeRole==='student'?'admin':'student';selectRole(role,true);
+  }
+});
+document.getElementById('refresh').addEventListener('click',()=>refreshRole(activeRole));
+const date=new Date();
+document.getElementById('weekday').textContent=new Intl.DateTimeFormat('pl-PL',{weekday:'long',timeZone:'Europe/Warsaw'}).format(date);
+document.getElementById('today').textContent=new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'long',year:'numeric',timeZone:'Europe/Warsaw'}).format(date);
+selectRole(location.hash==='#admin'?'admin':'student');
+window.addEventListener('hashchange',()=>selectRole(location.hash==='#admin'?'admin':'student'));
+</script>
+</body>
+</html>
