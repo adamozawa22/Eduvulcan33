@@ -1,956 +1,41 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel administracyjny – Dziennik</title>
-
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Dziennik — Panel administratora</title>
 <style>
-:root{
-  --bg:#f2f4f8;
-  --card:#ffffff;
-  --card-hover:#f7f9fc;
-  --text:#1c2733;
-  --muted:#6b7686;
-  --accent:#0064c8;
-  --accent-dark:#004c99;
-  --accent-dim:#e6f0fb;
-  --line:#e2e6ee;
-  --danger:#d6413a;
-  --danger-dim:#fbe9e8;
-  --ok:#1f8a3e;
-  --ok-dim:#e4f7ea;
-  --late:#a36d00;
-  --late-dim:#fff4d6;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:var(--bg);
-}
-
-.wrap{
-  max-width:1320px;
-  margin:auto;
-  padding:28px;
-}
-
-/* ---- układ: menu po lewej, treść po prawej ---- */
-
-.layout{
-  display:grid;
-  grid-template-columns:250px 1fr;
-  gap:20px;
-  align-items:start;
-}
-
-.sidebar{
-  position:sticky;
-  top:28px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 1px 3px rgba(20,30,50,.05);
-}
-
-.sidebar .brand h1{
-  margin:0;
-  font-size:18px;
-  font-weight:700;
-}
-
-.sidebar .brand span{
-  display:block;
-  margin-top:4px;
-  color:var(--muted);
-  font-size:12px;
-}
-
-.sidebar-sep{
-  height:1px;
-  background:var(--line);
-  margin:16px 0;
-}
-
-.sidebar .logout{
-  width:100%;
-  margin-top:16px;
-  padding:10px 14px;
-  font-size:13px;
-}
-
-.content{min-width:0}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:16px 22px;
-  box-shadow:0 1px 3px rgba(20,30,50,.05);
-}
-
-.top h1{
-  margin:0;
-  font-size:22px;
-  font-weight:700;
-}
-
-.top span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:18px;
-  box-shadow:0 1px 3px rgba(20,30,50,.05);
-}
-
-h2{
-  font-size:17px;
-  margin:0 0 16px;
-  font-weight:700;
-}
-
-.tabs{
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-  gap:6px;
-  padding:0;
-}
-
-.tab{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  background:transparent;
-  color:var(--text);
-  border:none;
-  padding:11px 14px;
-  border-radius:12px;
-  cursor:pointer;
-  white-space:nowrap;
-  font-weight:600;
-  font-size:14px;
-  font-family:inherit;
-  text-align:left;
-}
-.tab svg{
-  width:20px;
-  height:20px;
-  flex:none;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.8;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-.tab:hover{background:var(--accent-dim);color:var(--accent)}
-
-.tab.active{
-  background:var(--accent);
-  color:#fff;
-}
-
-.panel{display:none}
-.panel.active{display:block}
-
-.week-nav{
-  display:flex;
-  justify-content:flex-start;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:0 0 15px;
-}
-
-.week-nav button{
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:var(--card);
-  color:var(--text);
-  font-weight:600;
-  padding:9px 14px;
-  cursor:pointer;
-  font-size:13px;
-  font-family:inherit;
-}
-
-.week-nav button:hover{background:var(--card-hover)}
-
-.week-nav .week-info{
-  margin:0;
-  text-align:left;
-  padding:9px 12px;
-  border-radius:10px;
-  background:var(--accent-dim);
-  color:var(--accent-dark);
-  font-size:12.5px;
-  font-weight:600;
-}
-
-.day-tabs{
-  display:flex;
-  justify-content:flex-start;
-  gap:7px;
-  overflow:auto;
-  margin-bottom:16px;
-  padding:2px;
-}
-
-.day-tab{
-  flex:1;
-  min-width:110px;
-  padding:10px 11px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--card);
-  color:var(--muted);
-  cursor:pointer;
-  font-weight:600;
-  line-height:1.3;
-  font-size:13px;
-  font-family:inherit;
-}
-
-.day-tab:hover{background:var(--card-hover)}
-
-.day-tab small{
-  font-size:11px;
-  font-weight:normal;
-  opacity:.8;
-}
-
-.day-tab.active{
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
-}
-
-.schedule{
-  display:grid;
-  grid-template-columns:80px 1fr;
-  gap:8px;
-}
-
-.timecell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--muted);
-  font-size:12px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--bg);
-}
-
-.lesson{
-  min-height:80px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px 14px;
-  cursor:pointer;
-  box-shadow:0 1px 2px rgba(20,30,50,.04);
-  transition:.12s;
-}
-
-.lesson:hover{
-  border-color:var(--accent);
-  box-shadow:0 2px 8px rgba(0,100,200,.12);
-}
-
-.lesson.cancelled{background:var(--card-hover)}
-.lesson.cancelled .num,
-.lesson.cancelled .subject,
-.lesson.cancelled .meta{
-  color:var(--muted);
-  text-decoration:line-through;
-  text-decoration-thickness:1.5px;
-}
-
-.lesson .num{
-  font-size:11.5px;
-  color:var(--muted);
-  font-weight:600;
-}
-
-.lesson .subject{
-  font-weight:700;
-  margin-top:5px;
-  font-size:14.5px;
-}
-
-.lesson .meta{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
-}
-
-.lesson .meta b{
-  color:var(--text);
-  font-weight:600;
-}
-
-.lesson .meta s{
-  color:#a9b2c0;
-}
-
-.lesson .flag{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  margin-top:6px;
-  padding:3px 8px;
-  border-radius:999px;
-  background:var(--late-dim);
-  color:var(--late);
-  font-size:10.5px;
-  font-weight:700;
-}
-
-/* ---- pasek masowego zaznaczania ---- */
-
-.bulk-scope{
-  display:flex;
-  justify-content:flex-start;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:10px;
-}
-
-.bulk-scope .scope-label{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:600;
-  margin-right:2px;
-}
-
-.scope-btn{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 14px;
-  font-size:12.5px;
-  font-weight:700;
-  cursor:pointer;
-  background:var(--card);
-  color:var(--muted);
-  font-family:inherit;
-}
-
-.scope-btn:hover{background:var(--card-hover)}
-
-.scope-btn.active{
-  background:var(--accent);
-  border-color:var(--accent);
-  color:#fff;
-}
-
-.bulk-bar{
-  display:flex;
-  justify-content:flex-start;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:14px;
-}
-
-.bulk-btn{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 14px;
-  font-size:12.5px;
-  font-weight:700;
-  cursor:pointer;
-  background:var(--card);
-  font-family:inherit;
-}
-
-.bulk-btn.present{color:var(--ok);border-color:#bfe3c9}
-.bulk-btn.present:hover{background:var(--ok-dim)}
-
-.bulk-btn.absent{color:var(--danger);border-color:#f3c9c6}
-.bulk-btn.absent:hover{background:var(--danger-dim)}
-
-.bulk-btn.clear{color:var(--muted)}
-.bulk-btn.clear:hover{background:var(--card-hover)}
-
-.att-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:10px;
-}
-
-.att-cell{
-  min-height:78px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px 14px;
-  cursor:pointer;
-  box-shadow:0 1px 2px rgba(20,30,50,.04);
-  transition:.12s;
-}
-
-.att-cell:hover{box-shadow:0 2px 8px rgba(20,30,50,.08)}
-
-.att-cell.present{border-color:#bfe3c9}
-.att-cell.absent{border-color:#f3c9c6}
-.att-cell.late{border-color:#f0dca0}
-.att-cell.none{border-color:var(--line)}
-
-.att-cell .status{
-  font-weight:700;
-  font-size:13px;
-}
-
-.present .status{color:var(--ok)}
-.absent .status{color:var(--danger)}
-.late .status{color:var(--late)}
-.none .status{color:var(--muted)}
-
-.att-cell .sub{
-  font-size:11.5px;
-  color:var(--muted);
-  margin-top:5px;
-  line-height:1.5;
-}
-
-.att-cell .sub b{color:var(--text)}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(15,25,40,.45);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  z-index:60;
-}
-
-.modal.show{display:flex}
-
-.modal-box{
-  width:min(520px,100%);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:22px;
-  box-shadow:0 24px 60px rgba(20,30,50,.25);
-  max-height:90vh;
-  overflow:auto;
-}
-
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:16px;
-}
-
-.modal-head h3{
-  margin:0;
-  font-size:18px;
-}
-
-.close{
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:50%;
-  background:var(--accent-dim);
-  color:var(--accent);
-  font-size:18px;
-  cursor:pointer;
-}
-
-label{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin:11px 0 6px;
-  font-weight:600;
-}
-
-input,select{
-  width:100%;
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:11px;
-  outline:none;
-  font:inherit;
-}
-
-input:focus,select:focus{border-color:var(--accent)}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.actions{
-  display:flex;
-  justify-content:flex-start;
-  gap:8px;
-  margin-top:18px;
-  flex-wrap:wrap;
-}
-
-button.primary{
-  border:none;
-  border-radius:12px;
-  padding:12px 18px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-  font-family:inherit;
-}
-
-button.primary:hover{background:var(--accent-dark)}
-
-button.secondary{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px 18px;
-  background:var(--card);
-  color:var(--text);
-  font-weight:600;
-  cursor:pointer;
-  font-family:inherit;
-}
-
-button.secondary:hover{background:var(--card-hover)}
-
-.status-msg{
-  min-height:20px;
-  color:var(--muted);
-  font-size:13px;
-  margin-top:10px;
-}
-
-.hint{
-  font-size:11px;
-  color:var(--muted);
-  margin-top:5px;
-}
-
-.teacher-box{
-  margin-top:14px;
-  padding:16px;
-  background:var(--bg);
-  border:1px solid var(--line);
-  border-radius:14px;
-}
-
-.teacher-box h4{
-  margin:0 0 10px;
-  font-size:13px;
-  font-weight:700;
-}
-
-.check-row{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  margin-top:12px;
-  font-size:13px;
-}
-
-.check-row input{width:auto}
-
-.absence-fields{display:none;margin-top:10px}
-.absence-fields.show{display:block}
-
-.auto-hint{
-  font-size:11px;
-  margin-top:5px;
-  font-weight:600;
-}
-
-.auto-hint.ok{color:var(--ok)}
-.auto-hint.warn{color:var(--late)}
-
-.teacher-row{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:14px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  margin-bottom:8px;
-}
-
-.teacher-row .tr-subject{font-weight:700;flex:1}
-.teacher-row .tr-teacher{color:var(--muted);flex:1}
-.teacher-row .tr-actions{display:flex;justify-content:flex-start;gap:6px}
-.teacher-row .tr-actions button{padding:8px 12px;font-size:12px}
-
-/* ---- oceny ---- */
-
-.grade-subject-block{margin-bottom:22px}
-#gradesList .grade-subject-head{padding:10px 0;border-bottom:1px solid var(--line)}
-#gradesList .grade-row{border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;padding:12px 0;box-shadow:none}
-#gradesList .grade-badge{min-width:32px;height:32px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--text)}
-#gradesList .gr-info{overflow-wrap:anywhere}
-@media(max-width:480px){
-  #gradesList .grade-row{flex-wrap:wrap;gap:8px}
-  #gradesList .gr-info{flex:1;min-width:150px}
-  #gradesList .gr-actions{width:100%;justify-content:flex-end}
-}
-
-.grade-subject-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:8px 4px;
-}
-
-.grade-subject-head .gs-name{
-  font-weight:700;
-  font-size:14.5px;
-}
-
-.grade-subject-head .gs-avg{
-  font-size:12.5px;
-  color:var(--muted);
-}
-
-.grade-subject-head .gs-avg b{color:var(--accent-dark)}
-
-.grade-row{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 14px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  margin-bottom:8px;
-}
-
-.grade-badge{
-  min-width:38px;
-  height:38px;
-  border-radius:11px;
-  background:var(--accent-dim);
-  color:var(--accent-dark);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  font-size:15px;
-}
-
-.grade-row .gr-info{flex:1;min-width:0}
-.grade-row .gr-cat{font-weight:600;font-size:13px}
-.grade-row .gr-date{font-size:11.5px;color:var(--muted);margin-top:2px}
-.grade-row .gr-actions{display:flex;gap:6px}
-.grade-row .gr-actions button{padding:8px 12px;font-size:12px}
-
-.admin-message-form textarea{display:block;width:100%;min-height:110px;resize:vertical;padding:11px;font:inherit;font-size:14px}
-.admin-message-status{min-height:18px;margin-top:10px;color:var(--muted);font-size:12px}
-.admin-message-status.error{color:var(--danger)}
-.admin-message-list{display:grid;gap:10px}
-.admin-message-item{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-.admin-message-item.sent{background:var(--card-hover)}
-.admin-message-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px}
-.admin-message-item h3{font-size:15px;margin:8px 0}
-.admin-message-item p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
-.admin-message-item button{margin-top:12px}
-.admin-message-item .danger{color:var(--danger);border-color:#f0c6c6}
-.message-fab{position:fixed;left:22px;bottom:22px;z-index:12;width:48px;height:48px;border:0;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 14px rgba(0,100,200,.32)}
-.message-fab svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-
-@media(max-width:900px){
-
-  .layout{grid-template-columns:1fr}
-
-  .sidebar{position:static}
-
-  .tabs{flex-direction:row;overflow:auto}
-
-  .tab{flex:1;text-align:center}
-
-  .sidebar .logout{width:auto}
-
-}
-
-@media(max-width:800px){
-
-  .wrap{padding:16px}
-
-  .form-grid{grid-template-columns:1fr}
-
-  .teacher-row{flex-wrap:wrap}
-
-}
-
-
-/* Spójny wygląd z dziennikiem ucznia */
-body{
-  min-height:100vh;
-  background:var(--bg);
-}
-
-.wrap{
-  max-width:1180px;
-  padding:40px 20px;
-}
-
-.layout{
-  grid-template-columns:230px minmax(0,1fr);
-  gap:0;
-  min-height:calc(100vh - 80px);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 2px 8px rgba(20,30,50,.045);
-}
-
-.sidebar{
-  top:0;
-  height:100%;
-  min-height:calc(100vh - 80px);
-  border:0;
-  border-right:1px solid var(--line);
-  border-radius:0;
-  padding:28px 16px;
-  box-shadow:none;
-}
-
-.admin-brand-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.admin-brand-row img{
-  width:34px;
-  height:34px;
-  object-fit:contain;
-}
-
-.admin-vulcan{
-  color:#1d2d50;
-  font-size:16px;
-  font-weight:850;
-  letter-spacing:.05em;
-}
-
-.sidebar .brand h1{
-  margin-top:2px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:600;
-}
-
-.sidebar .brand>span{
-  margin-top:12px;
-  padding-top:12px;
-  border-top:1px solid var(--line);
-}
-
-.sidebar-sep{display:none}
-
-.tabs{gap:4px;margin-top:16px}
-
-.tab{
-  position:relative;
-  padding:12px 14px;
-  border-radius:12px;
-  color:var(--muted);
-  transition:background .16s ease,color .16s ease,transform .16s ease;
-}
-
-.tab:hover{
-  background:var(--accent-dim);
-  color:var(--accent);
-  transform:translateX(2px);
-}
-
-.tab.active{
-  background:var(--accent-dim);
-  color:var(--accent);
-  font-weight:750;
-}
-
-.tab.active::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:10px;
-  bottom:10px;
-  width:3px;
-  border-radius:3px;
-  background:var(--accent);
-}
-
-.sidebar .logout{
-  margin-top:24px;
-  color:var(--danger);
-  background:var(--danger-dim);
-  border-color:transparent;
-}
-
-.content{
-  padding:0 34px 34px;
-  background:var(--bg);
-}
-
-.top{
-  position:sticky;
-  top:0;
-  z-index:5;
-  margin:0 -34px 24px;
-  padding:25px 34px 18px;
-  border:0;
-  border-bottom:1px solid var(--line);
-  border-radius:0;
-  box-shadow:none;
-}
-
-.top h1{font-size:22px}
-.top span{display:block;margin-top:4px}
-
-.card{
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 2px 8px rgba(20,30,50,.045);
-}
-
-h2{font-size:16px}
-
-input,select,textarea{
-  border-radius:12px!important;
-  border:1px solid var(--line)!important;
-  background:#fbfcfe!important;
-  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
-}
-
-input:focus,select:focus,textarea:focus{
-  outline:none;
-  background:#fff!important;
-  border-color:var(--accent)!important;
-  box-shadow:0 0 0 3px rgba(0,100,200,.11);
-}
-
-button.primary{
-  border-radius:11px;
-  background:var(--accent);
-  box-shadow:0 4px 12px rgba(0,100,200,.18);
-}
-
-button.primary:hover{background:var(--accent-dark)}
-
-button.secondary,.week-nav button{
-  border-radius:11px;
-  background:var(--card);
-}
-
-table{
-  border-radius:14px;
-  overflow:hidden;
-}
-
-
-
-.admin-menu-toggle{display:none;width:42px;height:42px;border:0;border-radius:12px;background:var(--accent-dim);color:var(--accent);cursor:pointer;align-items:center;justify-content:center}
-.admin-menu-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.admin-menu-backdrop{display:none}
-
-@media(max-width:850px){
-  .wrap{padding:0}
-  .layout{display:block;min-height:100vh;border:0;border-radius:0}
-  .sidebar{
-    position:fixed;
-    z-index:41;
-    left:0;
-    top:0;
-    bottom:0;
-    width:min(84vw,310px);
-    min-height:100dvh;
-    border-right:1px solid var(--line);
-    border-bottom:0;
-    padding:24px 16px;
-    transform:translateX(-105%);
-    transition:transform .24s cubic-bezier(.22,.8,.3,1);
-    box-shadow:18px 0 45px rgba(20,30,50,.16);
-  }
-  .sidebar.open{transform:translateX(0)}
-  .tabs{
-    flex-direction:column;
-    overflow:visible;
-    padding-bottom:0;
-  }
-  .tab{flex:none;width:100%}
-  .tab.active::before{left:0;right:auto;top:10px;bottom:10px;width:3px;height:auto}
-  .sidebar .logout{margin:18px 0 0;width:100%}
-  .content{padding:0 16px 24px}
-  .top{position:sticky;top:0;margin:0 -16px 18px;padding:14px 16px;z-index:30}
-  .admin-menu-toggle{display:flex}
-  .admin-menu-backdrop{position:fixed;inset:0;z-index:40;background:rgba(15,25,40,.42);backdrop-filter:blur(2px)}
-  .admin-menu-backdrop.show{display:block}
-}
-
-
-</style>
-<link rel="stylesheet" href="auth.css">
-</head>
-
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;650;700&family=Manrope:wght@500;600;650;700;750;800&display=swap');
+:root{--bg:#f4f5f9;--card:#fff;--card-hover:#f9f9fd;--text:#22243c;--muted:#85869d;--accent:#7661dc;--accent-dark:#5945bb;--accent-dim:#efebff;--line:#ececf3;--danger:#d45163;--danger-dim:#fceef0;--ok:#399878;--ok-dim:#e9f6ef;--late:#c68a28;--late-dim:#fff6e5;--warn:#c68a28;--warn-dim:#fff6e5;--warn-ink:#a87423;--header-bg:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:var(--bg);font-size:14px}button,input,select,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #b0a1f2;outline-offset:3px}[hidden]{display:none!important}svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}h1,h2,h3,h4{font-family:Manrope,sans-serif;letter-spacing:-.04em}h1,h2,h3,p{margin:0}button{border:0}button:disabled{opacity:.55;cursor:wait}
+.app-sidebar{position:fixed;inset:0 auto 0 0;width:252px;background:#25253f;color:#b6b4ce;display:flex;flex-direction:column;padding:30px 22px;z-index:40}.brand-link{display:flex;align-items:center;gap:11px;color:#fff;text-decoration:none;font-family:Manrope,sans-serif;font-size:23px;font-weight:800;letter-spacing:-.9px}.brand-symbol{background:#a995fa;color:#27233f;width:37px;height:37px;border-radius:12px;display:grid;place-items:center}.brand-symbol svg{width:22px;height:22px}.brand-subtitle{font-size:10px;margin:8px 0 34px 48px;color:#a29bbd;letter-spacing:.02em}.nav-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin:0 14px 12px;color:#807d9b}.main-navigation{display:grid;gap:6px}.nav-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;color:#b6b4ce;background:transparent;padding:13px 14px;border-radius:12px;font-weight:500;font-size:13px;transition:background .2s,color .2s}.nav-item svg{width:19px;height:19px;opacity:.85}.nav-item:hover{background:#ffffff09;color:#fff}.nav-item.active{background:#8270dc;color:white;font-weight:650;box-shadow:0 5px 20px #16142f30}.sidebar-bottom{margin-top:auto;padding-top:32px}.sidebar-note{padding:18px;background:#ffffff07;border:1px solid #ffffff0b;border-radius:16px}.sidebar-note .note-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#a995fa20;color:#bdacf6;margin-bottom:12px}.sidebar-note b{display:block;color:#e3dff5;font-size:12px;margin-bottom:6px}.sidebar-note p{font-size:11px;line-height:1.6;color:#a29bbd;margin-bottom:12px}.sidebar-note button{color:#d0c4fa;background:transparent;padding:0;font-size:11px;font-weight:650}.sidebar-foot{display:flex;align-items:center;justify-content:space-between;padding:20px 8px 0;font-size:9px;color:#79758f}.sidebar-foot a{text-decoration:none}.menu-overlay{display:none}
+.app-main{margin-left:252px;min-height:100vh}.topbar{min-height:88px;display:flex;align-items:center;justify-content:space-between;padding:18px 38px;border-bottom:1px solid var(--line);background:#fff;gap:20px}.breadcrumbs{display:flex;align-items:center;gap:9px;color:#a4a4b6;font-size:11px}.breadcrumbs b{font-weight:500;color:#64637c}.top-actions{display:flex;align-items:center;gap:12px}.role-tabs{display:flex;background:#f4f3f9;border:1px solid var(--line);padding:4px;border-radius:12px;gap:3px}.role-tab{font-size:11px;font-weight:650;background:transparent;color:#8b88a1;padding:9px 16px;border-radius:9px;display:flex;align-items:center;gap:7px}.role-tab svg{width:15px;height:15px}.role-tab[aria-selected=true]{background:#28263f;color:white;box-shadow:0 3px 7px #1e1a3110}.icon-button{width:35px;height:35px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:#fff;color:#85829c}.icon-button svg{width:17px;height:17px}.profile-mark{width:36px;height:36px;display:grid;place-items:center;background:#fff0e7;color:#c37a48;border-radius:12px}.menu-open{display:none}.workspace{padding:34px 38px 44px;max-width:1620px;margin:auto}.page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:28px}.page-heading h1{font-size:29px;font-weight:800;line-height:1.2}.page-heading p{font-size:12px;color:var(--muted);margin-top:8px}.heading-date{text-align:right;font-size:10px;color:var(--muted);padding-top:3px}.heading-date b{display:block;font-size:12px;color:#6f6a88;margin-top:5px;font-weight:500}.root{min-width:0}.view,.panel{display:none}.view.active,.panel.active{display:block}.notice{display:none}.notice.show{display:block;padding:13px 17px;color:#ae7830;background:#fff6e6;border:1px solid #f5e5c8;border-radius:13px;margin-bottom:22px;font-size:12px;line-height:1.5}.loading-strip{height:96px;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:20px;background:white;border:1px solid var(--line);color:var(--muted);margin-bottom:22px;font-size:12px}.loading-strip::before{content:'';width:19px;height:19px;border:2px solid #ece8fa;border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.section-heading h2{font-size:16px;font-weight:800}.section-heading span,.section-heading button{font-size:11px;color:var(--muted)}.section-heading button{padding:0;background:transparent;color:var(--accent);font-weight:600}.surface{border:1px solid var(--line);background:#fff;border-radius:21px;padding:24px}.surface + .surface{margin-top:20px}.surface-head{margin-bottom:20px}
+.welcome-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:22px;margin-bottom:24px}.welcome-card{position:relative;background:#eeeafa;border:1px solid #e6dff8;border-radius:22px;padding:28px 30px;min-height:220px;overflow:hidden}.welcome-card .eyebrow{color:#8574b3;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}.welcome-card h2{font-size:26px;max-width:320px;line-height:1.3;color:#383057;position:relative;z-index:1}.welcome-card p{font-size:12px;color:#8c81a8;line-height:1.7;max-width:280px;margin-top:11px;position:relative;z-index:1}.welcome-card button{background:#7860cf;color:white;border-radius:10px;padding:10px 16px;font-size:10px;font-weight:650;margin-top:20px;position:relative;z-index:1}.welcome-art{position:absolute;width:160px;height:160px;right:18px;bottom:0;transform:rotate(-8deg);opacity:.8}.welcome-art::before{content:'';position:absolute;inset:20px 7px 0;background:#c6b7eb;border-radius:50%}.book-art{position:absolute;left:25px;top:50px;width:112px;height:85px;border:6px solid #fbf9ff;border-bottom-width:12px;border-radius:8px;background:#9681cb;box-shadow:9px 13px 0 #7864ab25}.book-art::before{content:'';position:absolute;inset:0 50% 0 0;background:#b4a0df;border-right:2px solid #e0d7ee}.book-art::after{content:'✦';position:absolute;right:15px;top:19px;color:#f6eeff;font-size:30px}.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}.metric .metric-icon{width:29px;height:29px;display:grid;place-items:center;border-radius:10px;background:#edf6f0;color:#5ca080}.metric:nth-child(2) .metric-icon{background:#fff0e9;color:#cb936e}.metric .metric-icon svg{width:16px;height:16px}.metric b{font-family:Manrope;font-size:27px;letter-spacing:-1px;font-weight:800}.metric span{font-size:10px;color:var(--muted)}.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:22px;margin-bottom:24px}.today-lesson{display:grid;grid-template-columns:55px 1fr 24px;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--line)}.today-lesson:first-child{border-top:0;padding-top:2px}.today-time{font-size:12px;color:#827494;font-weight:600}.today-lesson b{font-size:12px;font-weight:650;display:block}.today-lesson small{display:block;font-size:10px;color:var(--muted);margin-top:4px}.today-lesson .period{font-size:10px;border-radius:8px;background:#f5f2fa;width:26px;height:26px;display:grid;place-items:center;color:#a395b8}.today-lesson.cancelled b{text-decoration:line-through}.st-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 20px;gap:12px}.st-head h3{font-size:16px}.st-head span{font-size:11px;color:var(--muted)}.week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.wd{padding:16px;border:1px solid var(--line);background:#fafafe;border-radius:14px;display:flex;align-items:center;gap:10px;position:relative;min-width:0;text-align:left;transition:transform .2s}.wd:hover{transform:translateY(-2px)}.wd-name{font-size:11px;color:#9690a8}.wd-num{font-family:Manrope;font-size:24px;font-weight:750;margin-left:auto}.wd-mark{height:24px;width:24px;background:#f0eff5;color:#aaa4b9;display:grid;place-items:center;border-radius:9px;flex:none}.wd-mark svg{width:13px;height:13px}.wd-detail{font-size:9px;display:none}.wd.today{background:#f0eafd;border-color:#d7caf8}.wd.today .wd-num{color:var(--accent)}.wd.bad .wd-mark{background:var(--danger-dim);color:var(--danger)}.wd.ok .wd-mark{background:var(--ok-dim);color:var(--ok)}.wd.warn .wd-mark{background:var(--warn-dim);color:var(--warn)}.issue{display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--line)}.issue:first-child{border-top:0;padding-top:0}.issue-date{width:30px;text-align:center;flex:none;color:#9690a8}.issue-date b{display:block;font-size:16px;font-family:Manrope}.issue-date span{display:block;font-size:9px;margin-top:2px}.issue-body{min-width:0;flex:1}.issue-body b{display:block;font-size:12px;font-weight:650}.issue-body span{display:block;font-size:10px;line-height:1.6;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.st-card{background:white;border:1px solid var(--line);border-radius:18px;padding:20px}.dashboard-grid .st-card{border:0;padding:0}.status-pill{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 11px;border-radius:9px;font-size:10px;font-weight:600;white-space:nowrap;background:#f2f1f7;color:#a199b1}.status-pill svg{width:13px;height:13px}.status-pill.present{background:var(--ok-dim);color:var(--ok)}.status-pill.absent{background:var(--danger-dim);color:var(--danger)}.status-pill.late{background:var(--warn-dim);color:var(--warn-ink)}.status-pill.neutral,.status-pill.none{background:#f3f2f6;color:#aaa2b3}.st-empty,.empty-state{padding:36px 15px;text-align:center;color:var(--muted);font-size:12px}.empty-state .ico{display:grid;place-items:center;margin-bottom:13px;color:#b6a6d6}.empty-state .ico svg{width:35px;height:35px}
+.day-nav{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 16px;margin-bottom:24px}.day-nav button{background:#f5f2fc;color:var(--accent);width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:19px}.day-label{font-size:12px;font-weight:650}.lesson-card{display:grid;grid-template-columns:35px 68px minmax(0,1fr);gap:16px;align-items:center;background:#fff;padding:23px 24px;border:1px solid var(--line);border-radius:16px;margin-bottom:12px;border-left:4px solid #cebfef}.lesson-card:nth-child(3n+2){border-left-color:#bdd6ce}.lesson-card:nth-child(3n){border-left-color:#ebcdb7}.lesson-num{width:31px;height:31px;border-radius:10px;background:#f4f0fc;color:#a18abf;display:grid;place-items:center;font-size:12px;font-weight:650}.lesson-time{font-size:11px;line-height:1.8;color:#9b93aa}.lesson-body{min-width:0}.lesson-body .subj{font-size:14px;font-weight:650}.lesson-body .meta{font-size:11px;line-height:1.7;color:var(--muted);margin-top:5px}.teacher-absent{color:var(--danger);display:inline-block;font-size:9px;padding:3px 7px;border-radius:5px;background:var(--danger-dim)}.cancelled .subj,.cancelled .lesson-time{text-decoration:line-through;opacity:.6}.att-summary{display:flex;align-items:center;gap:16px;padding:30px;background:#29273f;border-radius:20px;color:#fff;margin-bottom:24px}.att-summary .pct{font-family:Manrope;font-size:42px;font-weight:800;letter-spacing:-1.5px}.att-summary>.sub{font-size:11px;color:#b9b0d3}.breakdown{display:flex;gap:30px;margin-left:auto;border-left:1px solid #ffffff18;padding-left:30px}.breakdown .num{font-size:21px;font-family:Manrope;font-weight:650}.breakdown .lbl{font-size:10px;color:#b9b0d3;margin-top:5px}.att-lesson{display:grid;grid-template-columns:35px 68px minmax(0,1fr) auto;align-items:center;gap:16px;padding:20px 24px;background:white;border:1px solid var(--line);border-radius:15px;margin-bottom:12px}.grades-overview{display:flex;justify-content:space-between;gap:14px;padding:22px 25px;background:#efebf9;border:1px solid #e6def6;border-radius:17px;margin-bottom:24px;color:#8d7da6;font-size:11px}.grades-overview b{color:#514068;margin-left:3px;font-size:15px}.grades-ledger{background:white;border:1px solid var(--line);border-radius:20px;overflow:hidden}.grades-columns,.grade-subject summary{display:grid;grid-template-columns:minmax(140px,1.2fr) minmax(120px,1.8fr) 70px;gap:20px;align-items:center;padding:21px 26px}.grades-columns{background:#faf9fd;font-size:9px;color:#a8a0b6;text-transform:uppercase;letter-spacing:.08em;padding-top:15px;padding-bottom:15px}.grade-subject{border-top:1px solid var(--line)}.grade-subject summary{cursor:pointer;list-style:none;font-size:12px}.grade-subject summary::-webkit-details-marker{display:none}.grade-subject-name{font-weight:650;display:flex;align-items:center;gap:10px}.grade-subject-name::before{content:'+';font-size:15px;color:#b4a9c7;font-weight:400}.grade-subject[open] .grade-subject-name::before{content:'−'}.grade-marks{display:flex;gap:8px;flex-wrap:wrap}.grade-mark{min-width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#f1eff6;color:#8b7b9d;font-weight:650;font-size:12px}.grade-mark.good{background:#eaf5ed;color:#579574}.grade-mark.mid{background:#fff3e5;color:#be914f}.grade-mark.bad{background:#fbecef;color:#cf7d88}.grade-average{font-family:Manrope;font-size:18px;font-weight:700;text-align:right}.grade-details{padding:0 26px 20px;background:#fcfbfe}.grade-details table{width:100%;border-collapse:collapse;font-size:11px}.grade-details th{text-align:left;color:#a49bb2;font-weight:500;padding:12px 8px;border-bottom:1px solid var(--line);font-size:9px}.grade-details td{padding:15px 8px;border-bottom:1px solid var(--line);vertical-align:top}.grade-description{display:block;font-size:10px;color:var(--muted);margin-top:5px}.grades-hint{font-size:10px;color:#aaa0b5;margin-top:16px}.remark-badge{font-size:9px;font-weight:650;padding:8px 12px;border-radius:8px;white-space:nowrap}.remark-badge.praise{background:var(--ok-dim);color:var(--ok)}.remark-badge.remark{background:var(--warn-dim);color:var(--warn-ink)}.message-card{padding:23px;background:white;border:1px solid var(--line);border-radius:18px;margin-bottom:15px}.message-card summary{cursor:pointer;list-style:none}.message-card h3{font-size:15px;margin-top:12px}.message-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:#aaa0b5}.message-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9;font-size:12px;padding-top:18px;margin-top:18px;border-top:1px solid var(--line);color:#706880}.message-empty{padding:50px 15px;background:#fff;border:1px solid var(--line);border-radius:18px;text-align:center;font-size:12px;color:var(--muted)}
+.admin-utilities{display:none!important}.card{padding:26px;background:#fff;border:1px solid var(--line);border-radius:20px;margin-bottom:24px}.card h2{font-size:16px;margin-bottom:22px}.week-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:22px}.week-nav button,.week-info{padding:10px 12px;border-radius:10px;background:#f8f6fb;color:#94859e;font-size:10px;font-weight:500;border:1px solid #efeaf5}.week-info{margin-left:auto;color:#a290b4;background:transparent;border:0}.day-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:22px}.day-tab{padding:14px 5px;background:#f9f8fc;border:1px solid #f0edf6;border-radius:12px;color:#aea2b9;font-size:11px;line-height:1.8}.day-tab small{font-size:9px}.day-tab.active{background:#eae2fa;border-color:#d8cbed;color:#8265b0;font-weight:650}.schedule{display:grid;grid-template-columns:70px minmax(0,1fr);gap:10px}.timecell{display:flex;align-items:center;justify-content:center;flex-direction:column;background:#faf8fc;border-radius:12px;font-size:10px;color:#b0a5bc;padding:12px}.timecell b{font-size:13px;color:#9583ac;margin-bottom:5px}.lesson{display:flex;align-items:center;gap:16px;flex-wrap:wrap;cursor:pointer;border:1px solid #ece6f4;border-radius:13px;padding:16px 20px;background:#fff;transition:background .2s}.lesson:hover{background:#faf7ff}.lesson.empty{border-style:dashed;color:#b6a8c4;background:#fcfbfd;font-size:11px}.lesson .subj{font-size:13px;font-weight:650}.lesson .meta{font-size:10px;color:#ac9cb7;line-height:1.8}.lesson.absent{background:#fff9fa}.lesson .badge,.badge{font-size:9px;background:#fcecf1;color:#c5899c;padding:5px 8px;border-radius:7px}.status-msg{font-size:10px;line-height:1.8;color:#b2a3be;margin-top:16px;min-height:18px}.bulk-scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:15px;background:#faf8fd;border-radius:13px;margin-bottom:14px;font-size:10px;color:#a99ab8}.scope-btn,.bulk-btn{padding:8px 12px;border-radius:8px;border:1px solid #ece5f4;background:#fff;color:#a18daf;font-size:10px}.scope-btn.active{background:#eae2f6;color:#8870ad;border-color:#d9c8ec}.bulk-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.bulk-btn.present{color:var(--ok);background:var(--ok-dim);border-color:#deeee4}.bulk-btn.absent{color:var(--danger);background:var(--danger-dim);border-color:#f5dfe5}.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}.att-cell{padding:19px;background:#faf9fc;border:1px solid var(--line);border-radius:15px;cursor:pointer}.att-cell .status{font-size:12px;font-weight:650}.att-cell .sub{font-size:10px;color:#a294af;line-height:1.9;margin-top:8px}.att-cell.present{border-color:#cde6d8;background:#f8fcf9}.att-cell.present .status{color:var(--ok)}.att-cell.absent{border-color:#efd1db;background:#fff9fb}.att-cell.absent .status{color:var(--danger)}.att-cell.late{border-color:#eddfc7;background:#fffaf3}.att-cell.late .status{color:var(--warn-ink)}.att-cell.none .status{color:#b1a3be}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px 24px}label{display:block;font-size:10px;font-weight:600;color:#9d8dad;margin:0 0 8px}input,select,textarea{width:100%;padding:13px 14px;border:1px solid #ece5f3;background:#fcfbfe;border-radius:11px;color:#716180;outline:none;min-height:42px}input:focus,select:focus,textarea:focus{border-color:#c3acd9;background:#fff}input::placeholder,textarea::placeholder{color:#c0b3cd}textarea{resize:vertical;line-height:1.8}.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:22px}.primary,.secondary,.logout-button,.save-note{padding:11px 16px;border-radius:10px;font-size:11px;font-weight:600}.primary,.save-note{background:var(--accent);color:#fff}.secondary{background:#f8f5fc;border:1px solid #ede5f5;color:#a08ab0}.logout-button{background:var(--danger-dim);color:var(--danger)}.hint,.auto-hint{font-size:9px;color:#b0a0be;line-height:1.7;margin-top:6px}.auto-hint.ok{color:var(--ok)}.auto-hint.warn{color:var(--warn-ink)}.teacher-box{padding:18px;background:#faf8fd;border:1px solid #f0eaf6;border-radius:12px;margin-top:20px}.teacher-box h4{font-size:12px;margin:0 0 14px}.check-row{display:flex;align-items:center;gap:9px;font-size:11px;margin-top:12px}.check-row input{width:16px;min-height:16px;accent-color:var(--accent)}.absence-fields{display:none;padding-top:14px}.absence-fields.show{display:block}.teacher-row{display:flex;align-items:center;gap:14px;padding:17px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}.tr-subject{flex:1;font-size:12px;font-weight:600}.tr-teacher{flex:1;font-size:11px;color:#a698b5}.tr-actions{display:flex;gap:7px}.tr-actions button,.gr-actions button{padding:8px 11px;font-size:10px}.grade-subject-block{margin-top:16px}.grade-subject-head{display:flex;align-items:center;justify-content:space-between;padding:14px 2px;margin-bottom:10px}.gs-name{font-family:Manrope;font-weight:750;font-size:14px}.gs-avg{font-size:10px;color:#a396b3}.gs-avg b{color:#8c73b6}.grade-row{display:flex;align-items:center;gap:15px;border:1px solid var(--line);padding:17px;border-radius:13px;margin-bottom:10px}.grade-badge{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;background:#eef5ee;color:#7ca183;font-size:17px;font-weight:650;flex:none}.gr-info{min-width:0;flex:1}.gr-cat{font-size:12px;font-weight:600}.gr-date{font-size:10px;color:#ab9bb8;margin-top:5px;line-height:1.8}.gr-actions{display:flex;gap:8px}.admin-message-form textarea{min-height:145px}.admin-message-form{display:block}.admin-message-form>.form-grid{margin-bottom:16px}.message-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.admin-message-card{padding:20px;border:1px solid var(--line);border-radius:14px;margin-top:14px;font-size:12px}.admin-message-card summary{cursor:pointer}.admin-message-card p{white-space:pre-wrap;overflow-wrap:anywhere}.admin-message-actions{display:flex;justify-content:flex-end;margin-top:15px}
+.modal{position:fixed;inset:0;z-index:80;background:#25213d65;backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:24px}.modal.show{display:flex}.modal-box{width:min(600px,100%);padding:30px;background:#fff;border-radius:24px;max-height:90dvh;overflow:auto;box-shadow:0 30px 100px #18132930}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:27px}.modal-head h2,.modal-head h3{font-size:20px;margin:0}.close,.close-btn{height:30px;width:30px;background:#f8f4fc;border-radius:10px;color:#b4a1c7;font-size:18px}.stat-box{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat-item{padding:20px;background:#faf7fd;border-radius:14px}.stat-item b{display:block;font-size:25px;font-family:Manrope}.stat-item span{display:block;font-size:10px;color:#b1a0c0;margin-top:8px}.note-input{min-height:180px}.save-note{margin-top:16px}.section-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#b0a0bd;margin-bottom:20px}.setting-row{display:flex;align-items:center;justify-content:space-between;padding:20px 0;font-size:12px}.toggle{width:37px;height:22px;background:#d9cfe3;border-radius:14px;position:relative;cursor:pointer}.toggle::after{content:'';position:absolute;width:16px;height:16px;top:3px;left:3px;background:white;border-radius:50%;transition:transform .2s}.toggle.on{background:#a78cc7}.toggle.on::after{transform:translateX(15px)}.logout-card{display:flex;justify-content:space-between;align-items:center;padding:25px;background:white;border:1px solid var(--line);border-radius:18px;margin-top:20px;gap:16px}.logout-card b{display:block;font-size:13px}.logout-card span{display:block;font-size:11px;color:#b0a0bd;margin-top:5px}
+.gate{display:grid;grid-template-columns:1fr 1fr;max-width:900px;margin:25px auto;border:1px solid var(--line);border-radius:26px;overflow:hidden;background:white;min-height:420px}.gate-art{background:#ece5f7;padding:42px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}.gate-art .eyebrow{font-size:10px;letter-spacing:.15em;color:#a18caf;font-weight:600;text-transform:uppercase;margin-bottom:24px}.gate-art h2{font-size:33px;line-height:1.3;color:#6f527e;max-width:280px}.gate-art p{font-size:12px;line-height:1.9;color:#a28bab;margin-top:20px;max-width:260px}.gate-form{padding:43px;display:flex;flex-direction:column;justify-content:center}.gate-form h2{font-size:22px;margin-bottom:10px}.gate-form>p{font-size:11px;color:#b19ebd;line-height:1.8;margin-bottom:25px}.gate-form label{margin-top:16px}.gate-form .primary{margin-top:24px;width:100%;padding:14px}.gate-error{color:var(--danger);font-size:11px;line-height:1.7;margin-top:14px;min-height:20px}.gate-hint{font-size:10px;color:#bca9c9;line-height:1.8;margin-top:10px}.settings-note{margin-top:22px}.settings-note h3{font-size:15px;margin-bottom:10px}.settings-note p{font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:18px}.app-footer{margin-top:34px;border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;font-size:9px;color:#b9abc3}.sr-only,.loading-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(min-width:1500px){.workspace{padding:42px 52px}.topbar{padding:20px 52px}.welcome-card{padding:34px 38px}.welcome-art{right:45px;width:190px;height:190px}.book-art{left:32px;top:62px;width:130px;height:96px}.metric{padding:24px}}
+@media(max-width:1180px){.app-sidebar{width:218px;padding:28px 16px}.app-main{margin-left:218px}.workspace{padding:28px}.topbar{padding:18px 28px}.welcome-layout{grid-template-columns:1fr}.mini-stats{grid-template-columns:1fr 1fr}.metric{display:grid;grid-template-columns:36px 1fr;align-items:center;gap:6px 14px;padding:18px}.metric .metric-icon{grid-row:1/3}.metric b{font-size:23px}.welcome-art{right:60px}.wd{padding:12px;gap:6px}.wd-mark{display:none}.dashboard-grid{gap:16px}.surface{padding:20px}.grades-columns,.grade-subject summary{grid-template-columns:minmax(120px,1fr) minmax(90px,1fr) 55px;gap:14px}}
+@media(max-width:850px){.app-sidebar{transform:translateX(-100%);transition:transform .25s;width:252px}.app-sidebar.open{transform:translateX(0)}.app-main{margin-left:0}.menu-open{display:grid}.menu-overlay.show{display:block;position:fixed;inset:0;background:#1e193b60;z-index:35;backdrop-filter:blur(4px)}.topbar{min-height:76px;padding:16px 22px}.breadcrumbs{display:none}.top-actions{margin-left:auto}.workspace{padding:26px 22px}.page-heading h1{font-size:27px}.dashboard-grid{grid-template-columns:1.1fr 1fr}.welcome-layout{grid-template-columns:1.4fr 1fr}.mini-stats{display:flex;flex-direction:column}.metric{flex:1;padding:14px}.metric b{font-size:22px}.welcome-card{padding:25px;min-height:245px}.welcome-card h2{font-size:24px;max-width:235px}.welcome-art{right:0;width:120px;height:120px;opacity:.35}.book-art{width:85px;height:68px;left:18px;top:35px}.att-lesson{gap:10px;padding:17px}.att-lesson .status-pill{font-size:9px}.gate{min-height:400px}.gate-art,.gate-form{padding:30px}}
+@media(max-width:600px){.topbar{padding:14px 16px;min-height:69px;gap:12px}.top-actions{gap:8px}.role-tab{padding:8px 13px;font-size:10px}.role-tab svg{display:none}.profile-mark{display:none}.workspace{padding:24px 16px 30px}.page-heading{margin-bottom:22px}.page-heading h1{font-size:25px}.page-heading p{font-size:11px;max-width:245px;line-height:1.7}.heading-date{display:none}.welcome-layout{display:block}.welcome-card{min-height:220px;padding:25px}.welcome-card h2{font-size:25px;max-width:235px}.welcome-card p{max-width:240px;font-size:11px}.welcome-art{width:150px;height:150px;opacity:.5;right:-6px}.book-art{width:106px;height:80px;left:25px;top:45px}.mini-stats{display:grid;grid-template-columns:1fr 1fr;margin-top:13px;gap:11px}.metric{padding:15px;gap:6px 9px;grid-template-columns:30px 1fr}.metric b{font-size:20px}.metric span{font-size:9px}.dashboard-grid{grid-template-columns:1fr;gap:18px}.surface{padding:21px 18px;border-radius:18px}.week{gap:7px}.wd{flex-direction:column;padding:12px 4px;gap:7px;text-align:center}.wd-num{margin-left:0;font-size:21px}.wd-name{font-size:9px}.day-nav{padding:10px 12px;margin-bottom:18px}.day-label{font-size:11px}.lesson-card{padding:18px 14px;grid-template-columns:26px 51px minmax(0,1fr);gap:10px;border-radius:14px;border-left-width:3px}.lesson-num{width:25px;height:27px;font-size:10px;border-radius:8px}.lesson-body .subj{font-size:12px}.lesson-body .meta{font-size:10px}.lesson-time{font-size:10px}.att-summary{flex-wrap:wrap;padding:23px;gap:12px}.att-summary .pct{font-size:36px}.breakdown{width:100%;margin-left:0;padding:18px 0 0;border-left:0;border-top:1px solid #ffffff18;justify-content:space-between;gap:15px}.breakdown .num{font-size:19px}.breakdown .lbl{font-size:9px}.att-lesson{grid-template-columns:26px 48px 1fr;padding:17px 13px;gap:8px}.att-lesson .status-pill{grid-column:3;justify-self:start;margin-top:3px}.grades-overview{flex-direction:column;padding:20px;gap:10px}.grades-columns{display:none}.grade-subject summary{grid-template-columns:1fr 45px;gap:13px;padding:21px 18px}.grade-marks{grid-column:1;grid-row:2;gap:6px}.grade-average{grid-column:2;grid-row:1/3;font-size:19px}.grade-details{padding:0 13px 17px;overflow:auto}.grade-details table{min-width:360px;font-size:10px}.grade-description{font-size:9px}.grade-mark{height:30px;min-width:30px}.message-card{padding:20px 18px}.message-meta{font-size:9px;align-items:flex-start}.message-meta time{white-space:nowrap}.card{padding:22px 16px;border-radius:17px}.card h2{font-size:15px}.week-nav{gap:6px}.week-nav button{font-size:9px;padding:9px}.week-info{width:100%;margin:4px 0 0;padding:0;font-size:10px}.day-tabs{gap:5px;margin-bottom:17px}.day-tab{font-size:9px;padding:9px 2px;line-height:1.8}.day-tab small{font-size:8px}.schedule{grid-template-columns:47px minmax(0,1fr);gap:7px}.timecell{font-size:9px;padding:9px 3px;border-radius:9px}.timecell b{font-size:11px}.lesson{padding:14px 13px;gap:8px;border-radius:10px}.lesson .subj{font-size:11px}.lesson .meta{font-size:9px}.form-grid{grid-template-columns:1fr;gap:15px}.actions{gap:8px}.primary,.secondary{font-size:10px;padding:11px 13px}.grade-row{padding:15px 12px;gap:11px;flex-wrap:wrap}.gr-info{flex:1;min-width:130px}.gr-actions{width:100%;justify-content:flex-end}.grade-badge{width:33px;height:33px;font-size:14px}.gs-avg{font-size:9px}.teacher-row{flex-wrap:wrap;padding:16px}.tr-subject{flex-basis:100%}.tr-teacher{font-size:10px}.tr-actions button{font-size:9px;padding:8px}.att-grid{grid-template-columns:1fr 1fr;gap:8px}.att-cell{padding:15px 12px}.att-cell .status{font-size:10px}.att-cell .sub{font-size:9px}.bulk-scope{padding:12px;font-size:9px}.scope-btn,.bulk-btn{font-size:9px;padding:8px 10px}.modal{padding:15px}.modal-box{padding:23px 20px;border-radius:21px}.modal-head h2,.modal-head h3{font-size:18px}.gate{display:block;margin:0;border-radius:21px}.gate-art{padding:28px}.gate-art .eyebrow{margin-bottom:12px}.gate-art h2{font-size:25px;max-width:none}.gate-art p{font-size:11px;max-width:none;margin-top:12px}.gate-form{padding:29px 24px}.gate-form h2{font-size:21px}.logout-card{padding:21px;flex-wrap:wrap}.logout-card span{font-size:10px}.app-footer{font-size:8px}.app-footer span:last-child{display:none}}
+.dashboard-grid>.surface+.surface{margin-top:0}.attendance-mini>div{display:flex;align-items:center;gap:11px;padding:15px 0;border-top:1px solid var(--line);font-size:12px;color:#8e829d}.attendance-mini>div:first-child{border-top:0}.attendance-mini b{font-family:Manrope;font-size:18px;color:#655176;margin-left:auto}.mini-dot{width:9px;height:9px;border-radius:3px;background:#cabbdc}.mini-dot.present{background:#97c6ac}.mini-dot.absent{background:#ddacb9}.mini-dot.late{background:#e2c493}.mini-caption{font-size:10px;color:#a193ad;margin-top:18px;line-height:1.7}
+.lesson{display:grid;grid-template-columns:64px minmax(0,1fr);gap:7px 16px}.lesson .num{grid-row:1/3;font-size:10px;color:#ad9bbd}.lesson .subject{font-size:13px;font-weight:650}.lesson .meta{grid-column:2}.lesson .flag{grid-column:2;font-size:9px;color:var(--danger)}.lesson.cancelled .subject{text-decoration:line-through}.animations-off *, .animations-off *::before,.animations-off *::after{animation:none!important;transition:none!important}
+.day-short{display:none}
+@media(max-width:600px){.lesson{grid-template-columns:47px minmax(0,1fr);gap:6px 10px}.lesson .subject{font-size:11px}.lesson .num{font-size:9px}.day-full{display:none}.day-short{display:inline;font-size:11px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.admin-badge{background:#28263f;color:#fff;box-shadow:0 3px 7px #1e1a3110}.sidebar-bottom #shell-logout{margin-top:14px}
+</style></head>
 <body>
+<aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="admin.html"><span class="brand-symbol"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v14"></path></svg></span>Dziennik<span style="font-size:22px;color:#a995fa">.</span></a><div class="brand-subtitle">Przestrzeń administratora</div><div class="nav-label" id="nav-label">Menu administratora</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje dziennika"></nav><div class="sidebar-bottom"><div class="sidebar-note"><b>Szkolny dzień pod kontrolą.</b><p>Sprawdź, jak uczeń widzi swój dziennik.</p><a href="start.html" style="color:#d0c4fa;font-size:11px;font-weight:650;text-decoration:none">Otwórz widok ucznia ↗</a></div><button class="nav-item" id="shell-logout" hidden type="button"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v16h5M12 12h9M17 8l4 4-4 4"></path></svg>Wyloguj się</button><div class="sidebar-foot"><span>Dziennik / administrator</span><a href="index.html">Strona główna ↗</a></div></div></aside>
+<div class="menu-overlay" id="shell-overlay"></div>
+<div class="app-main"><header class="topbar"><button class="icon-button menu-open" id="shell-menu" aria-label="Otwórz menu" aria-expanded="false"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button><div class="breadcrumbs"><span>Administrator</span><span>/</span><b id="breadcrumb-page">Pulpit</b></div><div class="top-actions"><div class="role-tabs"><a class="role-tab" href="start.html" style="text-decoration:none"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5zM6 11v6c4 3 8 3 12 0v-6"></path></svg>Uczeń ↗</a><span class="role-tab admin-badge"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4"></path></svg>Admin</span></div><button class="icon-button" id="shell-refresh" aria-label="Odśwież dane"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5"></path></svg></button><span class="profile-mark" aria-label="Konto"><svg viewbox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"></circle><path d="M5 21v-3c0-7 14-7 14 0v3"></path></svg></span></div></header>
+<main class="workspace"><div class="page-heading"><div><h1 id="shell-title">Twój pulpit</h1><p id="shell-description">Wszystko, co ważne w Twoim szkolnym dniu.</p></div><div class="heading-date"><span id="shell-weekday"></span><b id="shell-date"></b></div></div>
+<section class="root" id="admin-root"><section id="loginScreen" class="gate"><div class="gate-art"><div class="eyebrow">Przestrzeń administratora</div><h2>Porządek zaczyna się od Ciebie.</h2><p>Plan, oceny, frekwencja i wiadomości. Jedno miejsce, w którym możesz zarządzać szkolnym dniem.</p></div><form class="gate-form" id="admin-login-form"><h2>Panel administratora</h2><p>Zaloguj się kontem z uprawnieniami do edycji.</p><label for="loginEmail">Adres e-mail</label><input id="loginEmail" type="email" autocomplete="username" required placeholder="Adres e-mail"><label for="loginPassword">Hasło</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Hasło"><button class="primary" id="admin-login-submit" type="submit">Zaloguj się ↗</button><div class="gate-error" id="loginStatus" role="alert" aria-live="polite"></div></form></section><div id="app" class="admin-app" style="display:none">
 
-<section id="loginScreen" class="auth-screen">
-  <div class="auth-shell">
-    <div class="auth-brand">
-      <div class="auth-logo">
-        <img src="vulcan-logo.png" alt="VULCAN" onerror="this.remove()">
-        <strong>VULCAN</strong>
-      </div>
-      <div class="auth-copy">
-        <h1>Panel administracyjny</h1>
-        <p>Zarządzaj planem lekcji, frekwencją, ocenami i informacjami dla uczniów.</p>
-      </div>
-    </div>
-    <form class="auth-form" id="admin-login-form">
-      <h2>Zaloguj się</h2>
-      <p class="auth-intro">Wpisz dane swojego konta administratora.</p>
-      <label class="auth-field"><span>Adres e-mail</span><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required placeholder="admin@szkola.pl"></label>
-      <label class="auth-field"><span>Hasło</span><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Wpisz hasło"></label>
-      <button class="auth-submit" id="admin-login-submit" type="submit">Zaloguj się</button>
-      <div class="auth-error" id="loginStatus" role="alert" aria-live="polite"></div>
-      <div class="auth-help"><a href="index.html">Przejdź do dziennika ucznia</a></div>
-    </form>
-  </div>
-</section>
-
-<div id="app" class="wrap" style="display:none">
-
-<div class="layout">
+<div class="admin-layout">
 
 <!-- MENU PO LEWEJ -->
 
-<aside class="sidebar">
+<aside class="sidebar admin-utilities">
 
 <div class="brand">
 <div class="admin-brand-row">
@@ -967,59 +52,59 @@ table{
 
 <nav class="tabs">
 
-<button class="tab active" onclick="switchPanel('plan',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"/></svg>
+<button class="tab active" onclick="Admin.switchPanel('plan',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"></use></svg>
 Plan lekcji
 </button>
 
-<button class="tab" onclick="switchPanel('frekwencja',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#attendance"/></svg>
+<button class="tab" onclick="Admin.switchPanel('frekwencja',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#attendance"></use></svg>
 Frekwencja
 </button>
 
-<button class="tab" onclick="switchPanel('oceny',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"/></svg>
+<button class="tab" onclick="Admin.switchPanel('oceny',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"></use></svg>
 Oceny
 </button>
 
-<button class="tab" onclick="switchPanel('uwagi',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#remarks"/></svg>
+<button class="tab" onclick="Admin.switchPanel('uwagi',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#remarks"></use></svg>
 Uwagi i pochwały
 </button>
 
-<button class="tab" onclick="switchPanel('nauczyciele',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#teachers"/></svg>
+<button class="tab" onclick="Admin.switchPanel('nauczyciele',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#teachers"></use></svg>
 Nauczyciele
 </button>
 
-<button class="tab" onclick="switchPanel('wiadomosci',this)">
-<svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"/></svg>
+<button class="tab" onclick="Admin.switchPanel('wiadomosci',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"></use></svg>
 Wiadomości
 </button>
 
 
 </nav>
 
-<button class="secondary logout" onclick="logout()">Wyloguj</button>
+<button class="secondary logout" onclick="Admin.logout()">Wyloguj</button>
 
 </aside>
 
-<div class="admin-menu-backdrop" id="adminMenuBackdrop" onclick="closeAdminMenu()"></div>
+<div class="admin-utilities" id="adminMenuBackdrop" onclick="Admin.closeAdminMenu()"></div>
 
 
 <!-- TREŚĆ PO PRAWEJ -->
 
-<main class="content">
+<div class="admin-content">
 
-<div class="top">
+<div class="top admin-utilities">
 
 <div>
 <h1 id="viewTitle">Plan lekcji</h1>
 <span id="viewSubtitle">Tygodniowy plan zajęć</span>
 </div>
 
-<button class="admin-menu-toggle" id="adminMenuToggle" type="button" onclick="toggleAdminMenu()" aria-label="Otwórz menu" aria-expanded="false">
-<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+<button class="admin-menu-toggle" id="adminMenuToggle" type="button" onclick="Admin.toggleAdminMenu()" aria-label="Otwórz menu" aria-expanded="false">
+<svg viewbox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
 </button>
 
 </div>
@@ -1032,9 +117,9 @@ Wiadomości
 <h2>Plan lekcji</h2>
 
 <div class="week-nav">
-<button onclick="changeWeek(-1)">‹ Poprzedni</button>
-<button onclick="goToCurrentWeek()">Ten tydzień</button>
-<button onclick="changeWeek(1)">Następny ›</button>
+<button onclick="Admin.changeWeek(-1)">‹ Poprzedni</button>
+<button onclick="Admin.goToCurrentWeek()">Ten tydzień</button>
+<button onclick="Admin.changeWeek(1)">Następny ›</button>
 <div class="week-info" id="planWeekInfo"></div>
 </div>
 
@@ -1062,7 +147,7 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 <div class="form-grid">
 
 <div>
-<label>Rodzaj</label>
+<label for="rKind">Rodzaj</label>
 <select id="rKind">
 <option value="praise">Pochwała</option>
 <option value="remark">Uwaga</option>
@@ -1070,25 +155,25 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 </div>
 
 <div>
-<label>Data</label>
+<label for="rDate">Data</label>
 <input id="rDate" type="date">
 </div>
 
 <div>
-<label>Tytuł</label>
+<label for="rTitle">Tytuł</label>
 <input id="rTitle" maxlength="120" placeholder="np. Pomoc koleżeńska">
 </div>
 
 <div>
-<label>Treść</label>
+<label for="rContent">Treść</label>
 <input id="rContent" maxlength="500" placeholder="Wpisz treść uwagi lub pochwały">
 </div>
 
 </div>
 
 <div class="actions">
-<button class="primary" onclick="saveRemark()">Zapisz wpis</button>
-<button class="secondary" id="cancelEditRemark" style="display:none" onclick="cancelRemarkEdit()">Anuluj edycję</button>
+<button class="primary" onclick="Admin.saveRemark()">Zapisz wpis</button>
+<button class="secondary" id="cancelEditRemark" style="display:none" onclick="Admin.cancelRemarkEdit()">Anuluj edycję</button>
 </div>
 
 <div class="status-msg" id="remarkMsg"></div>
@@ -1110,9 +195,9 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 <h2>Frekwencja</h2>
 
 <div class="week-nav">
-<button onclick="changeWeek(-1)">‹ Poprzedni</button>
-<button onclick="goToCurrentWeek()">Ten tydzień</button>
-<button onclick="changeWeek(1)">Następny ›</button>
+<button onclick="Admin.changeWeek(-1)">‹ Poprzedni</button>
+<button onclick="Admin.goToCurrentWeek()">Ten tydzień</button>
+<button onclick="Admin.changeWeek(1)">Następny ›</button>
 <div class="week-info" id="attWeekInfo"></div>
 </div>
 
@@ -1122,20 +207,20 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 <span class="scope-label">Zakres:</span>
 
-<button class="scope-btn active" id="scopeDay" onclick="setBulkScope('day',this)">
+<button class="scope-btn active" id="scopeDay" onclick="Admin.setBulkScope('day',this)">
 Cały dzień
 </button>
 
-<button class="scope-btn" id="scopeWeek" onclick="setBulkScope('week',this)">
+<button class="scope-btn" id="scopeWeek" onclick="Admin.setBulkScope('week',this)">
 Cały tydzień
 </button>
 
 </div>
 
 <div class="bulk-bar">
-<button class="bulk-btn present" id="btnBulkPresent" onclick="markBulk('present')">✓ Obecność</button>
-<button class="bulk-btn absent" id="btnBulkAbsent" onclick="markBulk('absent')">✕ Nieobecność</button>
-<button class="bulk-btn clear" id="btnBulkClear" onclick="clearBulk()">Wyczyść</button>
+<button class="bulk-btn present" id="btnBulkPresent" onclick="Admin.markBulk('present')">✓ Obecność</button>
+<button class="bulk-btn absent" id="btnBulkAbsent" onclick="Admin.markBulk('absent')">✕ Nieobecność</button>
+<button class="bulk-btn clear" id="btnBulkClear" onclick="Admin.clearBulk()">Wyczyść</button>
 </div>
 
 <div class="status-msg" id="bulkMsg"></div>
@@ -1163,36 +248,36 @@ Pojedynczą lekcję nadal można kliknąć i ustawić obecność, nieobecność 
 <div class="form-grid">
 
 <div>
-<label>Przedmiot</label>
+<label for="gSubject">Przedmiot</label>
 <select id="gSubject"></select>
 </div>
 
 <div>
-<label>Ocena</label>
+<label for="gValue">Ocena</label>
 <select id="gValue"></select>
 </div>
 
 <div>
-<label>Waga</label>
+<label for="gWeight">Waga</label>
 <select id="gWeight">
-<option value="1">1</option>
+<option value="0">0 — bez wpływu na średnią</option><option value="1" selected>1</option>
 <option value="2">2</option>
 <option value="3">3</option>
 </select>
 </div>
 
 <div>
-<label>Kategoria</label>
+<label for="gCategory">Kategoria</label>
 <select id="gCategory"></select>
 </div>
 
 <div>
-<label>Data</label>
+<label for="gDate">Data</label>
 <input id="gDate" type="date">
 </div>
 
 <div>
-<label>Opis (opcjonalnie)</label>
+<label for="gDesc">Opis (opcjonalnie)</label>
 <input id="gDesc" placeholder="np. Dział: Ułamki">
 </div>
 
@@ -1200,11 +285,11 @@ Pojedynczą lekcję nadal można kliknąć i ustawić obecność, nieobecność 
 
 <div class="actions">
 
-<button class="primary" onclick="saveGrade()">
+<button class="primary" onclick="Admin.saveGrade()">
 Zapisz ocenę
 </button>
 
-<button class="secondary" id="cancelEditGrade" style="display:none" onclick="cancelGradeEdit()">
+<button class="secondary" id="cancelEditGrade" style="display:none" onclick="Admin.cancelGradeEdit()">
 Anuluj edycję
 </button>
 
@@ -1241,15 +326,15 @@ Anuluj edycję
     <input id="admin-message-subject" maxlength="120" required placeholder="Temat wiadomości">
     <label for="admin-message-body">Treść</label>
     <textarea id="admin-message-body" maxlength="2000" required placeholder="Napisz wiadomość"></textarea>
-    <div class="actions"><button class="primary" id="admin-message-submit" type="submit">Wyślij uczniom</button><button class="secondary" type="button" onclick="closeAdminMessageComposer()">Anuluj</button></div>
+    <div class="actions"><button class="primary" id="admin-message-submit" type="submit">Wyślij uczniom</button><button class="secondary" type="button" onclick="Admin.closeAdminMessageComposer()">Anuluj</button></div>
   </form>
 </div>
 <div class="admin-message-status" id="admin-message-status" role="status" aria-live="polite"></div>
 <div class="card">
-  <div class="week-nav" style="justify-content:space-between"><h2 style="margin:0">Wiadomości od nauczycieli</h2><button type="button" onclick="loadAdminMessages()">Odśwież</button></div>
+  <div class="week-nav" style="justify-content:space-between"><h2 style="margin:0">Wiadomości od nauczycieli</h2><button type="button" onclick="Admin.loadAdminMessages()">Odśwież</button></div>
   <div class="admin-message-list" id="admin-message-list"><div class="status-msg">Otwórz wiadomości, aby je wczytać.</div></div>
 </div>
-<button class="message-fab" type="button" onclick="openAdminMessageComposer()" aria-label="Dodaj wiadomość" title="Dodaj wiadomość"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#plus"/></svg></button>
+<button class="message-fab" type="button" onclick="Admin.openAdminMessageComposer()" aria-label="Dodaj wiadomość" title="Dodaj wiadomość"><svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#plus"></use></svg></button>
 </section>
 
 <section id="panel-nauczyciele" class="panel">
@@ -1265,12 +350,12 @@ Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w pla
 <div class="form-grid">
 
 <div>
-<label>Przedmiot</label>
+<label for="tSubject">Przedmiot</label>
 <input id="tSubject" list="subjectDatalist" placeholder="np. Matematyka">
 </div>
 
 <div>
-<label>Nauczyciel</label>
+<label for="tTeacher">Nauczyciel</label>
 <input id="tTeacher" placeholder="np. Anna Kowalska">
 </div>
 
@@ -1280,11 +365,11 @@ Przypisz nauczyciela do przedmiotu. Od tej pory, wybierając ten przedmiot w pla
 
 <div class="actions">
 
-<button class="primary" onclick="saveTeacherMapping()">
+<button class="primary" onclick="Admin.saveTeacherMapping()">
 Zapisz przypisanie
 </button>
 
-<button class="secondary" id="cancelEditTeacher" style="display:none" onclick="cancelTeacherEdit()">
+<button class="secondary" id="cancelEditTeacher" style="display:none" onclick="Admin.cancelTeacherEdit()">
 Anuluj edycję
 </button>
 
@@ -1300,16 +385,11 @@ Anuluj edycję
 
 
 
-</main>
-
 </div>
 
 </div>
 
-
-<!-- LEKCJA -->
-
-<div class="modal" id="lessonModal">
+</div><!-- LEKCJA --><div class="modal" id="lessonModal">
 
 <div class="modal-box">
 
@@ -1319,7 +399,7 @@ Anuluj edycję
 Lekcja
 </h3>
 
-<button class="close" onclick="closeModal('lessonModal')">
+<button class="close" onclick="Admin.closeModal('lessonModal')">
 ×
 </button>
 
@@ -1328,32 +408,32 @@ Lekcja
 <div class="form-grid">
 
 <div>
-<label>Numer lekcji</label>
+<label for="mNum">Numer lekcji</label>
 <input id="mNum" type="number" min="1">
 </div>
 
 <div>
-<label>Przedmiot</label>
-<select id="mSubject" onchange="subjectChanged()"></select>
+<label for="mSubject">Przedmiot</label>
+<select id="mSubject" onchange="Admin.subjectChanged()"></select>
 </div>
 
 <div>
-<label>Od</label>
+<label for="mStart">Od</label>
 <input id="mStart" type="time">
 </div>
 
 <div>
-<label>Do</label>
+<label for="mEnd">Do</label>
 <input id="mEnd" type="time">
 </div>
 
 <div>
-<label>Sala</label>
+<label for="mRoom">Sala</label>
 <input id="mRoom">
 </div>
 
 <div>
-<label>Nauczyciel</label>
+<label for="mTeacher">Nauczyciel</label>
 <input id="mTeacher" placeholder="Uzupełni się automatycznie">
 <div class="auto-hint" id="teacherHint"></div>
 </div>
@@ -1369,10 +449,7 @@ Nieobecność nauczyciela
 
 <label class="check-row">
 
-<input
-id="mTeacherAbsent"
-type="checkbox"
-onchange="toggleTeacherAbsence()">
+<input id="mTeacherAbsent" type="checkbox" onchange="Admin.toggleTeacherAbsence()">
 
 Nauczyciel jest nieobecny
 
@@ -1380,7 +457,7 @@ Nauczyciel jest nieobecny
 
 <div class="absence-fields" id="absenceFields">
 
-<label>
+<label for="mChangeDate">
 Data nieobecności
 </label>
 
@@ -1394,11 +471,11 @@ Data nieobecności
 
 <div class="actions">
 
-<button class="primary" onclick="saveLesson()">
+<button class="primary" onclick="Admin.saveLesson()">
 Zapisz
 </button>
 
-<button class="secondary" onclick="deleteLesson()">
+<button class="secondary" onclick="Admin.deleteLesson()">
 Usuń lekcję
 </button>
 
@@ -1407,12 +484,7 @@ Usuń lekcję
 <div class="status-msg" id="lessonMsg"></div>
 
 </div>
-</div>
-
-
-<!-- FREKWENCJA -->
-
-<div class="modal" id="attModal">
+</div><!-- FREKWENCJA --><div class="modal" id="attModal">
 
 <div class="modal-box">
 
@@ -1422,13 +494,13 @@ Usuń lekcję
 Frekwencja
 </h3>
 
-<button class="close" onclick="closeModal('attModal')">
+<button class="close" onclick="Admin.closeModal('attModal')">
 ×
 </button>
 
 </div>
 
-<label>Status</label>
+<label for="mAttStatus">Status</label>
 
 <select id="mAttStatus">
 
@@ -1446,17 +518,17 @@ Spóźnienie
 
 </select>
 
-<label>Data</label>
+<label for="mAttDate">Data</label>
 
 <input id="mAttDate" type="date">
 
 <div class="actions">
 
-<button class="primary" onclick="saveAttendance()">
+<button class="primary" onclick="Admin.saveAttendance()">
 Zapisz
 </button>
 
-<button class="secondary" onclick="deleteAttendance()">
+<button class="secondary" onclick="Admin.deleteAttendance()">
 Wyczyść
 </button>
 
@@ -1466,46 +538,84 @@ Wyczyść
 
 </div>
 
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+</div></section>
+<footer class="app-footer"><span>Dziennik · Panel administratora</span><span>Dobry plan robi miejsce na resztę.</span></footer></main></div>
+<noscript>Włącz JavaScript, aby korzystać z dziennika. <a href="start.html">Uczeń</a> · <a href="admin.html">Admin</a></noscript>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="session.js"></script>
 <script>
+const sharedClient=sb;
+function scopedDocument(root){return new Proxy(document,{get(target,key){if(key==='getElementById')return id=>root.querySelector('[id="'+CSS.escape(id)+'"]');if(key==='querySelector')return selector=>root.querySelector(selector);if(key==='querySelectorAll')return selector=>root.querySelectorAll(selector);if(key==='body')return root;const value=target[key];return typeof value==='function'?value.bind(target):value;}})}
+function scopedWindow(root){return new Proxy(window,{get(target,key){if(typeof key==='string'){const element=root.querySelector('[id="'+CSS.escape(key)+'"]');if(element)return element;}const value=target[key];return typeof value==='function'&&!(key==='supabase')?value.bind(target):value;}})}
+window.Admin=(()=>{const document=scopedDocument(globalThis.document.getElementById('admin-root'));const window=scopedWindow(globalThis.document.getElementById('admin-root'));
+const loginScreen=document.getElementById("loginScreen");
+const loginEmail=document.getElementById("loginEmail");
+const loginPassword=document.getElementById("loginPassword");
+const loginStatus=document.getElementById("loginStatus");
+const app=document.getElementById("app");
+const adminMenuBackdrop=document.getElementById("adminMenuBackdrop");
+const viewTitle=document.getElementById("viewTitle");
+const viewSubtitle=document.getElementById("viewSubtitle");
+const adminMenuToggle=document.getElementById("adminMenuToggle");
+const planWeekInfo=document.getElementById("planWeekInfo");
+const planDays=document.getElementById("planDays");
+const schedule=document.getElementById("schedule");
+const rKind=document.getElementById("rKind");
+const rDate=document.getElementById("rDate");
+const rTitle=document.getElementById("rTitle");
+const rContent=document.getElementById("rContent");
+const cancelEditRemark=document.getElementById("cancelEditRemark");
+const remarkMsg=document.getElementById("remarkMsg");
+const remarksList=document.getElementById("remarksList");
+const attWeekInfo=document.getElementById("attWeekInfo");
+const attDays=document.getElementById("attDays");
+const scopeDay=document.getElementById("scopeDay");
+const scopeWeek=document.getElementById("scopeWeek");
+const btnBulkPresent=document.getElementById("btnBulkPresent");
+const btnBulkAbsent=document.getElementById("btnBulkAbsent");
+const btnBulkClear=document.getElementById("btnBulkClear");
+const bulkMsg=document.getElementById("bulkMsg");
+const attGrid=document.getElementById("attGrid");
+const gSubject=document.getElementById("gSubject");
+const gValue=document.getElementById("gValue");
+const gWeight=document.getElementById("gWeight");
+const gCategory=document.getElementById("gCategory");
+const gDate=document.getElementById("gDate");
+const gDesc=document.getElementById("gDesc");
+const cancelEditGrade=document.getElementById("cancelEditGrade");
+const gradeMsg=document.getElementById("gradeMsg");
+const gradesList=document.getElementById("gradesList");
+const tSubject=document.getElementById("tSubject");
+const tTeacher=document.getElementById("tTeacher");
+const subjectDatalist=document.getElementById("subjectDatalist");
+const cancelEditTeacher=document.getElementById("cancelEditTeacher");
+const teacherMsg=document.getElementById("teacherMsg");
+const teacherList=document.getElementById("teacherList");
+const lessonModal=document.getElementById("lessonModal");
+const lessonModalTitle=document.getElementById("lessonModalTitle");
+const mNum=document.getElementById("mNum");
+const mSubject=document.getElementById("mSubject");
+const mStart=document.getElementById("mStart");
+const mEnd=document.getElementById("mEnd");
+const mRoom=document.getElementById("mRoom");
+const mTeacher=document.getElementById("mTeacher");
+const teacherHint=document.getElementById("teacherHint");
+const mTeacherAbsent=document.getElementById("mTeacherAbsent");
+const absenceFields=document.getElementById("absenceFields");
+const mChangeDate=document.getElementById("mChangeDate");
+const lessonMsg=document.getElementById("lessonMsg");
+const attModal=document.getElementById("attModal");
+const attModalTitle=document.getElementById("attModalTitle");
+const mAttStatus=document.getElementById("mAttStatus");
+const mAttDate=document.getElementById("mAttDate");
+const attMsg=document.getElementById("attMsg");
+
 
 /* =====================================================
    SUPABASE
 ===================================================== */
 
-const SUPABASE_URL=
-"https://hozpikyxilmedzsyquct.supabase.co";
-
-const SUPABASE_ANON_KEY=
-"sb_publishable_OMnC90EdPVnLwJXAx8jipA_rV0lZfdD";
-
-const ADMIN_USER_ID=
-"1f049736-fd58-4b4e-ac61-62af34e02651";
-/*
-  Klucz zapasowy (stary anon, format JWT) na wypadek,
-  gdyby nowe klucze API byly wylaczone w projekcie:
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvenBpa3l4aWxtZWR6c3lxdWN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0ODg4MzIsImV4cCI6MjEwNTA2NDgzMn0.WHPtOpswRUeMOrzjmlL2Rplm4x14gwPRuzsJ9uDVxDc"
-*/
-
-
-const sb=
-(
-  SUPABASE_URL.startsWith("UZUPELNIJ_") ||
-  SUPABASE_ANON_KEY.startsWith("UZUPELNIJ_") ||
-  !window.supabase ||
-  !window.supabase.createClient
-)
-?null
-:window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-
+const ADMIN_USER_ID="1f049736-fd58-4b4e-ac61-62af34e02651";
+const sb=sharedClient;
 /* =====================================================
    DNI
 ===================================================== */
@@ -1713,7 +823,7 @@ function renderAdminMessages(){
           <div class="admin-message-meta"><span>Od nauczyciela: ${esc(senderName)}</span><time>${esc(formatAdminMessageDate(message.created_at))}</time></div>
           <h3>${esc(message.subject)}</h3>
           <p>${esc(message.body)}</p>
-          <button class="secondary danger" type="button" onclick="deleteAdminMessage('${esc(String(message.id))}')">Usuń wiadomość</button>
+          <button class="secondary danger" type="button" onclick="Admin.deleteAdminMessage('${Admin.esc(String(message.id))}')">Usuń wiadomość</button>
         </article>`;
       }).join("")
     : '<div class="status-msg">Nie ma jeszcze wiadomości.</div>';
@@ -1960,26 +1070,25 @@ async function login(event){
 
 async function logout(){
 
-  if(sb)
-    await sb.auth.signOut();
+  if(sb){const {error}=await sb.auth.signOut();if(error){alert("Nie udało się wylogować. Spróbuj ponownie.");return;}}
 
-  location.reload();
+  Shell.loggedOut();
 
 }
 
 
 async function showApp(){
+  if(!sb){lock();loginStatus.textContent="Nie udało się połączyć. Odśwież stronę i spróbuj ponownie.";return;}
 
   const {data}=
     await sb.auth.getSession();
 
-  if(!data.session)
-    return;
+  if(!data.session){lock();return;}
 
   if(data.session.user.id!==ADMIN_USER_ID){
-    await sb.auth.signOut();
+    globalThis.document.getElementById("shell-logout").hidden=true;
     app.style.display="none";
-    loginScreen.style.display="flex";
+    loginScreen.style.display="";
     loginPassword.value="";
     loginStatus.textContent=
       "To konto nie ma uprawnień administratora. Zaloguj się jako admin@gmail.com.";
@@ -1989,6 +1098,7 @@ async function showApp(){
   loginScreen.style.display="none";
 
   app.style.display="block";
+  globalThis.document.getElementById("shell-logout").hidden=false;
 
   rDate.value=localDateISO(new Date());
 
@@ -2286,14 +1396,10 @@ function renderPlanDays(){
 
       <button
         class="day-tab ${i===selectedDay?"active":""}"
-        onclick="
-          selectedDay=${i};
-          renderPlanDays();
-          renderSchedule();
-        "
+        onclick="Admin.chooseDay(${i},'plan')"
       >
 
-        ${d}
+        <span class="day-full">${d}</span><span class="day-short" aria-hidden="true">${["Pn","Wt","Śr","Cz","Pt"][i]}</span>
 
         <br>
 
@@ -2393,7 +1499,7 @@ function renderSchedule(){
 
       <div
         class="lesson ${change?.teacher_absent?"cancelled":""}"
-        onclick="openLesson(${t?`'${esc(String(t.id))}'`:"null"},${n})"
+        onclick="Admin.openLesson(${t?`'${Admin.esc(String(t.id))}'`:"null"},${n})"
       >
 
         <div class="num">
@@ -3015,14 +2121,10 @@ function renderAttDays(){
 
       <button
         class="day-tab ${i===selectedDay?"active":""}"
-        onclick="
-          selectedDay=${i};
-          renderAttDays();
-          renderAttendance();
-        "
+        onclick="Admin.chooseDay(${i},'attendance')"
       >
 
-        ${d}
+        <span class="day-full">${d}</span><span class="day-short" aria-hidden="true">${["Pn","Wt","Śr","Cz","Pt"][i]}</span>
 
         <br>
 
@@ -3127,7 +2229,7 @@ function renderAttendance(){
       <div
         class="att-cell ${cls}"
         onclick="
-          openAtt(${t.lesson_number})
+          Admin.openAtt(${t.lesson_number})
         "
       >
 
@@ -3572,8 +2674,8 @@ function askBulkConfirm(kind,status){
 
   bulkMsg.innerHTML=
     `<span>${esc(question)}</span> `+
-    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="confirmBulk()">Tak, wykonaj</button> `+
-    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px" onclick="cancelBulk()">Anuluj</button>`;
+    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="Admin.confirmBulk()">Tak, wykonaj</button> `+
+    `<button type="button" class="secondary" style="padding:6px 12px;font-size:12px" onclick="Admin.cancelBulk()">Anuluj</button>`;
 
 }
 
@@ -3743,8 +2845,8 @@ function renderRemarks(){
               ${esc(item.content||"")}
             </div>
             <div class="tr-actions">
-              <button class="secondary" onclick="editRemark('${esc(String(item.id))}')">Edytuj</button>
-              <button class="secondary" onclick="removeRemark('${esc(String(item.id))}')">Usuń</button>
+              <button class="secondary" onclick="Admin.editRemark('${Admin.esc(String(item.id))}')">Edytuj</button>
+              <button class="secondary" onclick="Admin.removeRemark('${Admin.esc(String(item.id))}')">Usuń</button>
             </div>
           </div>`;
       }).join("")
@@ -3937,7 +3039,7 @@ function renderGrades(){
           gradeToNumber(r.value);
 
         const w=
-          Number(r.weight)||1;
+          Number(r.weight ?? 1);
 
         if(n!==null){
           wsum+=n*w;
@@ -3988,7 +3090,7 @@ function renderGrades(){
             </div>
 
             <div class="gr-date">
-              ${esc(fmtGradeDate(r.grade_date))} · waga ${esc(String(r.weight||1))}
+              ${esc(fmtGradeDate(r.grade_date))} · waga ${esc(String(r.weight ?? 1))}
             </div>
 
           </div>
@@ -3997,14 +3099,14 @@ function renderGrades(){
 
             <button
               class="secondary"
-              onclick="editGrade('${esc(String(r.id))}')"
+              onclick="Admin.editGrade('${Admin.esc(String(r.id))}')"
             >
               Edytuj
             </button>
 
             <button
               class="secondary"
-              onclick="removeGrade('${esc(String(r.id))}')"
+              onclick="Admin.removeGrade('${Admin.esc(String(r.id))}')"
             >
               Usuń
             </button>
@@ -4044,7 +3146,7 @@ function editGrade(id){
     row.value;
 
   gWeight.value=
-    String(row.weight||1);
+    String(row.weight ?? 1);
 
   gCategory.value=
     row.category||GRADE_CATEGORIES[0];
@@ -4093,7 +3195,7 @@ async function saveGrade(){
       gValue.value;
 
     const weight=
-      Number(gWeight.value)||1;
+      Number(gWeight.value);
 
     const category=
       gCategory.value;
@@ -4228,14 +3330,14 @@ function renderTeachers(){
 
             <button
               class="secondary"
-              onclick="editTeacher('${esc(String(x.id))}')"
+              onclick="Admin.editTeacher('${Admin.esc(String(x.id))}')"
             >
               Edytuj
             </button>
 
             <button
               class="secondary"
-              onclick="removeTeacher('${esc(String(x.id))}')"
+              onclick="Admin.removeTeacher('${Admin.esc(String(x.id))}')"
             >
               Usuń
             </button>
@@ -4468,21 +3570,25 @@ function fmtTime(t){
 document.getElementById("admin-login-form").addEventListener("submit",login);
 document.getElementById("admin-message-form").addEventListener("submit",sendAdminMessage);
 
-if(sb){
-
-  sb.auth
-    .getSession()
-    .then(showApp);
-
-
-}else{
-
-  loginStatus.textContent=
-    "Nie udało się załadować biblioteki Supabase. Sprawdź połączenie z internetem i odśwież stronę.";
-
-}
-
-</script>
-
-</body>
-</html>
+function chooseDay(day,type){selectedDay=Number(day);if(type==='plan'){renderPlanDays();renderSchedule();}else{renderAttDays();renderAttendance();}}
+function lock(){app.style.display='none';loginScreen.style.display='';loginPassword.value='';}
+return {getMonday,changeWeek,goToCurrentWeek,refreshWeekViews,getWeekDate,localDateISO,formatShortDate,formatFullDate,formatWeek,getWeekDateFrom,formatAdminMessageDate,localDateTimeInputValue,renderAdminMessageSenders,renderAdminMessages,openAdminMessageComposer,closeAdminMessageComposer,deleteAdminMessage,loadAdminMessages,sendAdminMessage,db,login,logout,showApp,loadData,toggleAdminMenu,closeAdminMenu,switchPanel,renderPlanDays,renderSchedule,allKnownSubjects,prepareSubjectOptions,prepareSubjectDatalist,prepareGradeOptions,getTeacherForSubject,subjectChanged,updateTeacherHint,toggleTeacherAbsence,getTeacherChange,openLesson,saveLesson,deleteLesson,renderAttDays,renderAttendance,openAtt,saveAttendance,deleteAttendance,statusLabel,setBulkScope,updateBulkLabels,bulkDays,bulkScopeLabel,bulkRows,askBulkConfirm,cancelBulk,confirmBulk,markBulk,clearBulk,renderRemarks,editRemark,cancelRemarkEdit,saveRemark,removeRemark,gradeToNumber,fmtGradeDate,renderGrades,editGrade,cancelGradeEdit,saveGrade,removeGrade,renderTeachers,editTeacher,cancelTeacherEdit,saveTeacherMapping,removeTeacher,closeModal,esc,fmtTime,chooseDay,lock};})();
+window.Shell=(()=>{
+ const menu=[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks']];
+ const titles={plan:['Zarządzaj planem','Zaplanuj i uporządkuj szkolny tydzień.'],frekwencja:['Zarządzaj frekwencją','Obecności, nieobecności i spóźnienia w jednym miejscu.'],oceny:['Zarządzaj ocenami','Dodawaj oceny i sprawdzaj postępy ucznia.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Dodawaj wpisy i doceniaj małe sukcesy.']};
+ let current='plan',busy=false;
+ function closeMenu(){document.getElementById('shell-sidebar').classList.remove('open');document.getElementById('shell-overlay').classList.remove('show');document.getElementById('shell-menu').setAttribute('aria-expanded','false');}
+ function toggleMenu(){const open=!document.getElementById('shell-sidebar').classList.contains('open');document.getElementById('shell-sidebar').classList.toggle('open',open);document.getElementById('shell-overlay').classList.toggle('show',open);document.getElementById('shell-menu').setAttribute('aria-expanded',String(open));}
+ function paintNavigation(){document.getElementById('shell-navigation').innerHTML=menu.map(([name,label,icon])=>`<button class="nav-item ${current===name?'active':''}" data-page="${name}" ${current===name?'aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#${icon}"/></svg>${label}</button>`).join('');document.getElementById('shell-navigation').querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.page)));}
+ function navigate(name){if(!titles[name])return;current=name;document.getElementById('shell-title').textContent=titles[name][0];document.getElementById('shell-description').textContent=titles[name][1];document.getElementById('breadcrumb-page').textContent=menu.find(x=>x[0]===name)[1];paintNavigation();const tab=[...document.querySelectorAll('#admin-root .tabs .tab')].find(button=>button.getAttribute('onclick')?.includes("'"+name+"'"));Admin.switchPanel(name,tab);history.replaceState(null,'','#'+name);closeMenu();window.scrollTo({top:0,behavior:'instant'});}
+ async function refresh(){if(busy)return;busy=true;const button=document.getElementById('shell-refresh');button.disabled=true;button.setAttribute('aria-busy','true');try{await Admin.showApp();}catch{loggedOut();document.getElementById('loginStatus').textContent='Nie udało się połączyć. Odśwież stronę i spróbuj ponownie.';}finally{busy=false;button.disabled=false;button.removeAttribute('aria-busy');document.getElementById('shell-logout').hidden=document.getElementById('app').style.display!=='block';}}
+ function loggedOut(){Admin.lock();document.getElementById('shell-logout').hidden=true;document.querySelectorAll('.modal.show').forEach(modal=>modal.classList.remove('show'));closeMenu();}
+ document.getElementById('shell-menu').addEventListener('click',toggleMenu);document.getElementById('shell-overlay').addEventListener('click',closeMenu);document.getElementById('shell-refresh').addEventListener('click',refresh);document.getElementById('shell-logout').addEventListener('click',()=>Admin.logout());
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();document.querySelectorAll('.modal.show').forEach(modal=>modal.classList.remove('show'));}});
+ document.querySelectorAll('.modal').forEach((modal,index)=>{modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');const heading=modal.querySelector('h2,h3');if(heading){if(!heading.id)heading.id='dialog-heading-'+index;modal.setAttribute('aria-labelledby',heading.id);}modal.addEventListener('click',event=>{if(event.target===modal)modal.classList.remove('show');});modal.querySelectorAll('.close,.close-btn').forEach(button=>{button.setAttribute('aria-label','Zamknij okno');button.setAttribute('type','button');});});
+ const now=new Date();document.getElementById('shell-weekday').textContent=new Intl.DateTimeFormat('pl-PL',{weekday:'long',timeZone:'Europe/Warsaw'}).format(now);document.getElementById('shell-date').textContent=new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'long',year:'numeric',timeZone:'Europe/Warsaw'}).format(now);
+ if(sharedClient)sharedClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(loggedOut,0);});
+ setTimeout(()=>{const page=location.hash.slice(1).split('/').pop();navigate(titles[page]?page:'plan');refresh();},0);
+ return {navigate,toggleMenu,closeMenu,refresh,loggedOut};
+})();
+</script></body></html>
