@@ -391,9 +391,7 @@ async function loadSupabaseData(){
         .order("weekday")
         .order("lesson_number");
 
-    if(lessons.error)throw lessons.error;
-
-    lessonPlanData=lessons.data||[];
+    if(lessons.error){ console.error("Błąd lesson_plan:",lessons.error); lessonPlanData=[]; } else lessonPlanData=lessons.data||[];
 
 
     const attendance=
@@ -403,9 +401,7 @@ async function loadSupabaseData(){
         .order("lesson_date")
         .order("lesson_number");
 
-    if(attendance.error)throw attendance.error;
-
-    attendanceData=attendance.data||[];
+    if(attendance.error){ console.error("Błąd attendance:",attendance.error); attendanceData=[]; } else attendanceData=attendance.data||[];
 
 
     const changes=
@@ -414,13 +410,7 @@ async function loadSupabaseData(){
         .select("*")
         .order("lesson_date");
 
-    if(changes.error && changes.error.code!=="42P01"){
-
-      throw changes.error;
-
-    }
-
-    teacherChangesData=changes.data||[];
+    if(changes.error){ console.error("Błąd teacher_changes:",changes.error); teacherChangesData=[]; } else teacherChangesData=changes.data||[];
 
 
     const grades=
@@ -429,13 +419,7 @@ async function loadSupabaseData(){
         .select("*")
         .order("grade_date",{ascending:false});
 
-    if(grades.error && grades.error.code!=="42P01"){
-
-      throw grades.error;
-
-    }
-
-    gradesData=grades.data||[];
+    if(grades.error){ console.error("Błąd grades:",grades.error); gradesData=[]; } else gradesData=grades.data||[];
 
 
     const remarks=
@@ -444,13 +428,7 @@ async function loadSupabaseData(){
         .select("*")
         .order("entry_date",{ascending:false});
 
-    if(remarks.error && remarks.error.code!=="42P01"){
-
-      throw remarks.error;
-
-    }
-
-    remarksData=remarks.data||[];
+    if(remarks.error){ console.error("Błąd remarks:",remarks.error); remarksData=[]; } else remarksData=remarks.data||[];
 
 
     showNotice("");
@@ -458,18 +436,9 @@ async function loadSupabaseData(){
     renderAll();
 
   }catch(error){
-
-    console.error(
-      "Błąd pobierania danych Supabase:",
-      error
-    );
-
-    showNotice(
-      "Nie udało się pobrać danych z dziennika. Widzisz stały plan lekcji. Szczegóły błędu są w konsoli."
-    );
-
+    console.error("Błąd pobierania danych Supabase:",error);
+    showNotice("Nie udało się pobrać części danych. Wyświetlam dostępny plan lekcji.");
     renderAll();
-
   }
 
 }
