@@ -1171,6 +1171,9 @@ async function showApp(){
 
   rDate.value=localDateISO(new Date());
 
+  if(globalThis.ServiceMode?.load)
+    await globalThis.ServiceMode.load();
+
   await loadData();
 
 }
@@ -3726,55 +3729,80 @@ window.Shell=(()=>{
  setTimeout(()=>{const page=location.hash.slice(1).split('/').pop();navigate(titles[page]?page:'plan');refresh();},0);
  return {navigate,toggleMenu,closeMenu,refresh,loggedOut};
 })();
-window.ServiceMode=(()=>{
- const key="vulcan-service-mode";
- const defaults={delay:0,maintenance:false};
- const nativeFetch=window.fetch.bind(window);
+globalThis.ServiceMode=(()=>{
+ const defaults={delayMs:0,maintenance:false};
+ let state={...defaults};
+ const nativeFetch=globalThis.fetch.bind(globalThis);
  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- function read(){try{return {...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch{return {...defaults}}}
- function paint(){
-   const state=read();
+ function paint(message){
    const delay=document.getElementById("service-delay");
    const maintenance=document.getElementById("service-maintenance");
    const status=document.getElementById("service-status");
-   if(delay)delay.value=String(state.delay);
+   if(delay)delay.value=String(state.delayMs);
    if(maintenance)maintenance.checked=Boolean(state.maintenance);
    if(status){
-     status.className="service-status"+(state.delay||state.maintenance?" on":"");
-     status.textContent=state.delay||state.maintenance
-       ? "Aktywne lokalnie na tym urządzeniu — Supabase działa bez zmian."
-       : "Tryb serwisowy jest wyłączony.";
+     status.className="service-status"+(state.delayMs||state.maintenance?" on":"");
+     status.textContent=message||(
+       state.delayMs||state.maintenance
+         ? "Aktywne globalnie w Supabase."
+         : "Tryb serwisowy jest wyłączony."
+     );
    }
  }
- function save(){
-   const state={delay:Number(document.getElementById("service-delay")?.value||0),maintenance:Boolean(document.getElementById("service-maintenance")?.checked)};
-   localStorage.setItem(key,JSON.stringify(state));
-   paint();
+ async function load(){
+   try{
+     const {data,error}=await sb.from("app_settings").select("value").eq("key","service_mode").maybeSingle();
+     if(error)throw error;
+     state={...defaults,...(data?.value||{})};
+     paint();
+   }catch(error){
+     state={...defaults};
+     paint("Nie udało się pobrać ustawień z Supabase.");
+   }
  }
- function reset(){localStorage.removeItem(key);paint()}
- window.fetch=async(...args)=>{
+ async function persist(next){
+   state=next;
+   paint("Zapisywanie ustawień w Supabase…");
+   const {error}=await sb.from("app_settings").upsert({
+     key:"service_mode",
+     value:{delayMs:Number(state.delayMs)||0,maintenance:Boolean(state.maintenance)},
+     updated_at:new Date().toISOString()
+   });
+   if(error){
+     paint("Błąd zapisu w Supabase: "+error.message);
+     return;
+   }
+   paint("Ustawienia zapisane globalnie w Supabase.");
+ }
+ function save(){
+   persist({
+     delayMs:Number(document.getElementById("service-delay")?.value||0),
+     maintenance:Boolean(document.getElementById("service-maintenance")?.checked)
+   });
+ }
+ function reset(){persist({...defaults})}
+ globalThis.fetch=async(...args)=>{
    const requestUrl=String(args[0]?.url||args[0]||"");
    const isAuthRequest=requestUrl.includes("/auth/");
-   const delay=Number(read().delay)||0;
+   const delay=Number(state.delayMs)||0;
    if(delay>0&&!isAuthRequest)await wait(delay);
    return nativeFetch(...args);
  };
- paint();
  async function checkServer(){
    const target=document.getElementById("supabase-server-status");
    if(!target)return;
    target.textContent="Sprawdzam połączenie…";
+   const started=Date.now();
    try{
-     const response=await nativeFetch("/api/supabase-status",{cache:"no-store"});
-     const data=await response.json();
-     if(!response.ok||!data.ok)throw new Error(data.error||"Błąd połączenia");
-     target.textContent="Połączono · "+(data.project?.status||"aktywny")+(data.latencyMs?" · "+data.latencyMs+" ms":"");
+     const {error}=await sb.from("app_settings").select("key").eq("key","service_mode").maybeSingle();
+     if(error)throw error;
+     target.textContent="Połączono z Supabase · "+(Date.now()-started)+" ms";
      target.style.color="var(--ok)";
    }catch(error){
      target.textContent=error.message||"Nie udało się sprawdzić połączenia.";
      target.style.color="var(--danger)";
    }
  }
- return {save,reset,paint,checkServer};
+ return {load,save,reset,paint,checkServer};
 })();
 </script></body></html>
