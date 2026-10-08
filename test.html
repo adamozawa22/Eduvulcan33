@@ -103,7 +103,7 @@
   <button type="button" onclick="Student.loadMessages()">Odśwież</button>
 </div>
 <div id="student-message-list"><div class="message-empty">Otwórz wiadomości, aby je wczytać.</div></div>
-</section><section class="view" id="view-ustawienia" hidden=""><div class="surface settings-note"><h3>Twoje notatki</h3><p>Zapisz zadanie, pomysł lub przypomnienie. Notatki są przechowywane na tym urządzeniu.</p><button class="secondary" onclick="Student.openModal('notatki')">Otwórz notatki</button></div>
+</section><section class="view" id="view-dodatki" hidden=""><div class="section-title" style="margin-top:0">Dodatki</div><div class="category-grid"><button class="category-card" type="button" onclick="Student.showView('plan')"><div class="cat-ico">↔</div><b>Zastępstwa i bloki</b><span>Sprawdź tymczasowe zmiany w planie.</span></button><button class="category-card" type="button"><div class="cat-ico">▣</div><b>Kalendarz szkolny</b><span>Zaplanuj wydarzenia i ważne terminy.</span></button><button class="category-card" type="button" onclick="Student.openModal('notatki')"><div class="cat-ico">✎</div><b>Szybka notatka</b><span>Zapisz coś na później na tym urządzeniu.</span></button><button class="category-card" type="button"><div class="cat-ico">?</div><b>Pomoc</b><span>Najważniejsze informacje o korzystaniu z dziennika.</span></button></div></section><section class="view" id="view-ustawienia" hidden=""><div class="surface settings-note"><h3>Twoje notatki</h3><p>Zapisz zadanie, pomysł lub przypomnienie. Notatki są przechowywane na tym urządzeniu.</p><button class="secondary" onclick="Student.openModal('notatki')">Otwórz notatki</button></div>
 
 <div class="section-title" style="margin-top:0">Ustawienia</div>
 
@@ -240,6 +240,7 @@ Nauczyciele
 <svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#messages"></use></svg>
 Wiadomości
 </button>
+<button class="tab" onclick="Admin.switchPanel('dodatki',this)"><svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"></use></svg>Dodatki</button>
 
 
 </nav>
@@ -296,6 +297,8 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 </section>
 
+
+<section id="panel-dodatki" class="panel"><div class="card"><h2>Dodatki administratora</h2><p class="hint">Szybki dostęp do funkcji, które pomagają uporządkować szkolny dzień.</p><div class="category-grid"><button class="category-card" type="button" onclick="Admin.switchPanel('plan',document.querySelector('#admin-root .tab'))"><div class="cat-ico">↔</div><b>Zastępstwa i bloki</b><span>Przejdź do planu i dodaj zmianę tylko na konkretny dzień.</span></button><button class="category-card" type="button"><div class="cat-ico">▣</div><b>Kalendarz wydarzeń</b><span>Miejsce na wyjścia, uroczystości i terminy szkolne.</span></button><button class="category-card" type="button"><div class="cat-ico">▤</div><b>Raporty</b><span>Podsumowania frekwencji, ocen i zmian w planie.</span></button><button class="category-card" type="button"><div class="cat-ico">⚙</div><b>Ustawienia panelu</b><span>Konfiguracja widoku administratora.</span></button></div></div></section>
 
 <section id="panel-uwagi" class="panel">
 
@@ -2013,7 +2016,7 @@ function closeMobileMenu(){
 }
 
 async function showView(name){
- if(!['start','plan','oceny','frekwencja','uwagi','wiadomosci','ustawienia'].includes(name))return;
+ if(!['start','plan','oceny','frekwencja','uwagi','wiadomosci','dodatki','ustawienia'].includes(name))return;
  activePage=name;
  document.querySelectorAll('.view').forEach(view=>{const selected=view.id==='view-'+name;view.classList.toggle('active',selected);view.hidden=!selected;});
  Shell.pageChanged(name);
@@ -5156,10 +5159,10 @@ function lock(){app.style.display='none';loginScreen.style.display='';loginPassw
 return {getMonday,changeWeek,goToCurrentWeek,refreshWeekViews,getWeekDate,localDateISO,formatShortDate,formatFullDate,formatWeek,getWeekDateFrom,formatAdminMessageDate,localDateTimeInputValue,renderAdminMessageSenders,renderAdminMessages,openAdminMessageComposer,closeAdminMessageComposer,deleteAdminMessage,loadAdminMessages,sendAdminMessage,db,login,logout,showApp,loadData,toggleAdminMenu,closeAdminMenu,switchPanel,renderPlanDays,renderSchedule,allKnownSubjects,prepareSubjectOptions,prepareSubjectDatalist,prepareGradeOptions,getTeacherForSubject,subjectChanged,updateTeacherHint,toggleTeacherAbsence,getTeacherChange,openLesson,saveLesson,deleteLesson,renderAttDays,renderAttendance,openAtt,saveAttendance,deleteAttendance,statusLabel,setBulkScope,updateBulkLabels,bulkDays,bulkScopeLabel,bulkRows,askBulkConfirm,cancelBulk,confirmBulk,markBulk,clearBulk,renderRemarks,editRemark,cancelRemarkEdit,saveRemark,removeRemark,gradeToNumber,fmtGradeDate,renderGrades,editGrade,cancelGradeEdit,saveGrade,removeGrade,renderTeachers,editTeacher,cancelTeacherEdit,saveTeacherMapping,removeTeacher,closeModal,esc,fmtTime,chooseDay,lock};})();
 window.Shell=(()=>{
  const menus={
- student:[['start','Pulpit','home'],['plan','Plan lekcji','calendar'],['oceny','Oceny','grades'],['frekwencja','Frekwencja','attendance'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks'],['ustawienia','Ustawienia','settings']],
- admin:[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks']]
+ student:[['start','Pulpit','home'],['plan','Plan lekcji','calendar'],['oceny','Oceny','grades'],['frekwencja','Frekwencja','attendance'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks'],['dodatki','Dodatki','settings'],['ustawienia','Ustawienia','settings']],
+ admin:[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks'],['dodatki','Dodatki','settings']]
  };
- const titles={start:['Twój pulpit','Wszystko, co ważne w Twoim szkolnym dniu.'],plan:['Plan lekcji','Twój dzień rozpisany krok po kroku.'],oceny:['Twoje oceny','Postępy, małe sukcesy i kolejne kroki.'],frekwencja:['Frekwencja','Sprawdź swoje obecności i nieobecności.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Wpisy, do których warto wrócić.'],ustawienia:['Twoja przestrzeń','Dostosuj dziennik i uporządkuj notatki.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.']};
+ const titles={start:['Twój pulpit','Wszystko, co ważne w Twoim szkolnym dniu.'],plan:['Plan lekcji','Twój dzień rozpisany krok po kroku.'],oceny:['Twoje oceny','Postępy, małe sukcesy i kolejne kroki.'],frekwencja:['Frekwencja','Sprawdź swoje obecności i nieobecności.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Wpisy, do których warto wrócić.'],ustawienia:['Twoja przestrzeń','Dostosuj dziennik i uporządkuj notatki.'],dodatki:['Dodatki','Przydatne narzędzia i szybki dostęp do najważniejszych funkcji.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.']};
  let role='student';const last={student:'start',admin:'plan'};let busy=false;
  function closeMenu(){document.getElementById('shell-sidebar').classList.remove('open');document.getElementById('shell-overlay').classList.remove('show');document.getElementById('shell-menu').setAttribute('aria-expanded','false');}
  function toggleMenu(){const open=!document.getElementById('shell-sidebar').classList.contains('open');document.getElementById('shell-sidebar').classList.toggle('open',open);document.getElementById('shell-overlay').classList.toggle('show',open);document.getElementById('shell-menu').setAttribute('aria-expanded',String(open));}
