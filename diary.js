@@ -700,7 +700,6 @@ function buildSummary(stats,days){
           <b>${days}</b>
           <span>dni z frekwencją</span>
         </div>
-        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
 
       </div>
 
@@ -954,9 +953,20 @@ function openDay(iso){
    PLAN
 ===================================================== */
 
+function mergeBlockLessons(lessons){
+  const merged=[];
+  lessons.forEach(lesson=>{
+    const previous=merged[merged.length-1];
+    const canMerge=previous && lesson.changeType==="block" && previous.changeType==="block" && Number(lesson.n)===Number(previous.lastN)+1 && lesson.subj===previous.subj && lesson.teacher===previous.teacher && lesson.changeNote===previous.changeNote;
+    if(canMerge){ previous.end=lesson.end; previous.lastN=lesson.n; previous.nLabel=previous.n+"–"+lesson.n; }
+    else merged.push({...lesson,lastN:lesson.n,nLabel:String(lesson.n)});
+  });
+  return merged;
+}
+
 function renderPlan(){
 
-  const lessons=getLessons(currentDate);
+  const lessons=mergeBlockLessons(getLessons(currentDate));
 
   document.getElementById("plan-day-label")
     .textContent=formatDate(currentDate);
@@ -991,7 +1001,7 @@ function renderPlan(){
     <div class="lesson-card ${l.absent?"cancelled":""}">
 
       <div class="lesson-num">
-        ${l.n}
+        ${escapeHTML(l.nLabel||String(l.n))}
       </div>
 
       <div class="lesson-time">
