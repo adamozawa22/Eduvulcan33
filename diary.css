@@ -1257,3 +1257,5 @@ nav.bottom a{text-decoration:none}nav.bottom a:focus-visible{outline:2px solid v
 
 
 .lesson-change-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:var(--accent-dim);color:var(--accent);font-size:10px;font-weight:800;vertical-align:middle}.lesson-note{margin-top:7px;color:var(--muted);font-size:12px;line-height:1.4}
+
+.start-change-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.start-change-row:first-child{border-top:0}.start-change-date{width:32px;text-align:center;flex:none;color:var(--muted)}.start-change-date b{display:block;font-size:16px}.start-change-date span{font-size:10px}.start-change-body{min-width:0;flex:1}.start-change-body b{display:block;font-size:12px}.start-change-body span,.start-change-body small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.start-change-body small{color:var(--text);line-height:1.4}
