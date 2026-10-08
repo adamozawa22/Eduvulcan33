@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700" role="img" aria-labelledby="title desc">
+<title>Nowe logo VULCAN</title><desc>Stylizowana litera V w kolorze bordowym</desc>
+<defs><linearGradient id="vulcanCurve" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9d2942"/><stop offset="1" stop-color="#5a2948"/></linearGradient></defs>
+<path fill="url(#vulcanCurve)" d="M0 0h220l130 225L505 0h195L350 612z"/>
+<path fill="#7f263d" d="M0 0h220l-96 124h-45z"/>
+</svg>
