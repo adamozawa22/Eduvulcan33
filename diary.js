@@ -1,42 +1,4 @@
 const activePage=document.body.dataset.page;
-let globalServiceMode={delayMs:0,maintenance:false};
-function serviceWaitOverlay(){
-  let overlay=document.getElementById("global-service-wait");
-  if(overlay)return overlay;
-  overlay=document.createElement("div");
-  overlay.id="global-service-wait";
-  overlay.style.cssText="position:fixed;inset:0;z-index:9999;display:none;place-items:center;background:rgba(37,37,63,.94);color:#fff;font-family:inherit";
-  overlay.innerHTML='<div style="width:min(360px,calc(100vw - 40px));padding:28px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:#302f50;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.28)"><h2 style="margin:0 0 8px;font-size:19px">Pobieranie danych</h2><p id="global-service-message" style="margin:0;color:#c8c3dc;font-size:12px">Czekam na odpowiedź serwera…</p><strong id="global-service-countdown" style="display:block;margin-top:16px;color:#d8ccff;font-size:28px">0,0 s</strong></div>';
-  document.body.appendChild(overlay);
-  return overlay;
-}
-async function loadGlobalServiceMode(){
-  try{
-    const {data,error}=await sb.from("app_settings").select("value").eq("key","service_mode").maybeSingle();
-    if(error)throw error;
-    globalServiceMode={delayMs:Number(data?.value?.delayMs)||0,maintenance:Boolean(data?.value?.maintenance)};
-  }catch{
-    globalServiceMode={delayMs:0,maintenance:false};
-  }
-}
-async function waitForGlobalServiceMode(){
-  const delay=Math.max(0,Number(globalServiceMode.delayMs)||0);
-  if(delay<=0)return;
-  const overlay=serviceWaitOverlay();
-  const message=document.getElementById("global-service-message");
-  const countdown=document.getElementById("global-service-countdown");
-  overlay.style.display="grid";
-  const started=Date.now();
-  while(Date.now()-started<delay){
-    const remaining=Math.max(0,delay-(Date.now()-started));
-    if(message)message.textContent="Czekam na odpowiedź serwera…";
-    if(countdown)countdown.textContent=(remaining/1000).toFixed(1).replace(".",",")+" s";
-    await new Promise(resolve=>setTimeout(resolve,Math.min(100,remaining)));
-  }
-  if(message)message.textContent="Pobieram dane z Supabase…";
-  overlay.style.display="none";
-}
-
 function showLogin(){
   document.getElementById("diary-app").hidden=true;
   location.replace("logowanie.html?next="+encodeURIComponent(activePage));
@@ -56,8 +18,6 @@ async function initAuth(){
     if(error)throw error;
     if(!data.session){showLogin();return;}
     status.hidden=true;
-    await loadGlobalServiceMode();
-    await waitForGlobalServiceMode();
     document.getElementById("diary-app").hidden=false;
     sb.auth.onAuthStateChange((event,session)=>{
       if(event==="SIGNED_OUT" || (event==="TOKEN_REFRESHED" && !session))showLogin();
