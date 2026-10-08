@@ -25,6 +25,8 @@
 .category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.category-card{appearance:none;width:100%;min-height:170px;padding:22px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;color:var(--text);box-shadow:0 8px 22px rgba(40,36,70,.04);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.category-card:hover{transform:translateY(-3px);border-color:#d9cef4;box-shadow:0 14px 30px rgba(40,36,70,.09)}.category-card:focus-visible{outline:3px solid #b0a1f2;outline-offset:3px}.category-card .cat-ico{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--accent-dim);color:var(--accent);font-size:22px;font-weight:700;line-height:1}.category-card:nth-child(2) .cat-ico{background:#eaf4f1;color:#3d967a}.category-card:nth-child(3) .cat-ico{background:#fff2e5;color:#c58239}.category-card:nth-child(4) .cat-ico{background:#f1edf8;color:#8a70ae}.category-card .cat-ico svg{width:22px;height:22px}.category-card b{font-family:Manrope,sans-serif;font-size:14px;line-height:1.3;font-weight:750;letter-spacing:-.02em}.category-card span{font-size:11px;line-height:1.6;color:var(--muted)}@media(max-width:680px){.category-grid{grid-template-columns:1fr;gap:12px}.category-card{min-height:145px;padding:18px}}
 
 .app-loading{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(37,37,63,.96);color:#fff;opacity:1;transition:opacity .35s ease}.app-loading.is-done{opacity:0;pointer-events:none}.app-loading-box{width:min(380px,calc(100vw - 40px));padding:30px 28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#302f50;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center}.app-loading-logo{width:58px;height:58px;object-fit:contain;margin:0 auto 16px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.18))}.app-loading-title{font-family:Manrope,sans-serif;font-size:18px;font-weight:750;letter-spacing:-.03em}.app-loading-stage{min-height:18px;margin-top:8px;color:#c8c3dc;font-size:11px}.app-loading-percent{margin-top:18px;font-family:Manrope,sans-serif;font-size:30px;font-weight:800;color:#d8ccff}.app-loading-track{height:8px;margin-top:12px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.12)}.app-loading-bar{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#9b86ed,#d9cfff);transition:width .18s ease}
+
+.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
 </style></head>
 <body><div class="app-loading" id="app-loading" role="status" aria-live="polite"><div class="app-loading-box"><img class="app-loading-logo" src="curve-logo.svg" alt=""><div class="app-loading-title">VULCAN Edukacja</div><div class="app-loading-stage" id="app-loading-stage">Uruchamiam aplikację…</div><div class="app-loading-percent" id="app-loading-percent">0%</div><div class="app-loading-track" aria-hidden="true"><div class="app-loading-bar" id="app-loading-bar"></div></div></div></div>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="test.html"><span class="brand-logo-wrap"><img class="brand-logo" src="curve-logo.svg" alt="VULCAN Edukacja"></span><span class="brand-name">VULCAN <em>Edukacja</em></span></a><div class="brand-subtitle">Twoja szkolna przestrzeń</div><div class="nav-label" id="nav-label">Menu ucznia</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje VULCAN Edukacja"></nav><div class="sidebar-bottom"><div class="sidebar-note"><div class="note-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM9 9h6M9 13h6M9 17h4"/></svg></div><b>Małe rzeczy, duży porządek.</b><p>Zapisz to, o czym chcesz pamiętać. Twoje notatki są zawsze pod ręką.</p><button id="shell-note">Otwórz notatki ↗</button></div><div class="sidebar-foot"><span>VULCAN Edukacja / nowy widok</span><a href="index.html">Strona główna ↗</a></div></div></aside>
@@ -302,7 +304,7 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 </section>
 
 
-<section id="panel-dodatki" class="panel"><div class="card"><h2>Dodatki administratora</h2><p class="hint">Szybki dostęp do funkcji, które pomagają uporządkować szkolny dzień.</p><div class="category-grid"><button class="category-card" type="button" onclick="Admin.switchPanel('plan',document.querySelector('#admin-root .tab'))"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"></use></svg></div><b>Zastępstwa i bloki</b><span>Przejdź do planu i dodaj zmianę tylko na konkretny dzień.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar-empty"></use></svg></div><b>Kalendarz wydarzeń</b><span>Miejsce na wyjścia, uroczystości i terminy szkolne.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"></use></svg></div><b>Raporty</b><span>Podsumowania frekwencji, ocen i zmian w planie.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"></use></svg></div><b>Ustawienia panelu</b><span>Konfiguracja widoku administratora.</span></button></div></div></section>
+<section id="panel-dodatki" class="panel"><div class="card"><h2>Dodatki administratora</h2><p class="hint">Szybki dostęp do funkcji, które pomagają uporządkować szkolny dzień.</p><div class="category-grid"><button class="category-card" type="button" onclick="Admin.switchPanel('plan',document.querySelector('#admin-root .tab'))"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar"></use></svg></div><b>Zastępstwa i bloki</b><span>Przejdź do planu i dodaj zmianę tylko na konkretny dzień.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#calendar-empty"></use></svg></div><b>Kalendarz wydarzeń</b><span>Miejsce na wyjścia, uroczystości i terminy szkolne.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#grades"></use></svg></div><b>Raporty</b><span>Podsumowania frekwencji, ocen i zmian w planie.</span></button><button class="category-card" type="button"><div class="cat-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"></use></svg></div><b>Ustawienia panelu</b><span>Konfiguracja widoku administratora.</span></button></div></div><div class="service-controls"><h3>Tryb serwisowy</h3><p>Bezpieczne ustawienia testowe dla tej aplikacji. Nie wyłączają infrastruktury Supabase ani nie zmieniają danych.</p><div class="service-grid"><div class="service-field"><label for="service-delay">Opóźnienie zapytań</label><select id="service-delay"><option value="0">Wyłączone</option><option value="500">Lekko — 0,5 s</option><option value="1500">Średnio — 1,5 s</option><option value="3000">Mocno — 3 s</option></select></div><div class="service-field"><label>Blokada widoku ucznia</label><label class="service-switch"><input id="service-maintenance" type="checkbox"> Włącz tryb serwisowy</label></div></div><div class="actions"><button class="primary" type="button" onclick="ServiceMode.save()">Zapisz ustawienia</button><button class="secondary" type="button" onclick="ServiceMode.reset()">Wyłącz wszystko</button></div><div class="service-status" id="service-status" aria-live="polite"></div></div></section>
 
 <section id="panel-uwagi" class="panel">
 
@@ -5243,5 +5245,33 @@ window.Shell=(()=>{
   window.addEventListener("load",()=>{clearInterval(timer);finish()},{once:true});
   setTimeout(()=>{clearInterval(timer);finish()},7000);
   window.AppLoading={finish};
+})();
+</script><script>
+window.ServiceMode=(()=>{
+ const key="vulcan-service-mode";
+ const defaults={delay:0,maintenance:false};
+ function read(){try{return {...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch{return {...defaults}}}
+ function paint(){
+   const state=read();
+   const delay=document.getElementById("service-delay");
+   const maintenance=document.getElementById("service-maintenance");
+   const status=document.getElementById("service-status");
+   if(delay)delay.value=String(state.delay);
+   if(maintenance)maintenance.checked=Boolean(state.maintenance);
+   if(status){
+     status.className="service-status"+(state.delay||state.maintenance?" on":"");
+     status.textContent=state.delay||state.maintenance
+       ? "Aktywne lokalnie na tym urządzeniu — Supabase działa bez zmian."
+       : "Tryb serwisowy jest wyłączony.";
+   }
+ }
+ function save(){
+   const state={delay:Number(document.getElementById("service-delay")?.value||0),maintenance:Boolean(document.getElementById("service-maintenance")?.checked)};
+   localStorage.setItem(key,JSON.stringify(state));
+   paint();
+ }
+ function reset(){localStorage.removeItem(key);paint()}
+ document.addEventListener("DOMContentLoaded",paint);
+ return {save,reset,paint};
 })();
 </script></script></body></html>
