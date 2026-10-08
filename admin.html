@@ -1751,6 +1751,10 @@ function getTeacherChange(
    EDYCJA LEKCJI
 ===================================================== */
 
+function readChangeDetails(change){
+  try{const parsed=JSON.parse(change?.note||"");return parsed?.__eduvulcan_change||{};}catch(error){return {};}
+}
+
 function openLesson(id,n){
 
   selectedLesson={
@@ -1836,11 +1840,12 @@ function openLesson(id,n){
     change?.lesson_date||
     localDateISO(selectedDate);
 
-  mChangeType.value=change?.change_type||"none";
-  mReplacementSubject.value=change?.replacement_subject||"";
-  mReplacementTeacher.value=change?.replacement_teacher||change?.substitute_teacher||"";
-  mReplacementRoom.value=change?.replacement_room||"";
-  mChangeNote.value=change?.note||"";
+  const changeDetails=readChangeDetails(change);
+  mChangeType.value=changeDetails.kind||"none";
+  mReplacementSubject.value=changeDetails.subject||"";
+  mReplacementTeacher.value=changeDetails.teacher||change?.substitute_teacher||"";
+  mReplacementRoom.value=changeDetails.room||"";
+  mChangeNote.value=changeDetails.message||((changeDetails.kind)?"":(change?.note||""));
 
 
   toggleTeacherAbsence();
@@ -1968,20 +1973,10 @@ async function saveLesson(){
         substitute_teacher:
           mReplacementTeacher.value.trim()||null,
 
-        change_type:
-          changeType,
-
-        replacement_subject:
-          mReplacementSubject.value.trim()||p.subject,
-
-        replacement_teacher:
-          mReplacementTeacher.value.trim(),
-
-        replacement_room:
-          mReplacementRoom.value.trim(),
-
         note:
-          mChangeNote.value.trim()
+          changeType!=="none"
+            ? JSON.stringify({__eduvulcan_change:{kind:changeType,subject:mReplacementSubject.value.trim()||p.subject,teacher:mReplacementTeacher.value.trim(),room:mReplacementRoom.value.trim(),message:mChangeNote.value.trim()}})
+            : mChangeNote.value.trim()
 
       };
 
@@ -3645,7 +3640,7 @@ async function saveBlock(){
     const note=document.getElementById("blockNote").value.trim();
     for(const box of document.querySelectorAll("#blockLessonsList input:checked")){
       const lessonId=box.value;
-      const payload={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:false,substitute_teacher:teacher||null,note,change_type:"block",replacement_subject:title,replacement_teacher:teacher,replacement_room:""};
+      const payload={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:false,substitute_teacher:teacher||null,note:JSON.stringify({__eduvulcan_change:{kind:"block",subject:title,teacher,room:"",message:note}})};
       const existing=await sb.from("teacher_changes").select("id").eq("lesson_plan_id",lessonId).eq("lesson_date",date).limit(1);
       if(existing.error)throw existing.error;
       const row=(existing.data||[])[0];
