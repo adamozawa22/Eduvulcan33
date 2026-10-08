@@ -317,13 +317,15 @@ function getLessonsFromSupabase(date){
 
         end:String(x.end_time||"").slice(0,5),
 
-        subj:x.subject||"",
+        subj:change?.replacement_subject||x.subject||"",
 
-        room:x.room||"",
+        room:change?.replacement_room||x.room||"",
 
-        teacher:x.teacher||"",
+        teacher:change?.change_type==="block" ? (change.replacement_teacher||"") : (change?.replacement_teacher||x.teacher||""),
 
-        absent:!!(change && change.teacher_absent),
+        absent:!!(change && (change.teacher_absent || change.change_type==="cancelled")),
+        changeType:change?.change_type||"",
+        changeNote:change?.note||"",
 
 
       };
@@ -723,6 +725,7 @@ function buildSummary(stats,days){
           <b>${days}</b>
           <span>dni z frekwencją</span>
         </div>
+        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
 
       </div>
 
@@ -981,6 +984,7 @@ function renderPlan(){
         <div>
           Brak lekcji tego dnia
         </div>
+        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
 
       </div>
 
@@ -1008,6 +1012,7 @@ function renderPlan(){
 
         <div class="subj">
           ${escapeHTML(l.subj)}
+          ${l.changeType?`<span class="lesson-change-badge">${l.changeType==="block"?"Blok":"Zastępstwo"}</span>`:""}
         </div>
 
         <div class="meta">
