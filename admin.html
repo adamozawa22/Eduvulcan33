@@ -3799,11 +3799,15 @@ globalThis.ServiceMode=(()=>{
  function reset(){persist({...defaults})}
  async function waitForData(){
    const delay=Number(state.delayMs)||0;
-   if(delay>0){
-     const status=document.getElementById("service-status");
-     if(status)status.textContent="Odczekuję "+(delay/1000)+" s przed pobraniem danych…";
-     await wait(delay);
+   if(delay<=0)return;
+   const status=document.getElementById("service-status");
+   const started=Date.now();
+   while(Date.now()-started<delay){
+     const remaining=Math.max(0,delay-(Date.now()-started));
+     if(status)status.textContent="Czekam "+(remaining/1000).toFixed(1)+" s przed pobraniem danych…";
+     await wait(Math.min(100,remaining));
    }
+   if(status)status.textContent="Pobieram dane z Supabase…";
  }
  async function checkServer(){
    const target=document.getElementById("supabase-server-status");
