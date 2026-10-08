@@ -3740,8 +3740,10 @@ window.ServiceMode=(()=>{
  }
  function reset(){localStorage.removeItem(key);paint()}
  window.fetch=async(...args)=>{
+   const requestUrl=String(args[0]?.url||args[0]||"");
+   const isAuthRequest=requestUrl.includes("/auth/");
    const delay=Number(read().delay)||0;
-   if(delay>0)await wait(delay);
+   if(delay>0&&!isAuthRequest)await wait(delay);
    return nativeFetch(...args);
  };
  paint();
