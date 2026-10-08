@@ -290,6 +290,10 @@ function formatDate(date){
    LEKCJE Z SUPABASE
 ===================================================== */
 
+function decodeTeacherChange(change){
+  try{const parsed=JSON.parse(change?.note||"");return parsed?.__eduvulcan_change||{};}catch(error){return {};}
+}
+
 function getLessonsFromSupabase(date){
 
   const weekday=adminWeekdayFromDate(date);
@@ -309,6 +313,8 @@ function getLessonsFromSupabase(date){
           String(c.lesson_date||"")===dateISO
         );
 
+      const detail=decodeTeacherChange(change);
+
       return {
 
         n:Number(x.lesson_number),
@@ -317,15 +323,15 @@ function getLessonsFromSupabase(date){
 
         end:String(x.end_time||"").slice(0,5),
 
-        subj:change?.replacement_subject||x.subject||"",
+        subj:detail.subject||x.subject||"",
 
-        room:change?.replacement_room||x.room||"",
+        room:detail.room||x.room||"",
 
-        teacher:change?.change_type==="block" ? (change.replacement_teacher||"") : (change?.replacement_teacher||x.teacher||""),
+        teacher:detail.kind==="block" ? (detail.teacher||"") : (detail.teacher||change?.substitute_teacher||x.teacher||""),
 
-        absent:!!(change && (change.teacher_absent || change.change_type==="cancelled")),
-        changeType:change?.change_type||"",
-        changeNote:change?.note||"",
+        absent:!!(change && (change.teacher_absent || detail.kind==="cancelled")),
+        changeType:detail.kind||"",
+        changeNote:detail.message||((detail.kind)? "":(change?.note||"")),
 
 
       };
