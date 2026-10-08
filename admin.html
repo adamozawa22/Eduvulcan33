@@ -125,6 +125,8 @@ Wiadomości
 
 <div class="day-tabs" id="planDays"></div>
 
+<div style="display:flex;justify-content:flex-end;margin:-8px 0 18px"><button class="primary" type="button" onclick="Admin.openChangeChooser()">Chcesz coś zmienić?</button></div>
+
 <div style="overflow:auto">
 <div class="schedule" id="schedule"></div>
 </div>
@@ -500,7 +502,7 @@ Usuń lekcję
 <div class="status-msg" id="lessonMsg"></div>
 
 </div>
-</div><!-- FREKWENCJA --><div class="modal" id="attModal">
+</div><!-- ZMIANA / BLOK LEKCYJNY --><div class="modal" id="changeChooserModal"><div class="modal-box"><div class="modal-head"><h3>Co chcesz zmienić?</h3><button class="close" type="button" onclick="Admin.closeModal('changeChooserModal')">×</button></div><div id="changeChooserStep"><p class="hint" style="margin-bottom:18px">Zmiana zostanie przypisana tylko do wybranego dnia i nie zmieni kolejnych tygodni.</p><div class="actions"><button class="primary" type="button" onclick="Admin.chooseChangeMode('lesson')">Zmień lekcję</button><button class="secondary" type="button" onclick="Admin.chooseChangeMode('block')">Utwórz blok lekcyjny</button></div></div><div id="blockLessonsStep" hidden><h4>Wybierz lekcje do połączenia</h4><p class="hint">Zaznacz lekcje, które mają stać się jednym blokiem.</p><div id="blockLessonsList"></div><div class="actions"><button class="primary" type="button" onclick="Admin.continueBlock()">Kontynuuj</button><button class="secondary" type="button" onclick="Admin.closeModal('changeChooserModal')">Anuluj</button></div></div><div id="blockDetailsStep" hidden><h4>Ustawienia bloku</h4><label for="blockTitle">Nazwa bloku</label><input id="blockTitle" type="text" placeholder="np. Wyjście do parku"><label for="blockTeacher">Prowadzący</label><input id="blockTeacher" type="text" placeholder="np. Anna Kowalska"><label for="blockAdditionalTeachers">Dodatkowi nauczyciele (opcjonalnie)</label><input id="blockAdditionalTeachers" type="text" placeholder="np. Piotr Nowak, Maria Zięba"><label for="blockNote">Informacja dla uczniów</label><textarea id="blockNote" rows="3" placeholder="Miejsce zbiórki, godzina, ważne informacje"></textarea><div class="actions"><button class="primary" type="button" onclick="Admin.saveBlock()">Zapisz blok</button><button class="secondary" type="button" onclick="Admin.closeModal('changeChooserModal')">Anuluj</button></div><div class="status-msg" id="blockMsg"></div></div></div></div><!-- FREKWENCJA --><div class="modal" id="attModal">
 
 <div class="modal-box">
 
@@ -3609,7 +3611,52 @@ document.getElementById("admin-message-form").addEventListener("submit",sendAdmi
 
 function chooseDay(day,type){selectedDay=Number(day);if(type==='plan'){renderPlanDays();renderSchedule();}else{renderAttDays();renderAttendance();}}
 function lock(){app.style.display='none';loginScreen.style.display='';loginPassword.value='';}
-return {getMonday,changeWeek,goToCurrentWeek,refreshWeekViews,getWeekDate,localDateISO,formatShortDate,formatFullDate,formatWeek,getWeekDateFrom,formatAdminMessageDate,localDateTimeInputValue,renderAdminMessageSenders,renderAdminMessages,openAdminMessageComposer,closeAdminMessageComposer,deleteAdminMessage,loadAdminMessages,sendAdminMessage,db,login,logout,showApp,loadData,toggleAdminMenu,closeAdminMenu,switchPanel,renderPlanDays,renderSchedule,allKnownSubjects,prepareSubjectOptions,prepareSubjectDatalist,prepareGradeOptions,getTeacherForSubject,subjectChanged,updateTeacherHint,toggleTeacherAbsence,getTeacherChange,openLesson,saveLesson,deleteLesson,renderAttDays,renderAttendance,openAtt,saveAttendance,deleteAttendance,statusLabel,setBulkScope,updateBulkLabels,bulkDays,bulkScopeLabel,bulkRows,askBulkConfirm,cancelBulk,confirmBulk,markBulk,clearBulk,renderRemarks,editRemark,cancelRemarkEdit,saveRemark,removeRemark,gradeToNumber,fmtGradeDate,renderGrades,editGrade,cancelGradeEdit,saveGrade,removeGrade,renderTeachers,editTeacher,cancelTeacherEdit,saveTeacherMapping,removeTeacher,closeModal,esc,fmtTime,chooseDay,lock};})();
+
+function openChangeChooser(){
+  document.getElementById("changeChooserStep").hidden=false;
+  document.getElementById("blockLessonsStep").hidden=true;
+  document.getElementById("blockDetailsStep").hidden=true;
+  document.getElementById("blockMsg").textContent="";
+  document.getElementById("changeChooserModal").classList.add("show");
+}
+function chooseChangeMode(mode){
+  if(mode==="lesson"){
+    closeModal("changeChooserModal");
+    document.querySelector("#panel-plan .status-msg").textContent="Kliknij wybraną lekcję, aby zmienić jej dane tylko w tym dniu.";
+    return;
+  }
+  const current=plan.filter(x=>Number(x.weekday)===Number(selectedDay)).sort((a,b)=>Number(a.lesson_number)-Number(b.lesson_number));
+  document.getElementById("blockLessonsList").innerHTML=current.length?current.map(x=>'<label class="check-row" style="padding:10px;border:1px solid var(--line);border-radius:10px;margin:7px 0"><input type="checkbox" value="'+esc(String(x.id))+'" data-lesson-number="'+esc(String(x.lesson_number))+'"> '+esc(String(x.lesson_number)+'. '+(x.subject||"Lekcja")+" · "+fmtTime(x.start_time)+"–"+fmtTime(x.end_time))+'</label>').join(""):'<p class="hint">Brak lekcji w wybranym dniu.</p>';
+  document.getElementById("changeChooserStep").hidden=true;
+  document.getElementById("blockLessonsStep").hidden=false;
+}
+function continueBlock(){
+  if(!document.querySelectorAll("#blockLessonsList input:checked").length){document.getElementById("blockMsg").textContent="Zaznacz co najmniej jedną lekcję.";return;}
+  document.getElementById("blockLessonsStep").hidden=true;
+  document.getElementById("blockDetailsStep").hidden=false;
+}
+async function saveBlock(){
+  const title=document.getElementById("blockTitle").value.trim();
+  if(!title){document.getElementById("blockMsg").textContent="Podaj nazwę bloku.";return;}
+  try{
+    db();
+    const date=localDateISO(getWeekDate(selectedDay));
+    const teacher=[document.getElementById("blockTeacher").value.trim(),document.getElementById("blockAdditionalTeachers").value.trim()].filter(Boolean).join(", ");
+    const note=document.getElementById("blockNote").value.trim();
+    for(const box of document.querySelectorAll("#blockLessonsList input:checked")){
+      const lessonId=box.value;
+      const payload={lesson_plan_id:lessonId,lesson_date:date,teacher_absent:false,substitute_teacher:teacher||null,note,change_type:"block",replacement_subject:title,replacement_teacher:teacher,replacement_room:""};
+      const existing=await sb.from("teacher_changes").select("id").eq("lesson_plan_id",lessonId).eq("lesson_date",date).limit(1);
+      if(existing.error)throw existing.error;
+      const row=(existing.data||[])[0];
+      const result=row?await sb.from("teacher_changes").update(payload).eq("id",row.id):await sb.from("teacher_changes").insert(payload);
+      if(result.error)throw result.error;
+    }
+    closeModal("changeChooserModal");
+    await loadData();
+  }catch(error){document.getElementById("blockMsg").textContent="Nie udało się zapisać bloku: "+(error.message||"sprawdź migrację Supabase.");}
+}
+return {openChangeChooser,chooseChangeMode,continueBlock,saveBlock,getMonday,changeWeek,goToCurrentWeek,refreshWeekViews,getWeekDate,localDateISO,formatShortDate,formatFullDate,formatWeek,getWeekDateFrom,formatAdminMessageDate,localDateTimeInputValue,renderAdminMessageSenders,renderAdminMessages,openAdminMessageComposer,closeAdminMessageComposer,deleteAdminMessage,loadAdminMessages,sendAdminMessage,db,login,logout,showApp,loadData,toggleAdminMenu,closeAdminMenu,switchPanel,renderPlanDays,renderSchedule,allKnownSubjects,prepareSubjectOptions,prepareSubjectDatalist,prepareGradeOptions,getTeacherForSubject,subjectChanged,updateTeacherHint,toggleTeacherAbsence,getTeacherChange,openLesson,saveLesson,deleteLesson,renderAttDays,renderAttendance,openAtt,saveAttendance,deleteAttendance,statusLabel,setBulkScope,updateBulkLabels,bulkDays,bulkScopeLabel,bulkRows,askBulkConfirm,cancelBulk,confirmBulk,markBulk,clearBulk,renderRemarks,editRemark,cancelRemarkEdit,saveRemark,removeRemark,gradeToNumber,fmtGradeDate,renderGrades,editGrade,cancelGradeEdit,saveGrade,removeGrade,renderTeachers,editTeacher,cancelTeacherEdit,saveTeacherMapping,removeTeacher,closeModal,esc,fmtTime,chooseDay,lock};})();
 window.Shell=(()=>{
  const menu=[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks']];
  const titles={plan:['Zarządzaj planem','Zaplanuj i uporządkuj szkolny tydzień.'],frekwencja:['Zarządzaj frekwencją','Obecności, nieobecności i spóźnienia w jednym miejscu.'],oceny:['Zarządzaj ocenami','Dodawaj oceny i sprawdzaj postępy ucznia.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Dodawaj wpisy i doceniaj małe sukcesy.']};
