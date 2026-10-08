@@ -3726,7 +3726,6 @@ window.Shell=(()=>{
  setTimeout(()=>{const page=location.hash.slice(1).split('/').pop();navigate(titles[page]?page:'plan');refresh();},0);
  return {navigate,toggleMenu,closeMenu,refresh,loggedOut};
 })();
-<script>
 window.ServiceMode=(()=>{
  const key="vulcan-service-mode";
  const defaults={delay:0,maintenance:false};
