@@ -985,8 +985,6 @@ function renderPlan(){
         <div>
           Brak lekcji tego dnia
         </div>
-        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
-
       </div>
 
     `;
