@@ -49,6 +49,11 @@ let teacherChangesData=[];
 let gradesData=[];
 let remarksData=[];
 let messagesData=[];
+const LOCAL_TEACHER_CHANGES_KEY="eduvulcan_teacher_changes";
+function localTeacherChanges(){
+  try{return JSON.parse(localStorage.getItem(LOCAL_TEACHER_CHANGES_KEY)||"[]");}
+  catch(error){return [];}
+}
 
 function formatMessageDate(value){
   const date=new Date(value);
@@ -317,13 +322,15 @@ function getLessonsFromSupabase(date){
 
         end:String(x.end_time||"").slice(0,5),
 
-        subj:x.subject||"",
+        subj:change?.replacement_subject||x.subject||"",
 
-        room:x.room||"",
+        room:change?.replacement_room||x.room||"",
 
-        teacher:x.teacher||"",
+        teacher:change?.change_type==="block" ? (change.replacement_teacher||"") : (change?.replacement_teacher||x.teacher||""),
 
-        absent:!!(change && change.teacher_absent),
+        absent:!!(change && (change.teacher_absent || change.change_type==="cancelled")),
+        changeType:change?.change_type||"",
+        changeNote:change?.note||"",
 
 
       };
@@ -345,8 +352,13 @@ function getLessons(date){
 
   }
 
-  return (weeklyPlan[date.getDay()]||[])
-    .map(l=>({...l,absent:false}));
+  const changes=localTeacherChanges().filter(c=>String(c.lesson_date)===formatISODate(date));
+  return (weeklyPlan[date.getDay()]||[]).map(l=>{
+    const c=changes.find(x=>Number(x.lesson_number)===Number(l.n));
+    return {...l,subj:c?.replacement_subject||l.subj,room:c?.replacement_room||l.room,
+      teacher:c?.change_type==="block" ? (c.replacement_teacher||"") : (c?.replacement_teacher||l.teacher),absent:!!(c&&(c.teacher_absent||c.change_type==="cancelled")),
+      changeType:c?.change_type||"",changeNote:c?.note||""};
+  });
 
 }
 
@@ -418,7 +430,9 @@ async function loadSupabaseData(){
 
     }
 
-    teacherChangesData=changes.data||[];
+    const remoteChanges=changes.data||[];
+    const localChanges=localTeacherChanges();
+    teacherChangesData=[...remoteChanges,...localChanges.filter(local=>!remoteChanges.some(remote=>String(remote.lesson_plan_id||"")===String(local.lesson_plan_id||"")&&String(remote.lesson_date)===String(local.lesson_date)))];
 
 
     const grades=
@@ -723,6 +737,7 @@ function buildSummary(stats,days){
           <b>${days}</b>
           <span>dni z frekwencją</span>
         </div>
+        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
 
       </div>
 
@@ -981,6 +996,7 @@ function renderPlan(){
         <div>
           Brak lekcji tego dnia
         </div>
+        ${l.changeNote?`<div class="lesson-note">${escapeHTML(l.changeNote)}</div>`:""}
 
       </div>
 
@@ -1008,6 +1024,7 @@ function renderPlan(){
 
         <div class="subj">
           ${escapeHTML(l.subj)}
+          ${l.changeType?`<span class="lesson-change-badge">${l.changeType==="block"?"Blok":"Zastępstwo"}</span>`:""}
         </div>
 
         <div class="meta">
