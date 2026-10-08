@@ -891,6 +891,22 @@ function renderStart(){
     }).join("");
 
 
+  /* --- zmiany w tym tygodniu --- */
+
+  const startChangesBox=document.getElementById("start-changes");
+  if(startChangesBox){
+    const changes=week.flatMap(d=>getLessons(d).filter(l=>l.changeType).map(l=>({date:d,lesson:l})));
+    startChangesBox.innerHTML=changes.length
+      ? changes.map(({date,lesson})=>`
+        <div class="start-change-row">
+          <div class="start-change-date"><b>${date.getDate()}</b><span>${monthShort[date.getMonth()]}</span></div>
+          <div class="start-change-body"><b>${escapeHTML(lesson.subj)}</b><span>${dayShort[date.getDay()]} · ${escapeHTML(lesson.start)} · ${escapeHTML(lesson.room||"Brak miejsca")}</span>${lesson.changeNote?`<small>${escapeHTML(lesson.changeNote)}</small>`:""}</div>
+          <span class="lesson-change-badge">${lesson.changeType==="block"?"Blok":"Zastępstwo"}</span>
+        </div>`).join("")
+      : '<div class="st-empty">Brak zaplanowanych zmian w tym tygodniu.</div>';
+  }
+
+
   /* --- ostatnie oceny --- */
 
   const recentGrades = (gradesData || [])
