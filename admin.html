@@ -24,7 +24,7 @@
 
 .admin-badge{background:#28263f;color:#fff;box-shadow:0 3px 7px #1e1a3110}.sidebar-bottom #shell-logout{margin-top:14px}
 
-.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}.service-server-status{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid #eee8f4}.service-server-status b{display:block;font-size:11px;color:var(--text)}.service-server-status span{display:block;margin-top:4px;font-size:10px;color:var(--muted)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
+.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}.data-delay-inline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin:0 0 18px;border:1px solid #eee8f4;border-radius:12px;background:#fcfbfe}.data-delay-inline label{margin:0;color:#8f7fa0}.data-delay-inline select{width:auto;min-width:150px;padding:9px 11px;min-height:38px}.data-delay-inline span{font-size:10px;color:var(--muted)}.service-server-status{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid #eee8f4}.service-server-status b{display:block;font-size:11px;color:var(--text)}.service-server-status span{display:block;margin-top:4px;font-size:10px;color:var(--muted)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="admin.html"><span class="brand-symbol"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v14"></path></svg></span>Dziennik<span style="font-size:22px;color:#a995fa">.</span></a><div class="brand-subtitle">Przestrzeń administratora</div><div class="nav-label" id="nav-label">Menu administratora</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje dziennika"></nav><div class="sidebar-bottom"><div class="sidebar-note"><b>Szkolny dzień pod kontrolą.</b><p>Sprawdź, jak uczeń widzi swój dziennik.</p><a href="start.html" style="color:#d0c4fa;font-size:11px;font-weight:650;text-decoration:none">Otwórz widok ucznia ↗</a></div><button class="nav-item" id="shell-logout" hidden type="button"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v16h5M12 12h9M17 8l4 4-4 4"></path></svg>Wyloguj się</button><div class="sidebar-foot"><span>Dziennik / administrator</span><a href="index.html">Strona główna ↗</a></div></div></aside>
@@ -122,6 +122,7 @@ Tryb serwisowy
 <div class="card">
 
 <h2>Plan lekcji</h2>
+<div class="data-delay-inline"><label for="service-delay-inline">Czas oczekiwania na pobranie danych</label><select id="service-delay-inline" onchange="ServiceMode.saveInline()"><option value="0">Bez oczekiwania</option><option value="1000">1 sekunda</option><option value="3000">3 sekundy</option><option value="5000">5 sekund</option><option value="10000">10 sekund</option></select><span>Ustawienie zapisuje się globalnie w Supabase.</span></div>
 
 <div class="week-nav">
 <button onclick="Admin.changeWeek(-1)">‹ Poprzedni</button>
@@ -3738,11 +3739,18 @@ globalThis.ServiceMode=(()=>{
  let state={...defaults};
  const nativeFetch=globalThis.fetch.bind(globalThis);
  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ function selectedDelay(){
+   const primary=document.getElementById("service-delay");
+   const inline=document.getElementById("service-delay-inline");
+   return Number(primary?.value ?? inline?.value ?? 0)||0;
+ }
  function paint(message){
    const delay=document.getElementById("service-delay");
+   const inlineDelay=document.getElementById("service-delay-inline");
    const maintenance=document.getElementById("service-maintenance");
    const status=document.getElementById("service-status");
    if(delay)delay.value=String(state.delayMs);
+   if(inlineDelay)inlineDelay.value=String(state.delayMs);
    if(maintenance)maintenance.checked=Boolean(state.maintenance);
    if(status){
      status.className="service-status"+(state.delayMs||state.maintenance?" on":"");
@@ -3780,10 +3788,11 @@ globalThis.ServiceMode=(()=>{
  }
  function save(){
    persist({
-     delayMs:Number(document.getElementById("service-delay")?.value||0),
+     delayMs:selectedDelay(),
      maintenance:Boolean(document.getElementById("service-maintenance")?.checked)
    });
  }
+ function saveInline(){save()}
  function reset(){persist({...defaults})}
  async function waitForData(){
    const delay=Number(state.delayMs)||0;
@@ -3808,6 +3817,6 @@ globalThis.ServiceMode=(()=>{
      target.style.color="var(--danger)";
    }
  }
- return {load,save,reset,paint,checkServer,waitForData};
+ return {load,save,saveInline,reset,paint,checkServer,waitForData};
 })();
 </script></body></html>
