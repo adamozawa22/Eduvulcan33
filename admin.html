@@ -24,7 +24,6 @@
 
 .admin-badge{background:#28263f;color:#fff;box-shadow:0 3px 7px #1e1a3110}.sidebar-bottom #shell-logout{margin-top:14px}
 
-.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}.data-delay-inline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin:0 0 18px;border:1px solid #eee8f4;border-radius:12px;background:#fcfbfe}.data-delay-inline label{margin:0;color:#8f7fa0}.data-delay-inline select{width:auto;min-width:150px;padding:9px 11px;min-height:38px}.data-delay-inline span{font-size:10px;color:var(--muted)}.service-server-status{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid #eee8f4}.service-server-status b{display:block;font-size:11px;color:var(--text)}.service-server-status span{display:block;margin-top:4px;font-size:10px;color:var(--muted)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
 
 </style></head>
 <body>
@@ -85,11 +84,6 @@ Nauczyciele
 Wiadomości
 </button>
 
-<button class="tab" onclick="Admin.switchPanel('serwis',this)">
-<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"></use></svg>
-Tryb serwisowy
-</button>
-
 
 </nav>
 
@@ -123,7 +117,6 @@ Tryb serwisowy
 <div class="card">
 
 <h2>Plan lekcji</h2>
-<div class="data-delay-inline"><label for="service-delay-inline">Czas oczekiwania na pobranie danych</label><select id="service-delay-inline" onchange="ServiceMode.saveInline()"><option value="0">Bez oczekiwania</option><option value="1000">1 sekunda</option><option value="3000">3 sekundy</option><option value="5000">5 sekund</option><option value="10000">10 sekund</option></select><span>Ustawienie zapisuje się globalnie w Supabase.</span></div>
 
 <div class="week-nav">
 <button onclick="Admin.changeWeek(-1)">‹ Poprzedni</button>
@@ -148,37 +141,7 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 </section>
 
-<section id="panel-serwis" class="panel">
-<div class="card">
-<h2>Serwer i tryb serwisowy</h2>
-<p class="hint">Bezpieczne ustawienia testowe aplikacji. Nie wyłączają infrastruktury Supabase ani nie zmieniają danych.</p>
-<div class="service-controls">
-<h3>Kontrola działania aplikacji</h3>
-<p>Opóźnienie jest ustawieniem globalnym zapisanym w Supabase. Po zapisaniu dane zostaną pobrane ponownie z wybranym opóźnieniem.</p>
-<div class="service-grid">
-<div class="service-field">
-<label for="service-delay">Czas oczekiwania na pobranie danych</label>
-<select id="service-delay">
-<option value="0">Bez oczekiwania</option>
-<option value="1000">1 sekunda</option>
-<option value="3000">3 sekundy</option>
-<option value="5000">5 sekund</option>
-<option value="10000">10 sekund</option>
-</select>
-</div>
-<div class="service-field">
-<label>Widok ucznia</label>
-<label class="service-switch"><input id="service-maintenance" type="checkbox"> Włącz tryb serwisowy</label>
-</div>
-</div>
-<div class="actions">
-<button class="primary" type="button" onclick="ServiceMode.save()">Zapisz ustawienia</button>
-<button class="secondary" type="button" onclick="ServiceMode.reset()">Wyłącz wszystko</button>
-</div>
-<div class="service-status" id="service-status" aria-live="polite"></div><div class="service-server-status"><div><b>Połączenie z Supabase</b><span id="supabase-server-status">Jeszcze nie sprawdzono.</span></div><button class="secondary" type="button" onclick="ServiceMode.checkServer()">Sprawdź teraz</button></div>
-</div>
-</div>
-</section>
+
 
 <section id="panel-uwagi" class="panel">
 
@@ -1174,9 +1137,6 @@ async function showApp(){
 
   rDate.value=localDateISO(new Date());
 
-  if(globalThis.ServiceMode?.load)
-    await globalThis.ServiceMode.load();
-
   await loadData();
 
 }
@@ -1189,9 +1149,6 @@ async function showApp(){
 async function loadData(){
 
   try{
-
-    if(globalThis.ServiceMode?.waitForData)
-      await globalThis.ServiceMode.waitForData();
 
     db();
 
@@ -1395,11 +1352,6 @@ const viewTitles={
     "Wiadomości",
     "Korespondencja z uczniami"
   ],
-
-  serwis:[
-    "Serwer / tryb serwisowy",
-    "Bezpieczne ustawienia działania aplikacji"
-  ]
 
 };
 
@@ -3718,8 +3670,8 @@ async function saveBlock(){
 }
 return {openChangeChooser,chooseChangeMode,continueBlock,saveBlock,getMonday,changeWeek,goToCurrentWeek,refreshWeekViews,getWeekDate,localDateISO,formatShortDate,formatFullDate,formatWeek,getWeekDateFrom,formatAdminMessageDate,localDateTimeInputValue,renderAdminMessageSenders,renderAdminMessages,openAdminMessageComposer,closeAdminMessageComposer,deleteAdminMessage,loadAdminMessages,sendAdminMessage,db,login,logout,showApp,loadData,toggleAdminMenu,closeAdminMenu,switchPanel,renderPlanDays,renderSchedule,allKnownSubjects,prepareSubjectOptions,prepareSubjectDatalist,prepareGradeOptions,getTeacherForSubject,subjectChanged,updateTeacherHint,toggleTeacherAbsence,getTeacherChange,openLesson,saveLesson,deleteLesson,renderAttDays,renderAttendance,openAtt,saveAttendance,deleteAttendance,statusLabel,setBulkScope,updateBulkLabels,bulkDays,bulkScopeLabel,bulkRows,askBulkConfirm,cancelBulk,confirmBulk,markBulk,clearBulk,renderRemarks,editRemark,cancelRemarkEdit,saveRemark,removeRemark,gradeToNumber,fmtGradeDate,renderGrades,editGrade,cancelGradeEdit,saveGrade,removeGrade,renderTeachers,editTeacher,cancelTeacherEdit,saveTeacherMapping,removeTeacher,closeModal,esc,fmtTime,chooseDay,lock};})();
 window.Shell=(()=>{
- const menu=[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages'],['uwagi','Uwagi i pochwały','remarks'],['serwis','Serwer / tryb serwisowy','settings']];
- const titles={plan:['Zarządzaj planem','Zaplanuj i uporządkuj szkolny tydzień.'],frekwencja:['Zarządzaj frekwencją','Obecności, nieobecności i spóźnienia w jednym miejscu.'],oceny:['Zarządzaj ocenami','Dodawaj oceny i sprawdzaj postępy ucznia.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Dodawaj wpisy i doceniaj małe sukcesy.'],serwis:['Serwer / tryb serwisowy','Bezpieczne ustawienia działania aplikacji.']};
+ const menu=[['plan','Plan lekcji','calendar'],['frekwencja','Frekwencja','attendance'],['oceny','Oceny','grades'],['nauczyciele','Nauczyciele','teachers'],['wiadomosci','Wiadomości','messages']],['uwagi','Uwagi i pochwały','remarks']];
+ const titles={plan:['Zarządzaj planem','Zaplanuj i uporządkuj szkolny tydzień.'],frekwencja:['Zarządzaj frekwencją','Obecności, nieobecności i spóźnienia w jednym miejscu.'],oceny:['Zarządzaj ocenami','Dodawaj oceny i sprawdzaj postępy ucznia.'],nauczyciele:['Nauczyciele','Przedmioty i przypisani do nich nauczyciele.'],wiadomosci:['Wiadomości','Szkolne informacje w jednym miejscu.'],uwagi:['Uwagi i pochwały','Dodawaj wpisy i doceniaj małe sukcesy.']};
  let current='plan',busy=false;
  function closeMenu(){document.getElementById('shell-sidebar').classList.remove('open');document.getElementById('shell-overlay').classList.remove('show');document.getElementById('shell-menu').setAttribute('aria-expanded','false');}
  function toggleMenu(){const open=!document.getElementById('shell-sidebar').classList.contains('open');document.getElementById('shell-sidebar').classList.toggle('open',open);document.getElementById('shell-overlay').classList.toggle('show',open);document.getElementById('shell-menu').setAttribute('aria-expanded',String(open));}
@@ -3735,91 +3687,5 @@ window.Shell=(()=>{
  setTimeout(()=>{const page=location.hash.slice(1).split('/').pop();navigate(titles[page]?page:'plan');refresh();},0);
  return {navigate,toggleMenu,closeMenu,refresh,loggedOut};
 })();
-globalThis.ServiceMode=(()=>{
- const defaults={delayMs:0,maintenance:false};
- let state={...defaults};
- const nativeFetch=globalThis.fetch.bind(globalThis);
- const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- function selectedDelay(){
-   const primary=document.getElementById("service-delay");
-   const inline=document.getElementById("service-delay-inline");
-   return Number(primary?.value ?? inline?.value ?? 0)||0;
- }
- function paint(message){
-   const delay=document.getElementById("service-delay");
-   const inlineDelay=document.getElementById("service-delay-inline");
-   const maintenance=document.getElementById("service-maintenance");
-   const status=document.getElementById("service-status");
-   if(delay)delay.value=String(state.delayMs);
-   if(inlineDelay)inlineDelay.value=String(state.delayMs);
-   if(maintenance)maintenance.checked=Boolean(state.maintenance);
-   if(status){
-     status.className="service-status"+(state.delayMs||state.maintenance?" on":"");
-     status.textContent=message||(
-       state.delayMs||state.maintenance
-         ? "Aktywne globalnie w Supabase."
-         : "Tryb serwisowy jest wyłączony."
-     );
-   }
- }
- async function load(){
-   try{
-     const {data,error}=await sharedClient.from("app_settings").select("value").eq("key","service_mode").maybeSingle();
-     if(error)throw error;
-     state={...defaults,...(data?.value||{})};
-     paint();
-   }catch(error){
-     state={...defaults};
-     paint("Nie udało się pobrać ustawień z Supabase.");
-   }
- }
- async function persist(next){
-   state=next;
-   paint("Zapisywanie ustawień w Supabase…");
-   const {error}=await sharedClient.from("app_settings").upsert({
-     key:"service_mode",
-     value:{delayMs:Number(state.delayMs)||0,maintenance:Boolean(state.maintenance)},
-     updated_at:new Date().toISOString()
-   });
-   if(error){
-     paint("Błąd zapisu w Supabase: "+error.message);
-     return;
-   }
-   paint("Ustawienia zapisane. Ponownie pobieram dane…");
-   if(globalThis.Admin?.loadData)
-     await globalThis.Admin.loadData();
-   paint("Ustawienia zapisane globalnie w Supabase.");
- }
- function save(){
-   persist({
-     delayMs:selectedDelay(),
-     maintenance:Boolean(document.getElementById("service-maintenance")?.checked)
-   });
- }
- function saveInline(){save()}
- function reset(){persist({...defaults})}
- async function waitForData(){
-   const delay=Number(state.delayMs)||0;
-   if(delay<=0)return;
-   const status=document.getElementById("service-status");
-   if(status)status.textContent="Pobieram dane z Supabase…";
-   await wait(delay);
- }
- async function checkServer(){
-   const target=document.getElementById("supabase-server-status");
-   if(!target)return;
-   target.textContent="Sprawdzam połączenie…";
-   const started=Date.now();
-   try{
-     const {error}=await sharedClient.from("app_settings").select("key").eq("key","service_mode").maybeSingle();
-     if(error)throw error;
-     target.textContent="Połączono z Supabase · "+(Date.now()-started)+" ms";
-     target.style.color="var(--ok)";
-   }catch(error){
-     target.textContent=error.message||"Nie udało się sprawdzić połączenia.";
-     target.style.color="var(--danger)";
-   }
- }
- return {load,save,saveInline,reset,paint,checkServer,waitForData};
-})();
+
 </script></body></html>
