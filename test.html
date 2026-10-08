@@ -23,8 +23,10 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
 .category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.category-card{appearance:none;width:100%;min-height:170px;padding:22px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;color:var(--text);box-shadow:0 8px 22px rgba(40,36,70,.04);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.category-card:hover{transform:translateY(-3px);border-color:#d9cef4;box-shadow:0 14px 30px rgba(40,36,70,.09)}.category-card:focus-visible{outline:3px solid #b0a1f2;outline-offset:3px}.category-card .cat-ico{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--accent-dim);color:var(--accent);font-size:22px;font-weight:700;line-height:1}.category-card:nth-child(2) .cat-ico{background:#eaf4f1;color:#3d967a}.category-card:nth-child(3) .cat-ico{background:#fff2e5;color:#c58239}.category-card:nth-child(4) .cat-ico{background:#f1edf8;color:#8a70ae}.category-card .cat-ico svg{width:22px;height:22px}.category-card b{font-family:Manrope,sans-serif;font-size:14px;line-height:1.3;font-weight:750;letter-spacing:-.02em}.category-card span{font-size:11px;line-height:1.6;color:var(--muted)}@media(max-width:680px){.category-grid{grid-template-columns:1fr;gap:12px}.category-card{min-height:145px;padding:18px}}
+
+.app-loading{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(37,37,63,.96);color:#fff;opacity:1;transition:opacity .35s ease}.app-loading.is-done{opacity:0;pointer-events:none}.app-loading-box{width:min(380px,calc(100vw - 40px));padding:30px 28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#302f50;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center}.app-loading-logo{width:58px;height:58px;object-fit:contain;margin:0 auto 16px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.18))}.app-loading-title{font-family:Manrope,sans-serif;font-size:18px;font-weight:750;letter-spacing:-.03em}.app-loading-stage{min-height:18px;margin-top:8px;color:#c8c3dc;font-size:11px}.app-loading-percent{margin-top:18px;font-family:Manrope,sans-serif;font-size:30px;font-weight:800;color:#d8ccff}.app-loading-track{height:8px;margin-top:12px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.12)}.app-loading-bar{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#9b86ed,#d9cfff);transition:width .18s ease}
 </style></head>
-<body>
+<body><div class="app-loading" id="app-loading" role="status" aria-live="polite"><div class="app-loading-box"><img class="app-loading-logo" src="curve-logo.svg" alt=""><div class="app-loading-title">VULCAN Edukacja</div><div class="app-loading-stage" id="app-loading-stage">Uruchamiam aplikację…</div><div class="app-loading-percent" id="app-loading-percent">0%</div><div class="app-loading-track" aria-hidden="true"><div class="app-loading-bar" id="app-loading-bar"></div></div></div></div>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="test.html"><span class="brand-logo-wrap"><img class="brand-logo" src="curve-logo.svg" alt="VULCAN Edukacja"></span><span class="brand-name">VULCAN <em>Edukacja</em></span></a><div class="brand-subtitle">Twoja szkolna przestrzeń</div><div class="nav-label" id="nav-label">Menu ucznia</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje VULCAN Edukacja"></nav><div class="sidebar-bottom"><div class="sidebar-note"><div class="note-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM9 9h6M9 13h6M9 17h4"/></svg></div><b>Małe rzeczy, duży porządek.</b><p>Zapisz to, o czym chcesz pamiętać. Twoje notatki są zawsze pod ręką.</p><button id="shell-note">Otwórz notatki ↗</button></div><div class="sidebar-foot"><span>VULCAN Edukacja / nowy widok</span><a href="index.html">Strona główna ↗</a></div></div></aside>
 <div class="menu-overlay" id="shell-overlay"></div>
 <div class="app-main"><header class="topbar"><button class="icon-button menu-open" id="shell-menu" aria-label="Otwórz menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="breadcrumbs"><span>Twoja przestrzeń</span><span>/</span><b id="breadcrumb-page">Pulpit</b></div><div class="top-actions"><div class="role-tabs" role="tablist" aria-label="Widok dziennika"><button class="role-tab" id="role-student" role="tab" aria-selected="true" aria-controls="student-root" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5zM6 11v6c4 3 8 3 12 0v-6"/></svg>Uczeń</button><button class="role-tab" id="role-admin" role="tab" aria-selected="false" aria-controls="admin-root" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4"/></svg>Admin</button></div><button class="icon-button" id="shell-refresh" aria-label="Odśwież dane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5"/></svg></button><span class="profile-mark" aria-label="Konto"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-3c0-7 14-7 14 0v3"/></svg></span></div></header>
@@ -5195,4 +5197,51 @@ window.Shell=(()=>{
  return api;
 })();
 
-</script></body></html>
+
+<script>
+(function(){
+  const overlay=document.getElementById("app-loading");
+  const stage=document.getElementById("app-loading-stage");
+  const percent=document.getElementById("app-loading-percent");
+  const bar=document.getElementById("app-loading-bar");
+  if(!overlay||!stage||!percent||!bar)return;
+  const stages=[
+    "Uruchamiam aplikację…",
+    "Łączę z dziennikiem…",
+    "Wczytuję plan lekcji…",
+    "Przygotowuję widok ucznia…",
+    "Przygotowuję panel administratora…"
+  ];
+  let value=4;
+  let finished=false;
+  const started=Date.now();
+  function paint(){
+    const index=Math.min(stages.length-1,Math.floor(value/22));
+    stage.textContent=stages[index];
+    percent.textContent=Math.round(value)+"%";
+    bar.style.width=Math.round(value)+"%";
+  }
+  function tick(){
+    if(finished)return;
+    value=Math.min(96,value+Math.floor(Math.random()*12)+4);
+    paint();
+  }
+  function finish(){
+    if(finished)return;
+    finished=true;
+    const wait=Math.max(0,900-(Date.now()-started));
+    setTimeout(()=>{
+      value=100;
+      stage.textContent="Gotowe";
+      paint();
+      overlay.classList.add("is-done");
+      setTimeout(()=>overlay.remove(),400);
+    },wait);
+  }
+  paint();
+  const timer=setInterval(tick,180);
+  window.addEventListener("load",()=>{clearInterval(timer);finish()},{once:true});
+  setTimeout(()=>{clearInterval(timer);finish()},7000);
+  window.AppLoading={finish};
+})();
+</script></script></body></html>
