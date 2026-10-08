@@ -153,7 +153,7 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 <p class="hint">Bezpieczne ustawienia testowe aplikacji. Nie wyłączają infrastruktury Supabase ani nie zmieniają danych.</p>
 <div class="service-controls">
 <h3>Kontrola działania aplikacji</h3>
-<p>Opóźnienie działa lokalnie na tym urządzeniu. Blokada dotyczy widoku ucznia w tej samej przeglądarce.</p>
+<p>Opóźnienie jest ustawieniem globalnym zapisanym w Supabase. Po zapisaniu dane zostaną pobrane ponownie z wybranym opóźnieniem.</p>
 <div class="service-grid">
 <div class="service-field">
 <label for="service-delay">Czas oczekiwania na pobranie danych</label>
@@ -3784,6 +3784,9 @@ globalThis.ServiceMode=(()=>{
      paint("Błąd zapisu w Supabase: "+error.message);
      return;
    }
+   paint("Ustawienia zapisane. Ponownie pobieram dane…");
+   if(globalThis.Admin?.loadData)
+     await globalThis.Admin.loadData();
    paint("Ustawienia zapisane globalnie w Supabase.");
  }
  function save(){
