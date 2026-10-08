@@ -24,7 +24,7 @@
 
 .admin-badge{background:#28263f;color:#fff;box-shadow:0 3px 7px #1e1a3110}.sidebar-bottom #shell-logout{margin-top:14px}
 
-.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
+.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}.service-server-status{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid #eee8f4}.service-server-status b{display:block;font-size:11px;color:var(--text)}.service-server-status span{display:block;margin-top:4px;font-size:10px;color:var(--muted)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="admin.html"><span class="brand-symbol"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v14"></path></svg></span>Dziennik<span style="font-size:22px;color:#a995fa">.</span></a><div class="brand-subtitle">Przestrzeń administratora</div><div class="nav-label" id="nav-label">Menu administratora</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje dziennika"></nav><div class="sidebar-bottom"><div class="sidebar-note"><b>Szkolny dzień pod kontrolą.</b><p>Sprawdź, jak uczeń widzi swój dziennik.</p><a href="start.html" style="color:#d0c4fa;font-size:11px;font-weight:650;text-decoration:none">Otwórz widok ucznia ↗</a></div><button class="nav-item" id="shell-logout" hidden type="button"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v16h5M12 12h9M17 8l4 4-4 4"></path></svg>Wyloguj się</button><div class="sidebar-foot"><span>Dziennik / administrator</span><a href="index.html">Strona główna ↗</a></div></div></aside>
@@ -172,7 +172,7 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 <button class="primary" type="button" onclick="ServiceMode.save()">Zapisz ustawienia</button>
 <button class="secondary" type="button" onclick="ServiceMode.reset()">Wyłącz wszystko</button>
 </div>
-<div class="service-status" id="service-status" aria-live="polite"></div>
+<div class="service-status" id="service-status" aria-live="polite"></div><div class="service-server-status"><div><b>Połączenie z Supabase</b><span id="supabase-server-status">Jeszcze nie sprawdzono.</span></div><button class="secondary" type="button" onclick="ServiceMode.checkServer()">Sprawdź teraz</button></div>
 </div>
 </div>
 </section>
@@ -3760,6 +3760,21 @@ window.ServiceMode=(()=>{
    return nativeFetch(...args);
  };
  paint();
- return {save,reset,paint};
+ async function checkServer(){
+   const target=document.getElementById("supabase-server-status");
+   if(!target)return;
+   target.textContent="Sprawdzam połączenie…";
+   try{
+     const response=await nativeFetch("/api/supabase-status",{cache:"no-store"});
+     const data=await response.json();
+     if(!response.ok||!data.ok)throw new Error(data.error||"Błąd połączenia");
+     target.textContent="Połączono · "+(data.project?.status||"aktywny")+(data.latencyMs?" · "+data.latencyMs+" ms":"");
+     target.style.color="var(--ok)";
+   }catch(error){
+     target.textContent=error.message||"Nie udało się sprawdzić połączenia.";
+     target.style.color="var(--danger)";
+   }
+ }
+ return {save,reset,paint,checkServer};
 })();
 </script></body></html>
