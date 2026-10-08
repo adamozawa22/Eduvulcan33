@@ -27,8 +27,10 @@
 .app-loading{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(37,37,63,.96);color:#fff;opacity:1;transition:opacity .35s ease}.app-loading.is-done{opacity:0;pointer-events:none}.app-loading-box{width:min(380px,calc(100vw - 40px));padding:30px 28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#302f50;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center}.app-loading-logo{width:58px;height:58px;object-fit:contain;margin:0 auto 16px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.18))}.app-loading-title{font-family:Manrope,sans-serif;font-size:18px;font-weight:750;letter-spacing:-.03em}.app-loading-stage{min-height:18px;margin-top:8px;color:#c8c3dc;font-size:11px}.app-loading-percent{margin-top:18px;font-family:Manrope,sans-serif;font-size:30px;font-weight:800;color:#d8ccff}.app-loading-track{height:8px;margin-top:12px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.12)}.app-loading-bar{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#9b86ed,#d9cfff);transition:width .18s ease}
 
 .service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
+
+.service-maintenance-screen{position:fixed;inset:0;z-index:9998;display:grid;place-items:center;padding:24px;background:rgba(37,37,63,.97);color:#fff}.service-maintenance-box{width:min(420px,100%);padding:32px 28px;border-radius:22px;background:#302f50;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3)}.service-maintenance-box h2{font-size:22px;margin:0 0 10px}.service-maintenance-box p{font-size:12px;line-height:1.7;color:#c8c3dc;margin:0 0 20px}.service-maintenance-box button{padding:11px 16px;border-radius:10px;background:#a995fa;color:#27233f;font-size:11px;font-weight:700}
 </style></head>
-<body><div class="app-loading" id="app-loading" role="status" aria-live="polite"><div class="app-loading-box"><img class="app-loading-logo" src="curve-logo.svg" alt=""><div class="app-loading-title">VULCAN Edukacja</div><div class="app-loading-stage" id="app-loading-stage">Uruchamiam aplikację…</div><div class="app-loading-percent" id="app-loading-percent">0%</div><div class="app-loading-track" aria-hidden="true"><div class="app-loading-bar" id="app-loading-bar"></div></div></div></div>
+<body><div id="service-maintenance-screen" class="service-maintenance-screen" hidden><div class="service-maintenance-box"><img class="app-loading-logo" src="curve-logo.svg" alt="VULCAN Edukacja"><h2>Chwilowa przerwa techniczna</h2><p>Widok ucznia jest tymczasowo wyłączony przez administratora. Spróbuj ponownie później.</p><button type="button" onclick="Shell.selectRole('admin')">Otwórz panel administratora</button></div></div><div class="app-loading" id="app-loading" role="status" aria-live="polite"><div class="app-loading-box"><img class="app-loading-logo" src="curve-logo.svg" alt=""><div class="app-loading-title">VULCAN Edukacja</div><div class="app-loading-stage" id="app-loading-stage">Uruchamiam aplikację…</div><div class="app-loading-percent" id="app-loading-percent">0%</div><div class="app-loading-track" aria-hidden="true"><div class="app-loading-bar" id="app-loading-bar"></div></div></div></div>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="test.html"><span class="brand-logo-wrap"><img class="brand-logo" src="curve-logo.svg" alt="VULCAN Edukacja"></span><span class="brand-name">VULCAN <em>Edukacja</em></span></a><div class="brand-subtitle">Twoja szkolna przestrzeń</div><div class="nav-label" id="nav-label">Menu ucznia</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje VULCAN Edukacja"></nav><div class="sidebar-bottom"><div class="sidebar-note"><div class="note-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM9 9h6M9 13h6M9 17h4"/></svg></div><b>Małe rzeczy, duży porządek.</b><p>Zapisz to, o czym chcesz pamiętać. Twoje notatki są zawsze pod ręką.</p><button id="shell-note">Otwórz notatki ↗</button></div><div class="sidebar-foot"><span>VULCAN Edukacja / nowy widok</span><a href="index.html">Strona główna ↗</a></div></div></aside>
 <div class="menu-overlay" id="shell-overlay"></div>
 <div class="app-main"><header class="topbar"><button class="icon-button menu-open" id="shell-menu" aria-label="Otwórz menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="breadcrumbs"><span>Twoja przestrzeń</span><span>/</span><b id="breadcrumb-page">Pulpit</b></div><div class="top-actions"><div class="role-tabs" role="tablist" aria-label="Widok dziennika"><button class="role-tab" id="role-student" role="tab" aria-selected="true" aria-controls="student-root" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5zM6 11v6c4 3 8 3 12 0v-6"/></svg>Uczeń</button><button class="role-tab" id="role-admin" role="tab" aria-selected="false" aria-controls="admin-root" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4"/></svg>Admin</button></div><button class="icon-button" id="shell-refresh" aria-label="Odśwież dane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5"/></svg></button><span class="profile-mark" aria-label="Konto"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-3c0-7 14-7 14 0v3"/></svg></span></div></header>
@@ -5250,12 +5252,16 @@ window.Shell=(()=>{
 window.ServiceMode=(()=>{
  const key="vulcan-service-mode";
  const defaults={delay:0,maintenance:false};
+ const nativeFetch=window.fetch.bind(window);
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  function read(){try{return {...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch{return {...defaults}}}
  function paint(){
    const state=read();
    const delay=document.getElementById("service-delay");
    const maintenance=document.getElementById("service-maintenance");
    const status=document.getElementById("service-status");
+   const screen=document.getElementById("service-maintenance-screen");
+   const studentRoot=document.getElementById("student-root");
    if(delay)delay.value=String(state.delay);
    if(maintenance)maintenance.checked=Boolean(state.maintenance);
    if(status){
@@ -5264,6 +5270,7 @@ window.ServiceMode=(()=>{
        ? "Aktywne lokalnie na tym urządzeniu — Supabase działa bez zmian."
        : "Tryb serwisowy jest wyłączony.";
    }
+   if(screen)screen.hidden=!(state.maintenance&&studentRoot&&!studentRoot.hidden);
  }
  function save(){
    const state={delay:Number(document.getElementById("service-delay")?.value||0),maintenance:Boolean(document.getElementById("service-maintenance")?.checked)};
@@ -5271,7 +5278,18 @@ window.ServiceMode=(()=>{
    paint();
  }
  function reset(){localStorage.removeItem(key);paint()}
+ window.fetch=async(...args)=>{
+   const delay=Number(read().delay)||0;
+   if(delay>0)await wait(delay);
+   return nativeFetch(...args);
+ };
  document.addEventListener("DOMContentLoaded",paint);
+ const observer=new MutationObserver(paint);
+ ["student-root","admin-root","role-student","role-admin"].forEach(id=>{
+   const node=document.getElementById(id);
+   if(node)observer.observe(node,{attributes:true,attributeFilter:["hidden","aria-selected"]});
+ });
+ paint();
  return {save,reset,paint};
 })();
 </script></script></body></html>
