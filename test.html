@@ -5198,7 +5198,6 @@ window.Shell=(()=>{
 })();
 
 
-<script>
 (function(){
   const overlay=document.getElementById("app-loading");
   const stage=document.getElementById("app-loading-stage");
@@ -5241,7 +5240,7 @@ window.Shell=(()=>{
   paint();
   const timer=setInterval(tick,180);
   window.addEventListener("load",()=>{clearInterval(timer);finish()},{once:true});
-  setTimeout(()=>{clearInterval(timer);finish()},7000);
+  setTimeout(()=>{clearInterval(timer);finish()},2500);
   window.AppLoading={finish};
 })();
-</script></script></body></html>
+</script></body></html>
