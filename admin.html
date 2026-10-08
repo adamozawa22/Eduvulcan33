@@ -23,6 +23,8 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
 .admin-badge{background:#28263f;color:#fff;box-shadow:0 3px 7px #1e1a3110}.sidebar-bottom #shell-logout{margin-top:14px}
+
+.service-controls{margin-top:22px;padding:20px;border:1px solid #efe8f6;border-radius:16px;background:#fcfbfe}.service-controls h3{font-size:14px;margin:0 0 6px}.service-controls>p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 17px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.service-field{display:flex;flex-direction:column;gap:7px}.service-field label{margin:0}.service-field select{min-height:40px}.service-switch{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid #ece5f3;border-radius:11px;background:#fff;color:#776987;font-size:11px}.service-switch input{width:17px;min-height:17px;accent-color:var(--accent)}.service-status{margin-top:14px;color:var(--muted);font-size:10px}.service-status.on{color:var(--warn-ink)}@media(max-width:680px){.service-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
 <aside class="app-sidebar" id="shell-sidebar"><a class="brand-link" href="admin.html"><span class="brand-symbol"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v14"></path></svg></span>Dziennik<span style="font-size:22px;color:#a995fa">.</span></a><div class="brand-subtitle">Przestrzeń administratora</div><div class="nav-label" id="nav-label">Menu administratora</div><nav class="main-navigation" id="shell-navigation" aria-label="Sekcje dziennika"></nav><div class="sidebar-bottom"><div class="sidebar-note"><b>Szkolny dzień pod kontrolą.</b><p>Sprawdź, jak uczeń widzi swój dziennik.</p><a href="start.html" style="color:#d0c4fa;font-size:11px;font-weight:650;text-decoration:none">Otwórz widok ucznia ↗</a></div><button class="nav-item" id="shell-logout" hidden type="button"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v16h5M12 12h9M17 8l4 4-4 4"></path></svg>Wyloguj się</button><div class="sidebar-foot"><span>Dziennik / administrator</span><a href="index.html">Strona główna ↗</a></div></div></aside>
@@ -82,6 +84,11 @@ Nauczyciele
 Wiadomości
 </button>
 
+<button class="tab" onclick="Admin.switchPanel('serwis',this)">
+<svg viewbox="0 0 24 24" aria-hidden="true"><use href="icons.svg#settings"></use></svg>
+Tryb serwisowy
+</button>
+
 
 </nav>
 
@@ -139,6 +146,36 @@ Kliknij dowolną lekcję, żeby ją zmienić. Pusta godzina również jest klika
 
 </section>
 
+<section id="panel-serwis" class="panel">
+<div class="card">
+<h2>Tryb serwisowy</h2>
+<p class="hint">Bezpieczne ustawienia testowe aplikacji. Nie wyłączają infrastruktury Supabase ani nie zmieniają danych.</p>
+<div class="service-controls">
+<h3>Kontrola działania aplikacji</h3>
+<p>Opóźnienie działa lokalnie na tym urządzeniu. Blokada dotyczy widoku ucznia w tej samej przeglądarce.</p>
+<div class="service-grid">
+<div class="service-field">
+<label for="service-delay">Opóźnienie zapytań</label>
+<select id="service-delay">
+<option value="0">Wyłączone</option>
+<option value="500">Lekko — 0,5 s</option>
+<option value="1500">Średnio — 1,5 s</option>
+<option value="3000">Mocno — 3 s</option>
+</select>
+</div>
+<div class="service-field">
+<label>Widok ucznia</label>
+<label class="service-switch"><input id="service-maintenance" type="checkbox"> Włącz tryb serwisowy</label>
+</div>
+</div>
+<div class="actions">
+<button class="primary" type="button" onclick="ServiceMode.save()">Zapisz ustawienia</button>
+<button class="secondary" type="button" onclick="ServiceMode.reset()">Wyłącz wszystko</button>
+</div>
+<div class="service-status" id="service-status" aria-live="polite"></div>
+</div>
+</div>
+</section>
 
 <section id="panel-uwagi" class="panel">
 
@@ -1334,6 +1371,11 @@ const viewTitles={
   wiadomosci:[
     "Wiadomości",
     "Korespondencja z uczniami"
+  ],
+
+  serwis:[
+    "Tryb serwisowy",
+    "Bezpieczne ustawienia działania aplikacji"
   ]
 
 };
@@ -3670,4 +3712,39 @@ window.Shell=(()=>{
  setTimeout(()=>{const page=location.hash.slice(1).split('/').pop();navigate(titles[page]?page:'plan');refresh();},0);
  return {navigate,toggleMenu,closeMenu,refresh,loggedOut};
 })();
-</script></body></html>
+<script>
+window.ServiceMode=(()=>{
+ const key="vulcan-service-mode";
+ const defaults={delay:0,maintenance:false};
+ const nativeFetch=window.fetch.bind(window);
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ function read(){try{return {...defaults,...JSON.parse(localStorage.getItem(key)||"{}")}}catch{return {...defaults}}}
+ function paint(){
+   const state=read();
+   const delay=document.getElementById("service-delay");
+   const maintenance=document.getElementById("service-maintenance");
+   const status=document.getElementById("service-status");
+   if(delay)delay.value=String(state.delay);
+   if(maintenance)maintenance.checked=Boolean(state.maintenance);
+   if(status){
+     status.className="service-status"+(state.delay||state.maintenance?" on":"");
+     status.textContent=state.delay||state.maintenance
+       ? "Aktywne lokalnie na tym urządzeniu — Supabase działa bez zmian."
+       : "Tryb serwisowy jest wyłączony.";
+   }
+ }
+ function save(){
+   const state={delay:Number(document.getElementById("service-delay")?.value||0),maintenance:Boolean(document.getElementById("service-maintenance")?.checked)};
+   localStorage.setItem(key,JSON.stringify(state));
+   paint();
+ }
+ function reset(){localStorage.removeItem(key);paint()}
+ window.fetch=async(...args)=>{
+   const delay=Number(read().delay)||0;
+   if(delay>0)await wait(delay);
+   return nativeFetch(...args);
+ };
+ paint();
+ return {save,reset,paint};
+})();
+</script></script></body></html>
