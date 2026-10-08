@@ -3751,7 +3751,7 @@ globalThis.ServiceMode=(()=>{
  }
  async function load(){
    try{
-     const {data,error}=await sb.from("app_settings").select("value").eq("key","service_mode").maybeSingle();
+     const {data,error}=await sharedClient.from("app_settings").select("value").eq("key","service_mode").maybeSingle();
      if(error)throw error;
      state={...defaults,...(data?.value||{})};
      paint();
@@ -3763,7 +3763,7 @@ globalThis.ServiceMode=(()=>{
  async function persist(next){
    state=next;
    paint("Zapisywanie ustawień w Supabase…");
-   const {error}=await sb.from("app_settings").upsert({
+   const {error}=await sharedClient.from("app_settings").upsert({
      key:"service_mode",
      value:{delayMs:Number(state.delayMs)||0,maintenance:Boolean(state.maintenance)},
      updated_at:new Date().toISOString()
@@ -3794,7 +3794,7 @@ globalThis.ServiceMode=(()=>{
    target.textContent="Sprawdzam połączenie…";
    const started=Date.now();
    try{
-     const {error}=await sb.from("app_settings").select("key").eq("key","service_mode").maybeSingle();
+     const {error}=await sharedClient.from("app_settings").select("key").eq("key","service_mode").maybeSingle();
      if(error)throw error;
      target.textContent="Połączono z Supabase · "+(Date.now()-started)+" ms";
      target.style.color="var(--ok)";
