@@ -1261,3 +1261,6 @@ nav.bottom a{text-decoration:none}nav.bottom a:focus-visible{outline:2px solid v
 .start-change-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.start-change-row:first-child{border-top:0}.start-change-date{width:32px;text-align:center;flex:none;color:var(--muted)}.start-change-date b{display:block;font-size:16px}.start-change-date span{font-size:10px}.start-change-body{min-width:0;flex:1}.start-change-body b{display:block;font-size:12px}.start-change-body span,.start-change-body small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.start-change-body small{color:var(--text);line-height:1.4}
 
 .lesson-card .lesson-num{width:auto;min-width:31px;padding:0 7px;white-space:nowrap}.lesson-card:has(.lesson-change-badge){border-left-color:#9ebfe8}
+
+/* Spóźnienie jest zawsze żółte — osobno od czerwonej nieobecności. */
+:root{--warn:#e3a900;--warn-dim:#fff2bf;--warn-ink:#956500}.status-pill.late,.wd.warn .wd-mark{background:#fff2bf;color:#956500}.status-pill.late svg{color:#e3a900}.ring-seg[style*="--warn"]{stroke:#e3a900}
