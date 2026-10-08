@@ -466,6 +466,22 @@ Data nieobecności
 
 </div>
 
+<label for="mChangeType">Zmiana tylko w tym dniu</label>
+<select id="mChangeType">
+<option value="none">Brak zastępstwa / zmiany</option>
+<option value="replacement">Zastępstwo / całkowita zmiana lekcji</option>
+<option value="block">Blok / wydarzenie (np. wyjście do parku)</option>
+<option value="cancelled">Lekcja odwołana</option>
+</select>
+<label for="mReplacementSubject">Nowy przedmiot lub nazwa bloku</label>
+<input id="mReplacementSubject" type="text" placeholder="np. Wyjście do parku">
+<label for="mReplacementTeacher">Nauczyciel zastępujący</label>
+<input id="mReplacementTeacher" type="text" placeholder="Opcjonalnie">
+<label for="mReplacementRoom">Sala / miejsce</label>
+<input id="mReplacementRoom" type="text" placeholder="np. park miejski">
+<label for="mChangeNote">Informacja dla uczniów</label>
+<textarea id="mChangeNote" rows="3" placeholder="Np. zbiórka przy wejściu o 10:35"></textarea>
+
 </div>
 
 
@@ -1818,6 +1834,12 @@ function openLesson(id,n){
     change?.lesson_date||
     localDateISO(selectedDate);
 
+  mChangeType.value=change?.change_type||"none";
+  mReplacementSubject.value=change?.replacement_subject||"";
+  mReplacementTeacher.value=change?.replacement_teacher||change?.substitute_teacher||"";
+  mReplacementRoom.value=change?.replacement_room||"";
+  mChangeNote.value=change?.note||"";
+
 
   toggleTeacherAbsence();
 
@@ -1927,7 +1949,8 @@ async function saveLesson(){
       );
 
 
-    if(mTeacherAbsent.checked){
+    const changeType=mChangeType.value;
+    if(mTeacherAbsent.checked || changeType!=="none"){
 
       const ch={
 
@@ -1938,11 +1961,25 @@ async function saveLesson(){
           date,
 
         teacher_absent:
-          true,
+          mTeacherAbsent.checked,
 
-        substitute_teacher:null,
+        substitute_teacher:
+          mReplacementTeacher.value.trim()||null,
 
-        note:""
+        change_type:
+          changeType,
+
+        replacement_subject:
+          mReplacementSubject.value.trim()||p.subject,
+
+        replacement_teacher:
+          mReplacementTeacher.value.trim(),
+
+        replacement_room:
+          mReplacementRoom.value.trim(),
+
+        note:
+          mChangeNote.value.trim()
 
       };
 
