@@ -1187,6 +1187,9 @@ async function loadData(){
 
   try{
 
+    if(globalThis.ServiceMode?.waitForData)
+      await globalThis.ServiceMode.waitForData();
+
     db();
 
 
@@ -3781,13 +3784,14 @@ globalThis.ServiceMode=(()=>{
    });
  }
  function reset(){persist({...defaults})}
- globalThis.fetch=async(...args)=>{
-   const requestUrl=String(args[0]?.url||args[0]||"");
-   const isAuthRequest=requestUrl.includes("/auth/");
+ async function waitForData(){
    const delay=Number(state.delayMs)||0;
-   if(delay>0&&!isAuthRequest)await wait(delay);
-   return nativeFetch(...args);
- };
+   if(delay>0){
+     const status=document.getElementById("service-status");
+     if(status)status.textContent="Odczekuję "+(delay/1000)+" s przed pobraniem danych…";
+     await wait(delay);
+   }
+ }
  async function checkServer(){
    const target=document.getElementById("supabase-server-status");
    if(!target)return;
@@ -3803,6 +3807,6 @@ globalThis.ServiceMode=(()=>{
      target.style.color="var(--danger)";
    }
  }
- return {load,save,reset,paint,checkServer};
+ return {load,save,reset,paint,checkServer,waitForData};
 })();
 </script></body></html>
