@@ -1125,7 +1125,7 @@ async function login(event){
           ? "Najpierw potwierdź adres e-mail w Supabase."
           : message.includes("fetch")||message.includes("network")
             ? "Supabase jest chwilowo niedostępne. Spróbuj ponownie."
-            : "Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.";
+            : "Błąd logowania: "+(e?.message||"spróbuj ponownie.");
   }finally{
     button.disabled=false;
     button.textContent="Zaloguj się";
