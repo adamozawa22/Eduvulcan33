@@ -670,6 +670,7 @@ const attMsg=document.getElementById("attMsg");
 ===================================================== */
 
 const ADMIN_USER_ID="1f049736-fd58-4b4e-ac61-62af34e02651";
+const ADMIN_EMAIL="admin@gmail.com";
 const sb=sharedClient;
 /* =====================================================
    DNI
@@ -1116,7 +1117,15 @@ async function login(event){
 
   }catch(e){
 
-    loginStatus.textContent="Nie udało się zalogować. Sprawdź e-mail i hasło lub spróbuj ponownie.";
+    const message=String(e?.message||"").toLowerCase();
+    loginStatus.textContent=
+      message.includes("invalid login credentials")
+        ? "Nieprawidłowy e-mail lub hasło."
+        : message.includes("email not confirmed")
+          ? "Najpierw potwierdź adres e-mail w Supabase."
+          : message.includes("fetch")||message.includes("network")
+            ? "Supabase jest chwilowo niedostępne. Spróbuj ponownie."
+            : "Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.";
   }finally{
     button.disabled=false;
     button.textContent="Zaloguj się";
@@ -1140,13 +1149,18 @@ async function showApp(){
 
   if(!data.session){lock();return;}
 
-  if(data.session.user.id!==ADMIN_USER_ID){
+  const user=data.session.user;
+  const isAdmin=
+    user.id===ADMIN_USER_ID ||
+    String(user.email||"").trim().toLowerCase()===ADMIN_EMAIL;
+
+  if(!isAdmin){
     globalThis.document.getElementById("shell-logout").hidden=true;
     app.style.display="none";
     loginScreen.style.display="";
     loginPassword.value="";
     loginStatus.textContent=
-      "To konto nie ma uprawnień administratora. Zaloguj się jako admin@gmail.com.";
+      "To konto nie ma uprawnień administratora. Zaloguj się kontem admin@gmail.com.";
     return;
   }
 
