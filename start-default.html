@@ -58,6 +58,14 @@ Ustawienia
 </div>
 </header>
 
+<div class="experimental-banner" role="region" aria-label="Nowy wygląd" style="margin:0 0 18px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,#7661dc,#5945bb);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 24px rgba(89,69,187,.28)">
+  <div>
+    <strong style="display:block;font-size:15px;margin-bottom:4px">Nowy eksperymentalny wygląd</strong>
+    <span style="display:block;font-size:12px;opacity:.9">Sprawdź odświeżoną wersję dziennika.</span>
+  </div>
+  <button type="button" onclick="localStorage.setItem('experimental-look','true');window.location.href='start.html'" style="flex:none;border:0;border-radius:10px;background:#fff;color:#5945bb;padding:11px 15px;font-weight:700;cursor:pointer">Włącz teraz</button>
+</div>
+
 <main>
 
 <div class="notice" id="data-notice"></div>
