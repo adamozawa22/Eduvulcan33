@@ -165,10 +165,7 @@ Ustawienia
 <button class="close-btn" onclick="closeModal()">×</button>
 </div>
 
-<div class="setting-row">
-<span>Komunikat o nowej platformie</span>
-<button class="toggle platform-notice-toggle on" type="button" role="switch" aria-checked="true" aria-label="Komunikat o nowej platformie" onclick="PlatformNotice.setEnabled(this)"></button>
-</div><div class="setting-row"><span>Nowa platforma</span><button type="button" class="save-note" onclick="PlatformTransfer.go(true)">Przejdź na nową platformę</button></div>
+<div class="setting-row"><span>Komunikat o nowej platformie</span><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button type="button" onclick="PlatformNotice.enable()" style="border:1px solid #e4e6ef;border-radius:10px;padding:10px 14px;background:#f4f3ff;color:#5945bb;cursor:pointer">Pokaż komunikat ponownie</button><button class="toggle platform-notice-toggle" type="button" role="switch" aria-checked="false" aria-label="Komunikat o nowej platformie" onclick="PlatformNotice.setEnabled()"></button></div></div><div class="setting-row"><span>Nowa platforma</span><button type="button" class="save-note" onclick="PlatformTransfer.go(true)">Przejdź na nową platformę</button></div>
 
 <div class="setting-row">
 <span>Powiadomienia</span>
@@ -194,16 +191,24 @@ Ustawienia
     <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:18px"><button type="button" onclick="PlatformTransfer.go(true)" style="border:0;border-radius:10px;background:#7661dc;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer">Przejdź na nową platformę</button><button type="button" onclick="PlatformNotice.close()" style="border:0;border-radius:10px;background:#7661dc;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer">Zamknij</button></div>
   </div>
 </div><script>
+
 window.PlatformNotice=(function(){
-  const KEY='platform-notice-dismissed', ENABLED='platform-notice-enabled';
-  function modal(){return document.getElementById('platform-notice-modal');}
-  function show(){const m=modal();if(!m||localStorage.getItem(ENABLED)==='false'||localStorage.getItem(KEY)==='true'||Date.now()>new Date('2026-12-31T23:59:59').getTime())return;m.hidden=false;m.style.display='flex';}
-  function close(){const m=modal(), box=document.getElementById('platform-notice-dismiss');if(box&&box.checked)localStorage.setItem(KEY,'true');if(m){m.hidden=true;m.style.display='none';}}
-  function setEnabled(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);button.setAttribute('aria-checked',String(on));localStorage.setItem(ENABLED,String(on));if(on){localStorage.removeItem(KEY);show();}else{const m=modal();if(m){m.hidden=true;m.style.display='none';}}}
-  function init(){document.querySelectorAll('.platform-notice-toggle').forEach(b=>{const on=localStorage.getItem(ENABLED)!=='false';b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on));});setTimeout(show,700);}
-  return {close,setEnabled,init,show};
+ const KEY='platform-notice-dismissed', ENABLED='platform-notice-enabled';
+ function read(key){try{return localStorage.getItem(key);}catch{return null;}}
+ function write(key,value){try{localStorage.setItem(key,value);}catch{}}
+ function enabled(){return read(ENABLED)!=='false'&&read(KEY)!=='true';}
+ function sync(){document.querySelectorAll('.platform-notice-toggle').forEach(b=>{b.classList.toggle('on',enabled());b.setAttribute('aria-checked',String(enabled()));});}
+ function modal(){return document.getElementById('platform-notice-modal');}
+ function show(force=false){const m=modal();if(!m||(!force&&(!enabled()||Date.now()>new Date('2026-12-31T23:59:59+01:00').getTime())))return;
+ const box=document.getElementById('platform-notice-dismiss');if(box)box.checked=false;m.hidden=false;m.style.display='flex';const button=m.querySelector('button');if(button)button.focus();}
+ function close(){const box=document.getElementById('platform-notice-dismiss');if(box&&box.checked){write(KEY,'true');write(ENABLED,'false');}const m=modal();if(m){m.hidden=true;m.style.display='none';}sync();}
+ function enable(){write(KEY,'false');write(ENABLED,'true');sync();show(true);}
+ function setEnabled(){if(!enabled()){enable();return;}write(ENABLED,'false');const m=modal();if(m){m.hidden=true;m.style.display='none';}sync();}
+ function init(){sync();setTimeout(show,700);}
+ return {close,setEnabled,init,show,enable};
 })();
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',PlatformNotice.init);else PlatformNotice.init();
+
 </script>
 <script>
 window.PlatformTransfer=(function(){
