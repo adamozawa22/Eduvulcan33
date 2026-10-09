@@ -5197,7 +5197,7 @@ window.Shell=(()=>{
  try{if(localStorage.getItem('experimental-look')==='false'){window.location.replace('start-default.html');}}catch{}
  try{if(localStorage.getItem('test-animations')==='false'){document.documentElement.classList.add('animations-off');document.querySelectorAll('#student-root .toggle').forEach(button=>{button.classList.remove('on');button.setAttribute('aria-checked','false')});}}catch{}
  if(sharedClient)sharedClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(loggedOut,0);});
- const api={selectRole,navigate,pageChanged,toggleMenu,closeMenu,refresh,loggedOut,toggleAnimations};
+ const api={selectRole,navigate,pageChanged,toggleMenu,closeMenu,refresh,loggedOut,toggleAnimations,toggleExperimentalAppearance};
  // Expose the controller before auth/render callbacks need it.
  setTimeout(()=>{const parts=location.hash.slice(1).split('/');if(menus.student.some(x=>x[0]===parts[1]))last.student=parts[1];selectRole('student');},0);
  return api;
