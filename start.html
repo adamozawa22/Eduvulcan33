@@ -115,10 +115,7 @@
 <div class="setting-row">
 <span>Komunikat o nowej platformie</span>
 <button class="toggle platform-notice-toggle on" type="button" role="switch" aria-checked="true" aria-label="Komunikat o nowej platformie" onclick="PlatformNotice.setEnabled(this)"></button>
-</div><div class="setting-row">
-<span>Eksperymentalny wygląd</span>
-<button class="toggle on" type="button" role="switch" aria-checked="true" aria-label="Eksperymentalny wygląd" onclick="Shell.toggleExperimentalAppearance(this);this.setAttribute('aria-checked',String(this.classList.contains('on')))"></button>
-</div>
+</div><div class="setting-row"><span>Poprzedni wygląd dziennika</span><button type="button" class="secondary" onclick="PlatformTransfer.go(false)">Przejdź na starą platformę</button></div>
 <div class="setting-row">
 <span>Animacje interfejsu</span>
 <button class="toggle on" type="button" role="switch" aria-checked="true" aria-label="Animacje interfejsu" onclick="Shell.toggleAnimations(this);this.setAttribute('aria-checked',String(this.classList.contains('on')))"></button>
@@ -5187,7 +5184,7 @@ window.Shell=(()=>{
  async function selectRole(next,focus=false){if(!['student','admin'].includes(next))return;role=next;for(const name of ['student','admin']){const selected=name===role;document.getElementById(name+'-root').hidden=!selected;const tab=document.getElementById('role-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;}await navigate(last[role]);if(role==='admin')await Admin.showApp();if(focus)document.getElementById('role-'+role).focus();}
  async function refresh(){if(busy)return;busy=true;const button=document.getElementById('shell-refresh');button.disabled=true;button.setAttribute('aria-busy','true');try{if(role==='student')await Student.initAuth();else await Admin.showApp();}finally{busy=false;button.disabled=false;button.removeAttribute('aria-busy');}}
  function loggedOut(){Student.showLogin();Admin.lock();closeMenu();}
- function toggleExperimentalAppearance(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);button.setAttribute('aria-checked',String(on));try{localStorage.setItem('experimental-look',String(on))}catch{};if(!on){window.location.href='start-default.html';}}
+ function toggleExperimentalAppearance(button){PlatformTransfer.go(false);}
  function toggleAnimations(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);document.documentElement.classList.toggle('animations-off',!on);try{localStorage.setItem('test-animations',String(on))}catch{}}
  document.getElementById('role-student').addEventListener('click',()=>selectRole('student'));
  document.getElementById('role-admin').addEventListener('click',()=>selectRole('admin'));
@@ -5269,9 +5266,35 @@ window.PlatformNotice=(function(){
   function show(){const m=modal();if(!m||localStorage.getItem(ENABLED)==='false'||localStorage.getItem(KEY)==='true'||Date.now()>new Date('2026-12-31T23:59:59').getTime())return;m.hidden=false;m.style.display='flex';}
   function close(){const m=modal(), box=document.getElementById('platform-notice-dismiss');if(box&&box.checked)localStorage.setItem(KEY,'true');if(m){m.hidden=true;m.style.display='none';}}
   function setEnabled(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);button.setAttribute('aria-checked',String(on));localStorage.setItem(ENABLED,String(on));if(on){localStorage.removeItem(KEY);show();}else{const m=modal();if(m){m.hidden=true;m.style.display='none';}}}
-  function init(){document.querySelectorAll('.platform-notice-toggle').forEach(b=>{const on=localStorage.getItem(ENABLED)!=='false';b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on));});setTimeout(show,700);}
+  function init(){document.querySelectorAll('.platform-notice-toggle').forEach(b=>{const on=localStorage.getItem(ENABLED)!=='false';b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on));});/* Komunikat przejścia dotyczy starej platformy. */}
   return {close,setEnabled,init,show};
 })();
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',PlatformNotice.init);else PlatformNotice.init();
 </script>
-</body></html>
+<script>
+window.PlatformTransfer=(function(){
+ let busy=false;
+ function read(store,key){try{return store.getItem(key);}catch{return null;}}
+ function write(store,key,value){try{store.setItem(key,value);}catch{}}
+ function panel(title){const layer=document.createElement('div');layer.id='platform-transfer';layer.style.cssText='position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(25,30,50,.6);font-family:Arial,sans-serif';
+ const card=document.createElement('div');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.style.cssText='width:min(440px,100%);padding:28px;border-radius:20px;background:#fff;color:#22243c;box-shadow:0 20px 70px #0003';
+ const heading=document.createElement('h2');heading.textContent=title;heading.style.cssText='font-size:22px;margin:0 0 18px';card.append(heading);layer.append(card);document.body.append(layer);return {layer,card};}
+ function go(next){if(busy)return;busy=true;if(window.PlatformNotice)PlatformNotice.close();
+ const seconds=next?20:30, target=next?'start.html':'start-default.html';
+ const {card}=panel(next?'Przechodzimy na nową platformę':'Powrót na starą platformę');
+ const status=document.createElement('p');status.setAttribute('role','status');status.style.cssText='font-size:14px;color:#687087;margin:0 0 18px';
+ const progress=document.createElement('progress');progress.max=100;progress.value=0;progress.style.cssText='width:100%;height:12px;accent-color:#7661dc';
+ card.append(status,progress);const started=Date.now();
+ function tick(){const elapsed=Date.now()-started;progress.value=Math.min(100,elapsed/(seconds*1000)*100);status.textContent='Pozostało '+Math.max(0,Math.ceil(seconds-elapsed/1000))+' s · '+Math.floor(progress.value)+'%';
+ if(elapsed>=seconds*1000){clearInterval(timer);write(localStorage,'experimental-look',String(next));if(next)write(sessionStorage,'platform-tour','true');location.assign(target);}}
+ const timer=setInterval(tick,200);tick();}
+ function tour(){if(read(sessionStorage,'platform-tour')!=='true')return;
+ const {layer,card}=panel('Poznaj nowy dziennik');
+ const steps=[['Twój pulpit','Na pulpicie znajdziesz frekwencję, ostatnie oceny i zmiany w planie.','start'],['Plan lekcji','Sprawdzaj lekcje, zastępstwa i bloki zajęć dla wybranego tygodnia.','plan'],['Oceny i frekwencja','W menu po lewej możesz przeglądać oceny i obecności. Na telefonie otwórz menu u góry.','oceny'],['Ustawienia','W ustawieniach możesz przejść na starą platformę. Powrót trwa 30 sekund.','ustawienia']];
+ let index=0;const text=document.createElement('p'), count=document.createElement('p'),button=document.createElement('button');text.style.cssText='color:#687087;font-size:14px;line-height:1.6';count.style.cssText='color:#85869d;font-size:12px';button.type='button';button.style.cssText='margin-top:12px;background:#7661dc;color:#fff;border:0;border-radius:10px;padding:12px 18px;cursor:pointer';card.append(count,text,button);
+ function paint(){card.querySelector('h2').textContent=steps[index][0];text.textContent=steps[index][1];count.textContent='Krok '+(index+1)+' z '+steps.length;button.textContent=index===steps.length-1?'Rozpocznij korzystanie':'Dalej';if(window.Shell)Shell.navigate(steps[index][2]);}
+ button.onclick=function(){if(index===steps.length-1){try{sessionStorage.removeItem('platform-tour');}catch{}layer.remove();if(window.Shell)Shell.navigate('start');}else{index++;paint();}};paint();}
+ return {go,tour};
+})();
+
+window.addEventListener('load',()=>setTimeout(PlatformTransfer.tour,2800),{once:true});</script></body></html>
