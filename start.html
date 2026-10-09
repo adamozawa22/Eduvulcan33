@@ -113,6 +113,9 @@
 
 <div class="st-card" style="padding:0 16px">
 <div class="setting-row">
+<span>Komunikat o nowej platformie</span>
+<button class="toggle platform-notice-toggle on" type="button" role="switch" aria-checked="true" aria-label="Komunikat o nowej platformie" onclick="PlatformNotice.setEnabled(this)"></button>
+</div><div class="setting-row">
 <span>Eksperymentalny wygląd</span>
 <button class="toggle on" type="button" role="switch" aria-checked="true" aria-label="Eksperymentalny wygląd" onclick="Shell.toggleExperimentalAppearance(this);this.setAttribute('aria-checked',String(this.classList.contains('on')))"></button>
 </div>
@@ -5249,4 +5252,26 @@ window.Shell=(()=>{
   setTimeout(()=>{clearInterval(timer);finish()},2500);
   window.AppLoading={finish};
 })();
-</script></body></html>
+</script><div id="platform-notice-modal" hidden style="position:fixed;inset:0;z-index:100000;background:rgba(20,22,40,.45);display:none;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif">
+  <div role="dialog" aria-modal="true" aria-labelledby="platform-notice-title" style="width:min(430px,100%);background:#fff;color:#22243c;border:1px solid #e4e6ef;border-radius:18px;padding:22px;box-shadow:0 18px 60px rgba(20,22,40,.25)">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div><div style="font-size:11px;color:#7661dc;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Ważny komunikat</div><h2 id="platform-notice-title" style="margin:6px 0 8px;font-size:22px;line-height:1.15">Przejdź na nową platformę</h2></div>
+      <button type="button" aria-label="Zamknij komunikat" onclick="PlatformNotice.close()" style="width:30px;height:30px;border:1px solid #e4e6ef;border-radius:8px;background:#f7f7fb;color:#666b80;font-size:20px;line-height:1;cursor:pointer">×</button>
+    </div>
+    <p style="margin:0 0 14px;color:#666b80;line-height:1.5;font-size:13px">Przejdź na nową platformę do ostatniego dnia tego roku, czyli do 31 grudnia 2026.</p>
+    <label style="display:flex;align-items:center;gap:9px;color:#666b80;font-size:12px;cursor:pointer"><input id="platform-notice-dismiss" type="checkbox" style="width:16px;height:16px;accent-color:#7661dc"> Nie pokazuj więcej</label>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px"><button type="button" onclick="PlatformNotice.close()" style="border:0;border-radius:10px;background:#7661dc;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer">Zamknij</button></div>
+  </div>
+</div><script>
+window.PlatformNotice=(function(){
+  const KEY='platform-notice-dismissed', ENABLED='platform-notice-enabled';
+  function modal(){return document.getElementById('platform-notice-modal');}
+  function show(){const m=modal();if(!m||localStorage.getItem(ENABLED)==='false'||localStorage.getItem(KEY)==='true'||Date.now()>new Date('2026-12-31T23:59:59').getTime())return;m.hidden=false;m.style.display='flex';}
+  function close(){const m=modal(), box=document.getElementById('platform-notice-dismiss');if(box&&box.checked)localStorage.setItem(KEY,'true');if(m){m.hidden=true;m.style.display='none';}}
+  function setEnabled(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);button.setAttribute('aria-checked',String(on));localStorage.setItem(ENABLED,String(on));if(on){localStorage.removeItem(KEY);show();}else{const m=modal();if(m){m.hidden=true;m.style.display='none';}}}
+  function init(){document.querySelectorAll('.platform-notice-toggle').forEach(b=>{const on=localStorage.getItem(ENABLED)!=='false';b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on));});setTimeout(show,700);}
+  return {close,setEnabled,init,show};
+})();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',PlatformNotice.init);else PlatformNotice.init();
+</script>
+</body></html>
