@@ -113,6 +113,10 @@
 
 <div class="st-card" style="padding:0 16px">
 <div class="setting-row">
+<span>Eksperymentalny wygląd</span>
+<button class="toggle on" type="button" role="switch" aria-checked="true" aria-label="Eksperymentalny wygląd" onclick="Shell.toggleExperimentalAppearance(this);this.setAttribute('aria-checked',String(this.classList.contains('on')))"></button>
+</div>
+<div class="setting-row">
 <span>Animacje interfejsu</span>
 <button class="toggle on" type="button" role="switch" aria-checked="true" aria-label="Animacje interfejsu" onclick="Shell.toggleAnimations(this);this.setAttribute('aria-checked',String(this.classList.contains('on')))"></button>
 </div>
@@ -5180,6 +5184,7 @@ window.Shell=(()=>{
  async function selectRole(next,focus=false){if(!['student','admin'].includes(next))return;role=next;for(const name of ['student','admin']){const selected=name===role;document.getElementById(name+'-root').hidden=!selected;const tab=document.getElementById('role-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;}await navigate(last[role]);if(role==='admin')await Admin.showApp();if(focus)document.getElementById('role-'+role).focus();}
  async function refresh(){if(busy)return;busy=true;const button=document.getElementById('shell-refresh');button.disabled=true;button.setAttribute('aria-busy','true');try{if(role==='student')await Student.initAuth();else await Admin.showApp();}finally{busy=false;button.disabled=false;button.removeAttribute('aria-busy');}}
  function loggedOut(){Student.showLogin();Admin.lock();closeMenu();}
+ function toggleExperimentalAppearance(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);document.documentElement.classList.toggle('experimental-off',!on);try{localStorage.setItem('experimental-look',String(on))}catch{};const note=document.getElementById('experimental-look-note');if(note)note.textContent=on?'Nowy wygląd jest aktywny.':'Eksperymentalny wygląd jest wyłączony.';}
  function toggleAnimations(button){const on=!button.classList.contains('on');button.classList.toggle('on',on);document.documentElement.classList.toggle('animations-off',!on);try{localStorage.setItem('test-animations',String(on))}catch{}}
  document.getElementById('role-student').addEventListener('click',()=>selectRole('student'));
  document.getElementById('role-admin').addEventListener('click',()=>selectRole('admin'));
@@ -5189,6 +5194,7 @@ window.Shell=(()=>{
  document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();document.querySelectorAll('.modal.show').forEach(modal=>modal.classList.remove('show'));}});
  document.querySelectorAll('.modal').forEach((modal,index)=>{modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');const heading=modal.querySelector('h2,h3');if(heading){if(!heading.id)heading.id='dialog-heading-'+index;modal.setAttribute('aria-labelledby',heading.id)}modal.addEventListener('click',event=>{if(event.target===modal)modal.classList.remove('show')});modal.querySelectorAll('.close,.close-btn').forEach(button=>{button.setAttribute('aria-label','Zamknij okno');button.setAttribute('type','button')});});
  const now=new Date();document.getElementById('shell-weekday').textContent=new Intl.DateTimeFormat('pl-PL',{weekday:'long',timeZone:'Europe/Warsaw'}).format(now);document.getElementById('shell-date').textContent=new Intl.DateTimeFormat('pl-PL',{day:'numeric',month:'long',year:'numeric',timeZone:'Europe/Warsaw'}).format(now);
+ try{if(localStorage.getItem('experimental-look')==='false'){document.documentElement.classList.add('experimental-off');document.querySelectorAll('#student-root .setting-row:nth-of-type(1) .toggle').forEach(button=>{button.classList.remove('on');button.setAttribute('aria-checked','false')});}}catch{}
  try{if(localStorage.getItem('test-animations')==='false'){document.documentElement.classList.add('animations-off');document.querySelectorAll('#student-root .toggle').forEach(button=>{button.classList.remove('on');button.setAttribute('aria-checked','false')});}}catch{}
  if(sharedClient)sharedClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(loggedOut,0);});
  const api={selectRole,navigate,pageChanged,toggleMenu,closeMenu,refresh,loggedOut,toggleAnimations};
