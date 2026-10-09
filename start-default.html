@@ -189,5 +189,24 @@ Ustawienia
 </div>
 
 
+<script>
+(function(){
+  function addExperimentalBanner(){
+    var main=document.querySelector('#diary-app main');
+    if(!main || main.querySelector('.experimental-banner')) return;
+    var banner=document.createElement('div');
+    banner.className='experimental-banner';
+    banner.setAttribute('role','region');
+    banner.setAttribute('aria-label','Nowy wygląd');
+    banner.style.cssText='position:sticky;top:0;z-index:10;margin:0 0 18px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,#7661dc,#5945bb);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 24px rgba(89,69,187,.28)';
+    banner.innerHTML='<div><strong style="display:block;font-size:15px;margin-bottom:4px">Nowy eksperymentalny wygląd</strong><span style="display:block;font-size:12px;opacity:.9">Sprawdź odświeżoną wersję dziennika.</span></div><button type="button" style="flex:none;border:0;border-radius:10px;background:#fff;color:#5945bb;padding:11px 15px;font-weight:700;cursor:pointer">Włącz teraz</button>';
+    banner.querySelector('button').onclick=function(){localStorage.setItem('experimental-look','true');window.location.href='start.html';};
+    main.prepend(banner);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addExperimentalBanner);
+  else addExperimentalBanner();
+  setTimeout(addExperimentalBanner,500);
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="session.js"></script><script src="diary.js"></script></body></html>
 
